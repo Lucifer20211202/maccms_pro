@@ -9,6 +9,7 @@ bs-config*
 .coding-ide/*
 nohup*
 *.log
+*.phar
 .wepycache
 .well-known
 /upload
