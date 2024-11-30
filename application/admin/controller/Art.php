@@ -5,10 +5,6 @@ use app\common\util\Pinyin;
 
 class Art extends Base
 {
-    public function __construct()
-    {
-        parent::__construct();
-    }
 
     public function data()
     {

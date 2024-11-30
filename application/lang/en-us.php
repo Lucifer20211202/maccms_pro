@@ -1939,7 +1939,6 @@ return [
     'install/result'=>'result',
     'install/back_step'=>'Back to the previous step',
     'install/next_step'=>'Go to the next step',
-    'install/question'=>'Common problem solutions',
     'install/database_config'=>'database configuration',
 
     'install/server_address'=>'server address',
@@ -1952,7 +1951,6 @@ return [
     'install/database_username_tip'=>'User name to connect to the database',
     'install/database_pass'=>'database password',
     'install/database_pass_tip'=>'password to connect to the database',
-    'install/database_pre'=>'database prefix',
     'install/database_pre_tip'=>'recommended to use default, prefix must have _',
     'install/overwrite_database'=>'overwrite database',
     'install/overwrite'=>'overwrite',

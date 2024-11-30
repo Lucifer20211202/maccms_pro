@@ -4,10 +4,6 @@ use think\Controller;
 
 class Topic extends Base
 {
-    public function __construct()
-    {
-        parent::__construct();
-    }
 
     public function index()
     {

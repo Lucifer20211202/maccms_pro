@@ -1,26 +1,21 @@
 <?php
+
 namespace app\install\controller;
+
 use think\Controller;
 use think\Db;
 use think\Lang;
-use think\Request;
 
 class Index extends Controller
 {
 
-    /**
-     * 构造方法
-     * @access public
-     * @param Request $request Request 对象
-     */
-    public function __construct(Request $request = null)
+    protected function _initialize()
     {
         // 仅安装脚本可进入
         if (!defined('BIND_MODULE') || BIND_MODULE != 'install') {
             header('HTTP/1.1 403 Forbidden');
             exit();
         }
-        parent::__construct($request);
     }
 
     public function index($step = 0)
@@ -30,43 +25,38 @@ class Index extends Controller
         $lang = $this->getInstallLang();
         if (in_array($lang, $langs)) {
             Lang::range($lang);
-            Lang::load(APP_PATH . 'lang/' . $lang . '.php', $lang);
+            Lang::load(APP_PATH.'lang/'.$lang.'.php', $lang);
         }
 
         switch ($step) {
             case 2:
                 session('install_error', false);
                 return self::step2();
-                break;
             case 3:
                 if (session('install_error')) {
                     return $this->error(lang('install/environment_failed'));
                 }
                 return self::step3();
-                break;
             case 4:
                 if (session('install_error')) {
                     return $this->error(lang('install/environment_failed'));
                 }
                 return self::step4();
-                break;
             case 5:
                 if (session('install_error')) {
                     return $this->error(lang('install/init_err'));
                 }
                 return self::step5();
-                break;
             default:
                 $param = input();
                 $lang = in_array($param['lang'], $langs) ? $param['lang'] : 'zh-cn';
                 Lang::range($lang);
-                Lang::load(APP_PATH . 'lang/' . $lang . '.php', $lang);
+                Lang::load(APP_PATH.'lang/'.$lang.'.php', $lang);
                 session('lang', $lang);
                 $this->assign('lang', $lang);
 
                 session('install_error', false);
                 return $this->fetch('install@/index/index');
-                break;
         }
     }
 
@@ -78,22 +68,21 @@ class Index extends Controller
     {
         $data = [];
         $data['env'] = self::checkNnv();
-        $data['dir'] = self::checkDir();
         $data['func'] = self::checkFunc();
         $this->assign('data', $data);
         return $this->fetch('install@index/step2');
     }
-    
+
     /**
      * 第三步：初始化配置
      * @return mixed
      */
     private function step3()
     {
-        $this->assign('install_dir', MAC_BASE_PATH . '/');
+        $this->assign('install_dir', MAC_BASE_PATH.'/');
         return $this->fetch('install@index/step3');
     }
-    
+
     /**
      * 第四步：执行安装
      * @return mixed
@@ -101,18 +90,17 @@ class Index extends Controller
     private function step4()
     {
         if ($this->request->isPost()) {
-            if (!is_writable(APP_PATH . 'database.php')) {
+            if (!is_writable(APP_PATH.'database.php')) {
                 return $this->error('[app/database.php]'.lang('install/write_read_err'));
             }
             $data = input('post.');
             $data['type'] = 'mysql';
             $rule = [
-                'hostname|'.lang('install/server_address') => 'require',
-                'hostport|'.lang('install/database_port') => 'require|number',
-                'database|'.lang('install/database_name') => 'require',
+                'hostname|'.lang('install/server_address')    => 'require',
+                'hostport|'.lang('install/database_port')     => 'require|number',
+                'database|'.lang('install/database_name')     => 'require',
                 'username|'.lang('install/database_username') => 'require',
-                'prefix|'.lang('install/database_pre') => 'require|regex:^[a-z0-9]{1,20}[_]{1}',
-                'cover|'.lang('install/overwrite_database') => 'require|in:0,1',
+                'cover|'.lang('install/overwrite_database')   => 'require|in:0,1',
             ];
             $validate = $this->validate($data, $rule);
             if (true !== $validate) {
@@ -120,10 +108,10 @@ class Index extends Controller
             }
             $cover = $data['cover'];
             unset($data['cover']);
-            $config = include APP_PATH . 'database.php';
+            $config = include APP_PATH.'database.php';
             foreach ($data as $k => $v) {
                 if (array_key_exists($k, $config) === false) {
-                    return $this->error(lang('param') . '' . $k . '' . lang('install/not_found'));
+                    return $this->error(lang('param').''.$k.''.lang('install/not_found'));
                 }
             }
             // 不存在的数据库会导致连接失败
@@ -132,9 +120,9 @@ class Index extends Controller
             // 创建数据库连接
             $db_connect = Db::connect($data);
             // 检测数据库连接
-            try{
+            try {
                 $db_connect->execute('select version()');
-            }catch(\Exception $e){
+            } catch (\Exception $e) {
                 $this->error(lang('install/database_connect_err'));
             }
 
@@ -146,7 +134,7 @@ class Index extends Controller
             // 不覆盖检测是否已存在数据库
             if (!$cover) {
                 if ($db_connect->execute('SELECT * FROM information_schema.schemata WHERE schema_name="'.$database.'"')) {
-                    $this->success(lang('install/database_name_haved'),'');
+                    $this->success(lang('install/database_name_haved'), '');
                 }
             }
             // 创建数据库
@@ -159,7 +147,7 @@ class Index extends Controller
             return $this->error(lang('install/access_denied'));
         }
     }
-    
+
     /**
      * 第五步：数据库安装
      * @return mixed
@@ -180,27 +168,27 @@ class Index extends Controller
         }
 
         $rule = [
-            'account|'.lang('install/admin_name') => 'require|alphaNum',
+            'account|'.lang('install/admin_name')  => 'require|alphaNum',
             'password|'.lang('install/admin_pass') => 'require|length:6,20',
         ];
         $validate = $this->validate(['account' => $account, 'password' => $password], $rule);
         if (true !== $validate) {
             return $this->error($validate);
         }
-        if(empty($install_dir)) {
-            $install_dir='/';
+        if (empty($install_dir)) {
+            $install_dir = '/';
         }
 
         // 更新程序配置
         $config_new = config('maccms');
-        $cofnig_new['app']['cache_flag'] = substr(md5(time()),0,10);
+        $cofnig_new['app']['cache_flag'] = substr(md5(time()), 0, 10);
         $cofnig_new['app']['lang'] = $this->getInstallLang();
         $config_new['api']['vod']['status'] = 0;
         $config_new['api']['art']['status'] = 0;
         $config_new['interface']['status'] = 0;
         $config_new['interface']['pass'] = mac_get_rndstr(16);
         $config_new['site']['install_dir'] = $install_dir;
-        $res = mac_save_config_data(APP_PATH . 'extra/maccms.php', $config_new);
+        $res = mac_save_config_data(APP_PATH.'extra/maccms.php', $config_new);
         if ($res === false) {
             return $this->error(lang('write_err_config'));
         }
@@ -210,31 +198,31 @@ class Index extends Controller
         $sql_file = APP_PATH.'install/sql/install.sql';
         if (file_exists($sql_file)) {
             $sql = file_get_contents($sql_file);
-            $sql_list = mac_parse_sql($sql, 0, ['mac_' => $config['prefix']]);
+            $sql_list = mac_parse_sql($sql, 0, ['prefix_' => $config['prefix']]);
             if ($sql_list) {
                 $sql_list = array_filter($sql_list);
                 foreach ($sql_list as $v) {
                     try {
                         Db::execute($v);
-                    } catch(\Exception $e) {
-                        return $this->error(lang('install/sql_err'). $e);
+                    } catch (\Exception $e) {
+                        return $this->error(lang('install/sql_err').$e);
                     }
                 }
             }
         }
         //初始化数据
-        if($initdata=='1'){
+        if ($initdata == '1') {
             $sql_file = APP_PATH.'install/sql/initdata.sql';
             if (file_exists($sql_file)) {
                 $sql = file_get_contents($sql_file);
-                $sql_list = mac_parse_sql($sql, 0, ['mac_' => $config['prefix']]);
+                $sql_list = mac_parse_sql($sql, 0, ['prefix_' => $config['prefix']]);
                 if ($sql_list) {
                     $sql_list = array_filter($sql_list);
                     foreach ($sql_list as $v) {
                         try {
                             Db::execute($v);
-                        } catch(\Exception $e) {
-                            return $this->error(lang('install/init_data_err'). $e);
+                        } catch (\Exception $e) {
+                            return $this->error(lang('install/init_data_err').$e);
                         }
                     }
                 }
@@ -243,18 +231,18 @@ class Index extends Controller
 
         // 注册管理员账号
         $data = [
-            'admin_name' => $account,
-            'admin_pwd' => $password,
-            'admin_status' =>1,
+            'admin_name'   => $account,
+            'admin_pwd'    => $password,
+            'admin_status' => 1,
         ];
         $res = model('Admin')->saveData($data);
-        if (!$res['code']>1) {
+        if (!$res['code'] > 1) {
             return $this->error(lang('install/admin_name_err').'：'.$res['msg']);
         }
         file_put_contents(APP_PATH.'data/install/install.lock', date('Y-m-d H:i:s'));
 
         // 关闭调试、配置保存到数据库
-        $env_path = ROOT_PATH . '.env';
+        $env_path = ROOT_PATH.'.env';
         $env_string = str_replace([
             'app_debug=true',
             'app_trace=true',
@@ -268,10 +256,10 @@ class Index extends Controller
 
         // 获取站点根目录
         $root_dir = request()->baseFile();
-        $root_dir  = preg_replace(['/install.php$/'], [''], $root_dir);
+        $root_dir = preg_replace(['/install.php$/'], [''], $root_dir);
         return $this->success(lang('install/is_ok'), $root_dir.'admin.php');
     }
-    
+
     /**
      * 环境检测
      * @return array
@@ -279,8 +267,19 @@ class Index extends Controller
     private function checkNnv()
     {
         $items = [
-            'os'      => [lang('install/os'), lang('install/not_limited'), 'Windows/Unix', PHP_OS, 'ok'],
-            'php'     => [lang('install/php'), '5.5', lang('install/php_version'), PHP_VERSION, 'ok'],
+            'os'  => [
+                lang('install/os'),
+                lang('install/not_limited'),
+                'Windows/Unix', PHP_OS,
+                'ok'
+            ],
+            'php' => [
+                lang('install/php'),
+                '7.4',
+                lang('install/php_version'),
+                PHP_VERSION,
+                'ok'
+            ],
         ];
         if ($items['php'][3] < $items['php'][1]) {
             $items['php'][4] = 'no';
@@ -298,45 +297,7 @@ class Index extends Controller
         */
         return $items;
     }
-    
-    /**
-     * 目录权限检查
-     * @return array
-     */
-    private function checkDir()
-    {
-        $items = [
-            ['file', './application/database.php', lang('install/read_and_write'), lang('install/read_and_write'), 'ok'],
-            ['file', './application/route.php', lang('install/read_and_write'), lang('install/read_and_write'), 'ok'],
-            ['dir', './application/extra', lang('install/read_and_write'), lang('install/read_and_write'), 'ok'],
-            ['dir', './application/data/backup', lang('install/read_and_write'), lang('install/read_and_write'), 'ok'],
-            ['dir', './application/data/update', lang('install/read_and_write'), lang('install/read_and_write'), 'ok'],
-            ['dir', './runtime', lang('install/read_and_write'), lang('install/read_and_write'), 'ok'],
-            ['dir', './upload', lang('install/read_and_write'), lang('install/read_and_write'), 'ok'],
-        ];
-        foreach ($items as &$v) {
-            if ($v[0] == 'dir') {// 文件夹
-                if(!is_writable($v[1])) {
-                    if(is_dir($v[1])) {
-                        $v[3] = lang('install/not_writable');
-                        $v[4] = 'no';
-                    } else {
-                        $v[3] = lang('install/not_found');
-                        $v[4] = 'no';
-                    }
-                    session('install_error', true);
-                }
-            } else {// 文件
-                if(!is_writable($v[1])) {
-                    $v[3] = lang('install/not_writable');
-                    $v[4] = 'no';
-                    session('install_error', true);
-                }
-            }
-        }
-        return $items;
-    }
-    
+
     /**
      * 函数及扩展检查
      * @return array
@@ -344,7 +305,7 @@ class Index extends Controller
     private function checkFunc()
     {
         $items = [
-            ['pdo', lang('install/support'), 'yes',lang('install/class')],
+            ['pdo', lang('install/support'), 'yes', lang('install/class')],
             ['pdo_mysql', lang('install/support'), 'yes', lang('install/model')],
             ['zip', lang('install/support'), 'yes', lang('install/model')],
             ['fileinfo', lang('install/support'), 'yes', lang('install/model')],
@@ -355,12 +316,12 @@ class Index extends Controller
             ['putenv', lang('install/support'), 'yes', lang('install/function')],
         ];
 
-        if(version_compare(PHP_VERSION,'5.6.0','ge') && version_compare(PHP_VERSION,'5.7.0','lt')){
-            $items[] = ['always_populate_raw_post_data',lang('install/support'),'yes',lang('install/config')];
+        if (version_compare(PHP_VERSION, '5.6.0', 'ge') && version_compare(PHP_VERSION, '5.7.0', 'lt')) {
+            $items[] = ['always_populate_raw_post_data', lang('install/support'), 'yes', lang('install/config')];
         }
 
         foreach ($items as &$v) {
-            if((lang('install/class')==$v[3] && !class_exists($v[0])) || (lang('install/model')==$v[3] && !extension_loaded($v[0])) || (lang('install/function')==$v[3] && !function_exists($v[0])) || (lang('install/config')==$v[3] && ini_get('always_populate_raw_post_data')!=-1)) {
+            if ((lang('install/class') == $v[3] && !class_exists($v[0])) || (lang('install/model') == $v[3] && !extension_loaded($v[0])) || (lang('install/function') == $v[3] && !function_exists($v[0])) || (lang('install/config') == $v[3] && ini_get('always_populate_raw_post_data') != -1)) {
                 $v[1] = lang('install/not_support');
                 $v[2] = 'no';
                 session('install_error', true);
@@ -369,7 +330,7 @@ class Index extends Controller
 
         return $items;
     }
-    
+
     /**
      * 生成数据库配置文件
      * @return array
@@ -412,8 +373,8 @@ return [
     'dsn'             => '',
     // 数据库连接参数
     'params'          => [],
-    // 数据库编码默认采用utf8
-    'charset'         => 'utf8',
+    // 数据库编码默认采用utf8mb4
+    'charset'         => 'utf8mb4',
     // 数据库表前缀
     'prefix'          => '{$data['prefix']}',
     // 数据库调试模式
@@ -442,8 +403,8 @@ return [
     'query'           => '\\think\\db\\Query',
 ];
 INFO;
-        $env_path = ROOT_PATH . '.env';
-        $db_path = APP_PATH . 'database.php';
+        $env_path = ROOT_PATH.'.env';
+        $db_path = APP_PATH.'database.php';
         file_put_contents($env_path, $env_code);
         file_put_contents($db_path, $db_code);
         // 判断写入是否成功（如有opcache手动清理一次）
@@ -454,8 +415,7 @@ INFO;
         $this->rePutEnv();
         $config = include $db_path;
         if (empty($config['database']) || $config['database'] != $data['database']) {
-            return $this->error('[application/database.php]' . lang('write_err_database'));
-            exit;
+            return $this->error('[application/database.php]'.lang('write_err_database'));
         }
     }
 
@@ -483,13 +443,14 @@ INFO;
     /**
      * 重新更新env
      */
-    private function rePutEnv() {
-        $env = parse_ini_file(ROOT_PATH . '.env', true);
+    private function rePutEnv()
+    {
+        $env = parse_ini_file(ROOT_PATH.'.env', true);
         foreach ($env as $key => $val) {
-            $name = ENV_PREFIX . strtoupper($key);
+            $name = ENV_PREFIX.strtoupper($key);
             if (is_array($val)) {
                 foreach ($val as $k => $v) {
-                    $item = $name . '_' . strtoupper($k);
+                    $item = $name.'_'.strtoupper($k);
                     putenv("$item=$v");
                 }
             } else {

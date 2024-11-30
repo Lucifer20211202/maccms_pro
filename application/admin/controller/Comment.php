@@ -4,10 +4,6 @@ use think\Db;
 
 class Comment extends Base
 {
-    public function __construct()
-    {
-        parent::__construct();
-    }
 
     public function data()
     {

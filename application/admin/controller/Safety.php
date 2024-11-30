@@ -6,10 +6,6 @@ class Safety extends Base
 {
 
     var $_files;
-    public function __construct()
-    {
-        parent::__construct();
-    }
 
     public function index()
     {

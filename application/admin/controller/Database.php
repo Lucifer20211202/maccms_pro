@@ -7,10 +7,6 @@ use app\common\util\Database as dbOper;
 class Database extends Base
 {
     var $_db_config;
-    public function __construct()
-    {
-        parent::__construct();
-    }
 
     public function index()
     {

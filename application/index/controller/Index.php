@@ -5,10 +5,6 @@ use think\Cache;
 
 class Index extends Base
 {
-    public function __construct()
-    {
-        parent::__construct();
-    }
 
     public function arraySort($array,$keys,$sort='asc') {
         $newArr = $valArr = array();

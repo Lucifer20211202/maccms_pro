@@ -25,7 +25,7 @@ return array (
     'site_icp' => 'icp123',
     'site_qq' => '123456',
     'site_email' => '123456@test.cn',
-    'install_dir' => '/',
+    'install_dir' => 'MAC_BASE_PATH/',
     'site_logo' => 'static/images/pro-home/home-logo.png',
     'site_logo_w' => 'static/images/pro-home/home-logo-b.png',
     'site_logo_b' => 'static/images/pro-home/home-logo.png',
@@ -227,7 +227,7 @@ return array (
   'interface' => 
   array (
     'status' => 0,
-    'pass' => 'VWDTDIOW4QQDEZ5S',
+    'pass' => 'C4ONU92A3J0H7V8Z',
     'vodtype' => '动作片=动作',
     'arttype' => '头条=头条',
     'actortype' => '',

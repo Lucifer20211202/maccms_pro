@@ -1,8 +1,8 @@
 -- ----------------------------
--- Table structure for mac_actor
+-- Table structure for prefix_actor
 -- ----------------------------
-DROP TABLE IF EXISTS `mac_actor`;
-CREATE TABLE `mac_actor` (
+DROP TABLE IF EXISTS `prefix_actor`;
+CREATE TABLE `prefix_actor` (
   `actor_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `type_id` smallint(6) unsigned NOT NULL DEFAULT '0' ,
   `type_id_1` smallint(6) unsigned NOT NULL DEFAULT '0' ,
@@ -63,13 +63,13 @@ CREATE TABLE `mac_actor` (
   KEY `actor_score` (`actor_score`),
   KEY `actor_score_all` (`actor_score_all`),
   KEY `actor_score_num` (`actor_score_num`)
-) ENGINE=MyISAM AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- ----------------------------
--- Table structure for mac_admin
+-- Table structure for prefix_admin
 -- ----------------------------
-DROP TABLE IF EXISTS `mac_admin`;
-CREATE TABLE `mac_admin` (
+DROP TABLE IF EXISTS `prefix_admin`;
+CREATE TABLE `prefix_admin` (
   `admin_id` smallint(6) unsigned NOT NULL AUTO_INCREMENT,
   `admin_name` varchar(30) NOT NULL DEFAULT '',
   `admin_pwd` char(32) NOT NULL DEFAULT '',
@@ -83,13 +83,13 @@ CREATE TABLE `mac_admin` (
   `admin_last_login_ip` int(10) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (`admin_id`),
   KEY `admin_name` (`admin_name`)
-) ENGINE=MyISAM AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 ;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ;
 
 -- ----------------------------
--- Table structure for mac_annex
+-- Table structure for prefix_annex
 -- ----------------------------
-DROP TABLE IF EXISTS `mac_annex`;
-CREATE TABLE `mac_annex` (
+DROP TABLE IF EXISTS `prefix_annex`;
+CREATE TABLE `prefix_annex` (
   `annex_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `annex_time` int(10) unsigned NOT NULL DEFAULT '0',
   `annex_file` varchar(255) NOT NULL DEFAULT '',
@@ -99,13 +99,13 @@ CREATE TABLE `mac_annex` (
   KEY `annex_time` (`annex_time`),
   KEY `annex_file` (`annex_file`),
   KEY `annex_type` (`annex_type`)
-) ENGINE=MyISAM AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- ----------------------------
--- Table structure for mac_art
+-- Table structure for prefix_art
 -- ----------------------------
-DROP TABLE IF EXISTS `mac_art`;
-CREATE TABLE `mac_art` (
+DROP TABLE IF EXISTS `prefix_art`;
+CREATE TABLE `prefix_art` (
   `art_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `type_id` smallint(6) unsigned NOT NULL DEFAULT '0' ,
   `type_id_1` smallint(6) unsigned NOT NULL DEFAULT '0' ,
@@ -173,13 +173,13 @@ CREATE TABLE `mac_art` (
   KEY `art_score` (`art_score`),
   KEY `art_score_all` (`art_score_all`),
   KEY `art_score_num` (`art_score_num`)
-) ENGINE=MyISAM AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 ;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- ----------------------------
--- Table structure for mac_card
+-- Table structure for prefix_card
 -- ----------------------------
-DROP TABLE IF EXISTS `mac_card`;
-CREATE TABLE `mac_card` (
+DROP TABLE IF EXISTS `prefix_card`;
+CREATE TABLE `prefix_card` (
   `card_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `card_no` varchar(16) NOT NULL DEFAULT '' ,
   `card_pwd` varchar(8) NOT NULL DEFAULT '' ,
@@ -196,13 +196,13 @@ CREATE TABLE `mac_card` (
   KEY `card_use_time` (`card_use_time`) USING BTREE,
   KEY `card_no` (`card_no`),
   KEY `card_pwd` (`card_pwd`)
-) ENGINE=MyISAM AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 ;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- ----------------------------
--- Table structure for mac_cash
+-- Table structure for prefix_cash
 -- ----------------------------
-DROP TABLE IF EXISTS `mac_cash`;
-CREATE TABLE `mac_cash` (
+DROP TABLE IF EXISTS `prefix_cash`;
+CREATE TABLE `prefix_cash` (
   `cash_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `user_id` int(10) unsigned NOT NULL DEFAULT '0',
   `cash_status` tinyint(1) unsigned NOT NULL DEFAULT '0' ,
@@ -216,13 +216,13 @@ CREATE TABLE `mac_cash` (
   PRIMARY KEY (`cash_id`),
   KEY `user_id` (`user_id`),
   KEY `cash_status` (`cash_status`) USING BTREE
-) ENGINE=MyISAM AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- ----------------------------
--- Table structure for mac_cj_content
+-- Table structure for prefix_cj_content
 -- ----------------------------
-DROP TABLE IF EXISTS `mac_cj_content`;
-CREATE TABLE `mac_cj_content` (
+DROP TABLE IF EXISTS `prefix_cj_content`;
+CREATE TABLE `prefix_cj_content` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `nodeid` int(10) unsigned NOT NULL DEFAULT '0',
   `status` tinyint(1) unsigned NOT NULL DEFAULT '1',
@@ -232,23 +232,23 @@ CREATE TABLE `mac_cj_content` (
   PRIMARY KEY (`id`),
   KEY `nodeid` (`nodeid`),
   KEY `status` (`status`)
-) ENGINE=MyISAM AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC ;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- ----------------------------
--- Table structure for mac_cj_history
+-- Table structure for prefix_cj_history
 -- ----------------------------
-DROP TABLE IF EXISTS `mac_cj_history`;
-CREATE TABLE `mac_cj_history` (
+DROP TABLE IF EXISTS `prefix_cj_history`;
+CREATE TABLE `prefix_cj_history` (
   `md5` char(32) NOT NULL,
   PRIMARY KEY (`md5`),
   KEY `md5` (`md5`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 ;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- ----------------------------
--- Table structure for mac_cj_node
+-- Table structure for prefix_cj_node
 -- ----------------------------
-DROP TABLE IF EXISTS `mac_cj_node`;
-CREATE TABLE `mac_cj_node` (
+DROP TABLE IF EXISTS `prefix_cj_node`;
+CREATE TABLE `prefix_cj_node` (
   `nodeid` smallint(6) unsigned NOT NULL AUTO_INCREMENT,
   `name` varchar(20) NOT NULL,
   `lastdate` int(10) unsigned NOT NULL DEFAULT '0',
@@ -281,13 +281,13 @@ CREATE TABLE `mac_cj_node` (
   `program_config` text NOT NULL,
   `mid` tinyint(1) unsigned NOT NULL DEFAULT '1' ,
   PRIMARY KEY (`nodeid`)
-) ENGINE=MyISAM AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC ;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- ----------------------------
--- Table structure for mac_collect
+-- Table structure for prefix_collect
 -- ----------------------------
-DROP TABLE IF EXISTS `mac_collect`;
-CREATE TABLE `mac_collect` (
+DROP TABLE IF EXISTS `prefix_collect`;
+CREATE TABLE `prefix_collect` (
   `collect_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `collect_name` varchar(30) NOT NULL DEFAULT '' ,
   `collect_url` varchar(255) NOT NULL DEFAULT '' ,
@@ -301,13 +301,13 @@ CREATE TABLE `mac_collect` (
   `collect_opt` tinyint(1) unsigned NOT NULL DEFAULT '0' ,
   `collect_sync_pic_opt` tinyint(1) unsigned NOT NULL DEFAULT '0' COMMENT '同步图片选项，0-跟随全局，1-开启，2-关闭',
   PRIMARY KEY (`collect_id`)
-) ENGINE=MyISAM AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 ;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- ----------------------------
--- Table structure for mac_comment
+-- Table structure for prefix_comment
 -- ----------------------------
-DROP TABLE IF EXISTS `mac_comment`;
-CREATE TABLE `mac_comment` (
+DROP TABLE IF EXISTS `prefix_comment`;
+CREATE TABLE `prefix_comment` (
   `comment_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `comment_mid` tinyint(1) unsigned NOT NULL DEFAULT '1' ,
   `comment_rid` int(10) unsigned NOT NULL DEFAULT '0' ,
@@ -329,13 +329,13 @@ CREATE TABLE `mac_comment` (
   KEY `comment_pid` (`comment_pid`),
   KEY `user_id` (`user_id`),
   KEY `comment_reply` (`comment_reply`)
-) ENGINE=MyISAM AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 ;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- ----------------------------
--- Table structure for mac_gbook
+-- Table structure for prefix_gbook
 -- ----------------------------
-DROP TABLE IF EXISTS `mac_gbook`;
-CREATE TABLE `mac_gbook` (
+DROP TABLE IF EXISTS `prefix_gbook`;
+CREATE TABLE `prefix_gbook` (
   `gbook_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `gbook_rid` int(10) unsigned NOT NULL DEFAULT '0' ,
   `user_id` int(10) unsigned NOT NULL DEFAULT '0' ,
@@ -352,13 +352,13 @@ CREATE TABLE `mac_gbook` (
   KEY `gbook_reply_time` (`gbook_reply_time`) USING BTREE,
   KEY `user_id` (`user_id`),
   KEY `gbook_reply` (`gbook_reply`)
-) ENGINE=MyISAM AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 ;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- ----------------------------
--- Table structure for mac_group
+-- Table structure for prefix_group
 -- ----------------------------
-DROP TABLE IF EXISTS `mac_group`;
-CREATE TABLE `mac_group` (
+DROP TABLE IF EXISTS `prefix_group`;
+CREATE TABLE `prefix_group` (
   `group_id` smallint(6) NOT NULL AUTO_INCREMENT,
   `group_name` varchar(30) NOT NULL DEFAULT '' ,
   `group_status` tinyint(1) unsigned NOT NULL DEFAULT '1' ,
@@ -371,19 +371,19 @@ CREATE TABLE `mac_group` (
   `group_points_free` tinyint(1) unsigned NOT NULL DEFAULT '0' ,
   PRIMARY KEY (`group_id`),
   KEY `group_status` (`group_status`)
-) ENGINE=MyISAM AUTO_INCREMENT=4 DEFAULT CHARSET=utf8 ;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
-INSERT INTO `mac_group` VALUES ('1', '游客', '1', ',1,6,7,8,9,10,11,12,2,13,14,15,16,3,4,5,17,18,', '{\"1\":{\"1\":\"1\",\"2\":\"2\",\"3\":\"3\",\"4\":\"4\",\"5\":\"5\"},\"6\":{\"1\":\"1\",\"2\":\"2\",\"3\":\"3\",\"4\":\"4\",\"5\":\"5\"},\"7\":{\"1\":\"1\",\"2\":\"2\",\"3\":\"3\",\"4\":\"4\",\"5\":\"5\"},\"8\":{\"1\":\"1\",\"2\":\"2\",\"3\":\"3\",\"4\":\"4\",\"5\":\"5\"},\"9\":{\"1\":\"1\",\"2\":\"2\",\"3\":\"3\",\"4\":\"4\",\"5\":\"5\"},\"10\":{\"1\":\"1\",\"2\":\"2\",\"3\":\"3\",\"4\":\"4\",\"5\":\"5\"},\"11\":{\"1\":\"1\",\"2\":\"2\",\"3\":\"3\",\"4\":\"4\",\"5\":\"5\"},\"12\":{\"1\":\"1\",\"2\":\"2\",\"3\":\"3\",\"4\":\"4\",\"5\":\"5\"},\"2\":{\"1\":\"1\",\"2\":\"2\",\"3\":\"3\",\"4\":\"4\",\"5\":\"5\"},\"13\":{\"1\":\"1\",\"2\":\"2\",\"3\":\"3\",\"4\":\"4\",\"5\":\"5\"},\"14\":{\"1\":\"1\",\"2\":\"2\",\"3\":\"3\",\"4\":\"4\",\"5\":\"5\"},\"15\":{\"1\":\"1\",\"2\":\"2\",\"3\":\"3\",\"4\":\"4\",\"5\":\"5\"},\"16\":{\"1\":\"1\",\"2\":\"2\",\"3\":\"3\",\"4\":\"4\",\"5\":\"5\"},\"3\":{\"1\":\"1\",\"2\":\"2\",\"3\":\"3\",\"4\":\"4\",\"5\":\"5\"},\"4\":{\"1\":\"1\",\"2\":\"2\",\"3\":\"3\",\"4\":\"4\",\"5\":\"5\"},\"5\":{\"1\":\"1\",\"2\":\"2\"},\"17\":{\"1\":\"1\",\"2\":\"2\"},\"18\":{\"1\":\"1\",\"2\":\"2\"}}', '0', '0', '0', '0', '0');
-INSERT INTO `mac_group` VALUES ('2', '默认会员', '1', ',1,6,7,8,9,10,11,12,2,13,14,15,16,3,4,5,17,18,', '{\"1\":{\"1\":\"1\",\"2\":\"2\",\"3\":\"3\",\"4\":\"4\",\"5\":\"5\"},\"6\":{\"1\":\"1\",\"2\":\"2\",\"3\":\"3\",\"4\":\"4\",\"5\":\"5\"},\"7\":{\"1\":\"1\",\"2\":\"2\",\"3\":\"3\",\"4\":\"4\",\"5\":\"5\"},\"8\":{\"1\":\"1\",\"2\":\"2\",\"3\":\"3\",\"4\":\"4\",\"5\":\"5\"},\"9\":{\"1\":\"1\",\"2\":\"2\",\"3\":\"3\",\"4\":\"4\",\"5\":\"5\"},\"10\":{\"1\":\"1\",\"2\":\"2\",\"3\":\"3\",\"4\":\"4\",\"5\":\"5\"},\"11\":{\"1\":\"1\",\"2\":\"2\",\"3\":\"3\",\"4\":\"4\",\"5\":\"5\"},\"12\":{\"1\":\"1\",\"2\":\"2\",\"3\":\"3\",\"4\":\"4\",\"5\":\"5\"},\"2\":{\"1\":\"1\",\"2\":\"2\",\"3\":\"3\",\"4\":\"4\",\"5\":\"5\"},\"13\":{\"1\":\"1\",\"2\":\"2\",\"3\":\"3\",\"4\":\"4\",\"5\":\"5\"},\"14\":{\"1\":\"1\",\"2\":\"2\",\"3\":\"3\",\"4\":\"4\",\"5\":\"5\"},\"15\":{\"1\":\"1\",\"2\":\"2\",\"3\":\"3\",\"4\":\"4\",\"5\":\"5\"},\"16\":{\"1\":\"1\",\"2\":\"2\",\"3\":\"3\",\"4\":\"4\",\"5\":\"5\"},\"3\":{\"1\":\"1\",\"2\":\"2\",\"3\":\"3\",\"4\":\"4\",\"5\":\"5\"},\"4\":{\"1\":\"1\",\"2\":\"2\",\"3\":\"3\",\"4\":\"4\",\"5\":\"5\"},\"5\":{\"1\":\"1\",\"2\":\"2\"},\"17\":{\"1\":\"1\",\"2\":\"2\"},\"18\":{\"1\":\"1\",\"2\":\"2\"}}', '0', '0', '0', '0', '0');
-INSERT INTO `mac_group` VALUES ('3', 'VIP会员', '1', ',1,6,7,8,9,10,11,12,2,13,14,15,16,3,4,5,17,18,', '{\"1\":{\"1\":\"1\",\"2\":\"2\",\"3\":\"3\",\"4\":\"4\",\"5\":\"5\"},\"6\":{\"1\":\"1\",\"2\":\"2\",\"3\":\"3\",\"4\":\"4\",\"5\":\"5\"},\"7\":{\"1\":\"1\",\"2\":\"2\",\"3\":\"3\",\"4\":\"4\",\"5\":\"5\"},\"8\":{\"1\":\"1\",\"2\":\"2\",\"3\":\"3\",\"4\":\"4\",\"5\":\"5\"},\"9\":{\"1\":\"1\",\"2\":\"2\",\"3\":\"3\",\"4\":\"4\",\"5\":\"5\"},\"10\":{\"1\":\"1\",\"2\":\"2\",\"3\":\"3\",\"4\":\"4\",\"5\":\"5\"},\"11\":{\"1\":\"1\",\"2\":\"2\",\"3\":\"3\",\"4\":\"4\",\"5\":\"5\"},\"12\":{\"1\":\"1\",\"2\":\"2\",\"3\":\"3\",\"4\":\"4\",\"5\":\"5\"},\"2\":{\"1\":\"1\",\"2\":\"2\",\"3\":\"3\",\"4\":\"4\",\"5\":\"5\"},\"13\":{\"1\":\"1\",\"2\":\"2\",\"3\":\"3\",\"4\":\"4\",\"5\":\"5\"},\"14\":{\"1\":\"1\",\"2\":\"2\",\"3\":\"3\",\"4\":\"4\",\"5\":\"5\"},\"15\":{\"1\":\"1\",\"2\":\"2\",\"3\":\"3\",\"4\":\"4\",\"5\":\"5\"},\"16\":{\"1\":\"1\",\"2\":\"2\",\"3\":\"3\",\"4\":\"4\",\"5\":\"5\"},\"3\":{\"1\":\"1\",\"2\":\"2\",\"3\":\"3\",\"4\":\"4\",\"5\":\"5\"},\"4\":{\"1\":\"1\",\"2\":\"2\",\"3\":\"3\",\"4\":\"4\",\"5\":\"5\"},\"5\":{\"1\":\"1\",\"2\":\"2\"},\"17\":{\"1\":\"1\",\"2\":\"2\"},\"18\":{\"1\":\"1\",\"2\":\"2\"}}', '10', '70', '300', '3600', '0');
+INSERT INTO `prefix_group` VALUES ('1', '游客', '1', ',1,6,7,8,9,10,11,12,2,13,14,15,16,3,4,5,17,18,', '{\"1\":{\"1\":\"1\",\"2\":\"2\",\"3\":\"3\",\"4\":\"4\",\"5\":\"5\"},\"6\":{\"1\":\"1\",\"2\":\"2\",\"3\":\"3\",\"4\":\"4\",\"5\":\"5\"},\"7\":{\"1\":\"1\",\"2\":\"2\",\"3\":\"3\",\"4\":\"4\",\"5\":\"5\"},\"8\":{\"1\":\"1\",\"2\":\"2\",\"3\":\"3\",\"4\":\"4\",\"5\":\"5\"},\"9\":{\"1\":\"1\",\"2\":\"2\",\"3\":\"3\",\"4\":\"4\",\"5\":\"5\"},\"10\":{\"1\":\"1\",\"2\":\"2\",\"3\":\"3\",\"4\":\"4\",\"5\":\"5\"},\"11\":{\"1\":\"1\",\"2\":\"2\",\"3\":\"3\",\"4\":\"4\",\"5\":\"5\"},\"12\":{\"1\":\"1\",\"2\":\"2\",\"3\":\"3\",\"4\":\"4\",\"5\":\"5\"},\"2\":{\"1\":\"1\",\"2\":\"2\",\"3\":\"3\",\"4\":\"4\",\"5\":\"5\"},\"13\":{\"1\":\"1\",\"2\":\"2\",\"3\":\"3\",\"4\":\"4\",\"5\":\"5\"},\"14\":{\"1\":\"1\",\"2\":\"2\",\"3\":\"3\",\"4\":\"4\",\"5\":\"5\"},\"15\":{\"1\":\"1\",\"2\":\"2\",\"3\":\"3\",\"4\":\"4\",\"5\":\"5\"},\"16\":{\"1\":\"1\",\"2\":\"2\",\"3\":\"3\",\"4\":\"4\",\"5\":\"5\"},\"3\":{\"1\":\"1\",\"2\":\"2\",\"3\":\"3\",\"4\":\"4\",\"5\":\"5\"},\"4\":{\"1\":\"1\",\"2\":\"2\",\"3\":\"3\",\"4\":\"4\",\"5\":\"5\"},\"5\":{\"1\":\"1\",\"2\":\"2\"},\"17\":{\"1\":\"1\",\"2\":\"2\"},\"18\":{\"1\":\"1\",\"2\":\"2\"}}', '0', '0', '0', '0', '0');
+INSERT INTO `prefix_group` VALUES ('2', '默认会员', '1', ',1,6,7,8,9,10,11,12,2,13,14,15,16,3,4,5,17,18,', '{\"1\":{\"1\":\"1\",\"2\":\"2\",\"3\":\"3\",\"4\":\"4\",\"5\":\"5\"},\"6\":{\"1\":\"1\",\"2\":\"2\",\"3\":\"3\",\"4\":\"4\",\"5\":\"5\"},\"7\":{\"1\":\"1\",\"2\":\"2\",\"3\":\"3\",\"4\":\"4\",\"5\":\"5\"},\"8\":{\"1\":\"1\",\"2\":\"2\",\"3\":\"3\",\"4\":\"4\",\"5\":\"5\"},\"9\":{\"1\":\"1\",\"2\":\"2\",\"3\":\"3\",\"4\":\"4\",\"5\":\"5\"},\"10\":{\"1\":\"1\",\"2\":\"2\",\"3\":\"3\",\"4\":\"4\",\"5\":\"5\"},\"11\":{\"1\":\"1\",\"2\":\"2\",\"3\":\"3\",\"4\":\"4\",\"5\":\"5\"},\"12\":{\"1\":\"1\",\"2\":\"2\",\"3\":\"3\",\"4\":\"4\",\"5\":\"5\"},\"2\":{\"1\":\"1\",\"2\":\"2\",\"3\":\"3\",\"4\":\"4\",\"5\":\"5\"},\"13\":{\"1\":\"1\",\"2\":\"2\",\"3\":\"3\",\"4\":\"4\",\"5\":\"5\"},\"14\":{\"1\":\"1\",\"2\":\"2\",\"3\":\"3\",\"4\":\"4\",\"5\":\"5\"},\"15\":{\"1\":\"1\",\"2\":\"2\",\"3\":\"3\",\"4\":\"4\",\"5\":\"5\"},\"16\":{\"1\":\"1\",\"2\":\"2\",\"3\":\"3\",\"4\":\"4\",\"5\":\"5\"},\"3\":{\"1\":\"1\",\"2\":\"2\",\"3\":\"3\",\"4\":\"4\",\"5\":\"5\"},\"4\":{\"1\":\"1\",\"2\":\"2\",\"3\":\"3\",\"4\":\"4\",\"5\":\"5\"},\"5\":{\"1\":\"1\",\"2\":\"2\"},\"17\":{\"1\":\"1\",\"2\":\"2\"},\"18\":{\"1\":\"1\",\"2\":\"2\"}}', '0', '0', '0', '0', '0');
+INSERT INTO `prefix_group` VALUES ('3', 'VIP会员', '1', ',1,6,7,8,9,10,11,12,2,13,14,15,16,3,4,5,17,18,', '{\"1\":{\"1\":\"1\",\"2\":\"2\",\"3\":\"3\",\"4\":\"4\",\"5\":\"5\"},\"6\":{\"1\":\"1\",\"2\":\"2\",\"3\":\"3\",\"4\":\"4\",\"5\":\"5\"},\"7\":{\"1\":\"1\",\"2\":\"2\",\"3\":\"3\",\"4\":\"4\",\"5\":\"5\"},\"8\":{\"1\":\"1\",\"2\":\"2\",\"3\":\"3\",\"4\":\"4\",\"5\":\"5\"},\"9\":{\"1\":\"1\",\"2\":\"2\",\"3\":\"3\",\"4\":\"4\",\"5\":\"5\"},\"10\":{\"1\":\"1\",\"2\":\"2\",\"3\":\"3\",\"4\":\"4\",\"5\":\"5\"},\"11\":{\"1\":\"1\",\"2\":\"2\",\"3\":\"3\",\"4\":\"4\",\"5\":\"5\"},\"12\":{\"1\":\"1\",\"2\":\"2\",\"3\":\"3\",\"4\":\"4\",\"5\":\"5\"},\"2\":{\"1\":\"1\",\"2\":\"2\",\"3\":\"3\",\"4\":\"4\",\"5\":\"5\"},\"13\":{\"1\":\"1\",\"2\":\"2\",\"3\":\"3\",\"4\":\"4\",\"5\":\"5\"},\"14\":{\"1\":\"1\",\"2\":\"2\",\"3\":\"3\",\"4\":\"4\",\"5\":\"5\"},\"15\":{\"1\":\"1\",\"2\":\"2\",\"3\":\"3\",\"4\":\"4\",\"5\":\"5\"},\"16\":{\"1\":\"1\",\"2\":\"2\",\"3\":\"3\",\"4\":\"4\",\"5\":\"5\"},\"3\":{\"1\":\"1\",\"2\":\"2\",\"3\":\"3\",\"4\":\"4\",\"5\":\"5\"},\"4\":{\"1\":\"1\",\"2\":\"2\",\"3\":\"3\",\"4\":\"4\",\"5\":\"5\"},\"5\":{\"1\":\"1\",\"2\":\"2\"},\"17\":{\"1\":\"1\",\"2\":\"2\"},\"18\":{\"1\":\"1\",\"2\":\"2\"}}', '10', '70', '300', '3600', '0');
 
 
 
 -- ----------------------------
--- Table structure for mac_link
+-- Table structure for prefix_link
 -- ----------------------------
-DROP TABLE IF EXISTS `mac_link`;
-CREATE TABLE `mac_link` (
+DROP TABLE IF EXISTS `prefix_link`;
+CREATE TABLE `prefix_link` (
   `link_id` smallint(6) unsigned NOT NULL AUTO_INCREMENT,
   `link_type` tinyint(1) unsigned NOT NULL DEFAULT '0' ,
   `link_name` varchar(60) NOT NULL DEFAULT '' ,
@@ -397,13 +397,13 @@ CREATE TABLE `mac_link` (
   KEY `link_type` (`link_type`) USING BTREE,
   KEY `link_add_time` (`link_add_time`),
   KEY `link_time` (`link_time`)
-) ENGINE=MyISAM AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 ;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- ----------------------------
--- Table structure for mac_msg
+-- Table structure for prefix_msg
 -- ----------------------------
-DROP TABLE IF EXISTS `mac_msg`;
-CREATE TABLE `mac_msg` (
+DROP TABLE IF EXISTS `prefix_msg`;
+CREATE TABLE `prefix_msg` (
   `msg_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `user_id` int(10) unsigned NOT NULL DEFAULT '0',
   `msg_type` tinyint(1) unsigned NOT NULL DEFAULT '0',
@@ -416,13 +416,13 @@ CREATE TABLE `mac_msg` (
   KEY `msg_code` (`msg_code`),
   KEY `msg_time` (`msg_time`),
   KEY `user_id` (`user_id`)
-) ENGINE=MyISAM AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- ----------------------------
--- Table structure for mac_order
+-- Table structure for prefix_order
 -- ----------------------------
-DROP TABLE IF EXISTS `mac_order`;
-CREATE TABLE `mac_order` (
+DROP TABLE IF EXISTS `prefix_order`;
+CREATE TABLE `prefix_order` (
   `order_id` int(10) unsigned NOT NULL AUTO_INCREMENT ,
   `user_id` int(10) unsigned NOT NULL DEFAULT '0' ,
   `order_status` tinyint(1) unsigned NOT NULL DEFAULT '0' ,
@@ -437,13 +437,13 @@ CREATE TABLE `mac_order` (
   KEY `order_code` (`order_code`) USING BTREE,
   KEY `user_id` (`user_id`) USING BTREE,
   KEY `order_time` (`order_time`) USING BTREE
-) ENGINE=MyISAM AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 ;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- ----------------------------
--- Table structure for mac_plog
+-- Table structure for prefix_plog
 -- ----------------------------
-DROP TABLE IF EXISTS `mac_plog`;
-CREATE TABLE `mac_plog` (
+DROP TABLE IF EXISTS `prefix_plog`;
+CREATE TABLE `prefix_plog` (
   `plog_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `user_id` int(10) unsigned NOT NULL DEFAULT '0',
   `user_id_1` int(10) NOT NULL DEFAULT '0',
@@ -454,13 +454,13 @@ CREATE TABLE `mac_plog` (
   PRIMARY KEY (`plog_id`),
   KEY `user_id` (`user_id`),
   KEY `plog_type` (`plog_type`) USING BTREE
-) ENGINE=MyISAM AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- ----------------------------
--- Table structure for mac_role
+-- Table structure for prefix_role
 -- ----------------------------
-DROP TABLE IF EXISTS `mac_role`;
-CREATE TABLE `mac_role` (
+DROP TABLE IF EXISTS `prefix_role`;
+CREATE TABLE `prefix_role` (
   `role_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `role_rid` int(10) unsigned NOT NULL DEFAULT '0' ,
   `role_name` varchar(255) NOT NULL DEFAULT '' ,
@@ -504,13 +504,13 @@ CREATE TABLE `mac_role` (
   KEY `role_score_num` (`role_score_num`),
   KEY `role_up` (`role_up`),
   KEY `role_down` (`role_down`)
-) ENGINE=MyISAM AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 ;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- ----------------------------
--- Table structure for mac_topic
+-- Table structure for prefix_topic
 -- ----------------------------
-DROP TABLE IF EXISTS `mac_topic`;
-CREATE TABLE `mac_topic` (
+DROP TABLE IF EXISTS `prefix_topic`;
+CREATE TABLE `prefix_topic` (
   `topic_id` smallint(6) unsigned NOT NULL AUTO_INCREMENT,
   `topic_name` varchar(255) NOT NULL DEFAULT '' ,
   `topic_en` varchar(255) NOT NULL DEFAULT '' ,
@@ -565,13 +565,13 @@ CREATE TABLE `mac_topic` (
   KEY `topic_en` (`topic_en`),
   KEY `topic_up` (`topic_up`),
   KEY `topic_down` (`topic_down`)
-) ENGINE=MyISAM AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 ;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- ----------------------------
--- Table structure for mac_type
+-- Table structure for prefix_type
 -- ----------------------------
-DROP TABLE IF EXISTS `mac_type`;
-CREATE TABLE `mac_type` (
+DROP TABLE IF EXISTS `prefix_type`;
+CREATE TABLE `prefix_type` (
   `type_id` smallint(6) unsigned NOT NULL AUTO_INCREMENT,
   `type_name` varchar(60) NOT NULL DEFAULT '' ,
   `type_en` varchar(60) NOT NULL DEFAULT '' ,
@@ -598,14 +598,14 @@ CREATE TABLE `mac_type` (
   KEY `type_name` (`type_name`),
   KEY `type_en` (`type_en`),
   KEY `type_mid` (`type_mid`)
-) ENGINE=MyISAM AUTO_INCREMENT=20 DEFAULT CHARSET=utf8 ;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 
 -- ----------------------------
--- Table structure for mac_ulog
+-- Table structure for prefix_ulog
 -- ----------------------------
-DROP TABLE IF EXISTS `mac_ulog`;
-CREATE TABLE `mac_ulog` (
+DROP TABLE IF EXISTS `prefix_ulog`;
+CREATE TABLE `prefix_ulog` (
   `ulog_id` int(10) unsigned NOT NULL AUTO_INCREMENT ,
   `user_id` int(10) unsigned NOT NULL DEFAULT '0' ,
   `ulog_mid` tinyint(1) unsigned NOT NULL DEFAULT '0' ,
@@ -621,13 +621,13 @@ CREATE TABLE `mac_ulog` (
   KEY `ulog_mid` (`ulog_mid`),
   KEY `ulog_type` (`ulog_type`),
   KEY `ulog_rid` (`ulog_rid`)
-) ENGINE=MyISAM AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 ;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- ----------------------------
--- Table structure for mac_user
+-- Table structure for prefix_user
 -- ----------------------------
-DROP TABLE IF EXISTS `mac_user`;
-CREATE TABLE `mac_user` (
+DROP TABLE IF EXISTS `prefix_user`;
+CREATE TABLE `prefix_user` (
   `user_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `group_id` smallint(6) unsigned NOT NULL DEFAULT '0' ,
   `user_name` varchar(30) NOT NULL DEFAULT '' ,
@@ -662,13 +662,13 @@ CREATE TABLE `mac_user` (
   KEY `type_id` (`group_id`) USING BTREE,
   KEY `user_name` (`user_name`),
   KEY `user_reg_time` (`user_reg_time`)
-) ENGINE=MyISAM AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 ;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- ----------------------------
--- Table structure for mac_visit
+-- Table structure for prefix_visit
 -- ----------------------------
-DROP TABLE IF EXISTS `mac_visit`;
-CREATE TABLE `mac_visit` (
+DROP TABLE IF EXISTS `prefix_visit`;
+CREATE TABLE `prefix_visit` (
   `visit_id` int(10) unsigned NOT NULL AUTO_INCREMENT ,
   `user_id` int(10) unsigned DEFAULT '0',
   `visit_ip` int(10) unsigned NOT NULL DEFAULT '0' ,
@@ -677,13 +677,13 @@ CREATE TABLE `mac_visit` (
   PRIMARY KEY (`visit_id`),
   KEY `user_id` (`user_id`),
   KEY `visit_time` (`visit_time`)
-) ENGINE=MyISAM AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 ;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- ----------------------------
--- Table structure for mac_vod
+-- Table structure for prefix_vod
 -- ----------------------------
-DROP TABLE IF EXISTS `mac_vod`;
-CREATE TABLE `mac_vod` (
+DROP TABLE IF EXISTS `prefix_vod`;
+CREATE TABLE `prefix_vod` (
   `vod_id` int(10) unsigned NOT NULL AUTO_INCREMENT ,
   `type_id` smallint(6) NOT NULL DEFAULT '0' ,
   `type_id_1` smallint(6) unsigned NOT NULL DEFAULT '0' ,
@@ -803,13 +803,13 @@ CREATE TABLE `mac_vod` (
   KEY `vod_version` (`vod_version`),
   KEY `vod_state` (`vod_state`),
   KEY `vod_isend` (`vod_isend`)
-) ENGINE=MyISAM AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 ;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- ----------------------------
--- Table structure for mac_website
+-- Table structure for prefix_website
 -- ----------------------------
-DROP TABLE IF EXISTS `mac_website`;
-CREATE TABLE `mac_website` (
+DROP TABLE IF EXISTS `prefix_website`;
+CREATE TABLE `prefix_website` (
   `website_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `type_id` smallint(5) unsigned NOT NULL DEFAULT '0',
   `type_id_1` smallint(5) unsigned NOT NULL DEFAULT '0',
@@ -880,13 +880,13 @@ CREATE TABLE `mac_website` (
   KEY `website_referer_day` (`website_referer_day`),
   KEY `website_referer_week` (`website_referer_week`),
   KEY `website_referer_month` (`website_referer_month`)
-) ENGINE=MyISAM AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 ;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- ----------------------------
--- Table structure for mac_app
+-- Table structure for prefix_app
 -- ----------------------------
-DROP TABLE IF EXISTS `mac_app`;
-CREATE TABLE `mac_app` (
+DROP TABLE IF EXISTS `prefix_app`;
+CREATE TABLE `prefix_app` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT '主键自增',
   `name` varchar(255) DEFAULT NULL COMMENT 'app名称',
   `ver_num` varchar(255) DEFAULT NULL COMMENT '版本号',
@@ -899,30 +899,30 @@ CREATE TABLE `mac_app` (
   `create_time` int(13) unsigned DEFAULT NULL COMMENT '添加时间',
   `update_time` int(13) unsigned DEFAULT NULL COMMENT '更新时间',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 COMMENT='App版本管理';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='App版本管理';
 
 -- ----------------------------
--- Table structure for mac_point
+-- Table structure for prefix_point
 -- ----------------------------
-DROP TABLE IF EXISTS `mac_point`;
-CREATE TABLE `mac_point` (
+DROP TABLE IF EXISTS `prefix_point`;
+CREATE TABLE `prefix_point` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT COMMENT '主键自增',
   `type_id` int(11) DEFAULT NULL COMMENT '类型',
-  `score` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL COMMENT '分数',
+  `score` varchar(255) DEFAULT NULL COMMENT '分数',
   `create_time` int(11) DEFAULT NULL COMMENT '创建时间',
   `detail_id` int(11) DEFAULT NULL COMMENT '默认ID',
   PRIMARY KEY (`id`),
   KEY `type_id` (`type_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 COMMENT='视频评分';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='视频评分';
 
 -- ----------------------------
--- Table structure for mac_config
+-- Table structure for prefix_config
 -- ----------------------------
-DROP TABLE IF EXISTS `mac_config`;
-CREATE TABLE `mac_config`  (
+DROP TABLE IF EXISTS `prefix_config`;
+CREATE TABLE `prefix_config`  (
   `config_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
-  `config_key` varchar(180) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
-  `config_value` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL,
+  `config_key` varchar(180) NULL DEFAULT NULL,
+  `config_value` longtext NULL,
   PRIMARY KEY (`config_id`) USING BTREE,
   UNIQUE INDEX `config_key`(`config_key`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '配置表' ROW_FORMAT = Compact;
+) ENGINE=InnoDB CHARACTER SET = utf8mb4 COMMENT = '配置表' ROW_FORMAT = Compact;

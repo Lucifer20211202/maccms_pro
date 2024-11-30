@@ -5,10 +5,6 @@ use think\Db;
 class Timming extends Base
 {
     var $_pre;
-    public function __construct()
-    {
-        parent::__construct();
-    }
 
     public function index()
     {

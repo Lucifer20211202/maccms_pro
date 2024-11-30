@@ -7,10 +7,6 @@ use think\Request;
 
 class Link extends Base
 {
-    public function __construct()
-    {
-        parent::__construct();
-    }
 
     public function index()
     {

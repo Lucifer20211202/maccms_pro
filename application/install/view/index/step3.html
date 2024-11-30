@@ -1,4 +1,4 @@
-{include file="../../../application/install/view/index/head" /}
+{include file="install@index/head" /}
 <style type="text/css">
 .layui-table td, .layui-table th{text-align:left;}
 .layui-table tbody tr.no{background-color:#f00;color:#fff;}
@@ -44,7 +44,7 @@
         <div class="layui-form-item">
             <label class="layui-form-label">{:lang('install/database_pre')}</label>
             <div class="layui-input-inline w200">
-                <input type="text" class="layui-input" name="prefix" lay-verify="title" value="mac_">
+                <input type="text" class="layui-input" name="prefix" lay-verify="title" value="prefix_">
             </div>
             <div class="layui-form-mid layui-word-aux">{:lang('install/database_pre_tip')}</div>
         </div>
@@ -97,10 +97,8 @@
         </div>
     </form>
 </div>
-<span style="display: none">
-    <iframe src="//www.maccms.pro/tongji.html?pro-php" MARGINWIDTH="0" MARGINHEIGHT="0" HSPACE="0" VSPACE="0" FRAMEBORDER="0" SCROLLING="no" width="0" height="0"></iframe>
-</span>
-{include file="../../../application/install/view/index/foot" /}
+
+{include file="install@index/foot" /}
 <script type="text/javascript">
     var test=0;
 layui.define(['element', 'form'], function(exports) {

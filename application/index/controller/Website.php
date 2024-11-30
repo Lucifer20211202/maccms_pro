@@ -5,10 +5,6 @@ use think\Db;
 
 class Website extends Base
 {
-    public function __construct()
-    {
-        parent::__construct();
-    }
 
     public function index()
     {

@@ -3,10 +3,6 @@ namespace app\admin\controller;
 
 class Link extends Base
 {
-    public function __construct()
-    {
-        parent::__construct();
-    }
 
     public function index()
     {

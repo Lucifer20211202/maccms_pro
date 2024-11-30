@@ -7,10 +7,6 @@ class Cj extends Base
 {
     var $_isall=0;
 
-    public function __construct()
-    {
-        parent::__construct();
-    }
 
     //列表
     public function index()

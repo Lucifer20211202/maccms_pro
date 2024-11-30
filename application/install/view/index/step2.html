@@ -1,4 +1,4 @@
-{include file="../../../application/install/view/index/head" /}
+{include file="install@/index/head" /}
 <style type="text/css">
 .layui-table td, .layui-table th{text-align:left;}
 .layui-table tbody tr .no{color:#ACACAC;}
@@ -31,9 +31,9 @@
                 <td>{$vo[2]}</td>
                 <td class="{$vo[4]}">
                     {if $vo[4] == 'ok'}
-                    <img src="{:MAC_BASE_PATH}/static/images/other/install-right.png" alt="">
+                    <img src="/static/images/other/install-right.png" alt="">
                     {else /} 
-                    <img src="{:MAC_BASE_PATH}/static/images/other/install-wrong.png" alt="">
+                    <img src="/static/images/other/install-wrong.png" alt="">
                     {/if}
                     
                     {$vo[3]}
@@ -58,36 +58,11 @@
                     <td>{$vo[3]}</td>
                     <td class="{$vo[2]}">
                         {if $vo[2] == 'yes'}
-                        <img src="{:MAC_BASE_PATH}/static/images/other/install-right.png" alt="">
+                        <img src="/static/images/other/install-right.png" alt="">
                         {else /} 
-                        <img src="{:MAC_BASE_PATH}/static/images/other/install-wrong.png" alt="">
+                        <img src="/static/images/other/install-wrong.png" alt="">
                         {/if}
                         {$vo[1]}
-                    </td>
-                </tr>
-                {/volist}
-            </tbody>
-        </table>
-        <table class="layui-table right" lay-skin="line">
-            <thead>
-                <tr>
-                    <th>{:lang('install/dir_file')}</th>
-                    <th>{:lang('install/required_popedom')}</th>
-                    <th>{:lang('install/current_popedom')}</th>
-                </tr> 
-            </thead>
-            <tbody>
-                {volist name="data.dir" id="vo"}
-                <tr>
-                    <td>{$vo[1]}</td>
-                    <td>{$vo[2]}</td>
-                    <td class="{$vo[4]}">
-                        {if $vo[4] == 'ok'}
-                        <img src="{:MAC_BASE_PATH}/static/images/other/install-right.png" alt="">
-                        {else /} 
-                        <img src="{:MAC_BASE_PATH}/static/images/other/install-wrong.png" alt="">
-                        {/if}
-                        {$vo[3]}
                     </td>
                 </tr>
                 {/volist}
@@ -100,7 +75,6 @@
         <a href="?index" class="btn btn-ghost btn-md float-left">{:lang('install/back_step')}</a>
 
         <a href="?step=3" class="btn btn-primary btn-md float-left">{:lang('install/next_step')}</a>
-        <a target="_blank" href="https://www.maccms.pro/document?version=pro" class="btn btn-md fr">{:lang('install/question')}</a>
     </div>
 </div>
-{include file="../../../application/install/view/index/foot" /}
+{include file="install@index/foot" /}

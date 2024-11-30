@@ -1987,7 +1987,6 @@ https://www.baidu.com/123.jpg
     'install/result'=>'结果',
     'install/back_step'=>'返回上一步',
     'install/next_step'=>'进行下一步',
-    'install/question'=>'常见问题解决办法',
     'install/database_config'=>'数据库配置',
 
     'install/server_address'=>'服务器地址',
@@ -2000,7 +1999,6 @@ https://www.baidu.com/123.jpg
     'install/database_username_tip'=>'连接数据库的用户名',
     'install/database_pass'=>'数据库密码',
     'install/database_pass_tip'=>'连接数据库的密码',
-    'install/database_pre'=>'数据库前缀',
     'install/database_pre_tip'=>'建议使用默认,数据库前缀必须带_',
     'install/overwrite_database'=>'覆盖数据库',
     'install/overwrite'=>'覆盖',

@@ -1941,7 +1941,6 @@ https://www.baidu.com/123.jpg
     'install/result'=>'結果',
     'install/back_step'=>'返回上一步',
     'install/next_step'=>'進行下一步',
-    'install/question'=>'常見問題解決辦法',
     'install/database_config'=>'數據庫配置',
 
     'install/server_address'=>'服務器地址',
@@ -1954,7 +1953,6 @@ https://www.baidu.com/123.jpg
     'install/database_username_tip'=>'連接數據庫的用戶名',
     'install/database_pass'=>'數據庫密碼',
     'install/database_pass_tip'=>'連接數據庫的密碼',
-    'install/database_pre'=>'數據庫前綴',
     'install/database_pre_tip'=>'建議使用默認,數據庫前綴必須帶_',
     'install/overwrite_database'=>'覆蓋數據庫',
     'install/overwrite'=>'覆蓋',

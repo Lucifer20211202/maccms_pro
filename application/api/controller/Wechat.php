@@ -6,10 +6,6 @@ use app\common\util\WechatPublic as wcOper;
 class Wechat extends Base
 {
 
-    public function __construct()
-    {
-        parent::__construct();
-    }
 
     public function index()
     {

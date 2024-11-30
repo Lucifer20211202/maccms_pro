@@ -9,6 +9,9 @@
 // | Author: liu21st <liu21st@gmail.com>
 // +----------------------------------------------------------------------
 
+use app\common\taglib\Maccms;
+use think\Env;
+
 return [
     // +----------------------------------------------------------------------
     // | 应用设置
@@ -17,9 +20,9 @@ return [
     // 应用命名空间
     'app_namespace'          => 'app',
     // 应用调试模式
-    'app_debug'              => getenv('PHP_APP_DEBUG') ? true : false,
+    'app_debug'              => Env::get('APP_DEBUG',true),
     // 应用Trace
-    'app_trace'              => getenv('PHP_APP_TRACE') ? true : false,
+    'app_trace'              => Env::get('APP_TRACE',false),
     // 应用模式状态
     'app_status'             => '',
     // 是否支持多模块
@@ -51,7 +54,7 @@ return [
     // 控制器类后缀
     'controller_suffix'      => false,
     // Extra配置是否存放db
-    'config_save_in_db'      => getenv('PHP_CONFIG_SAVE_IN_DB') ? true : false,
+    'config_save_in_db'      => Env::get('CONFIG_SAVE_IN_DB',true),
 
     // +----------------------------------------------------------------------
     // | 模块设置
@@ -82,8 +85,6 @@ return [
     'var_pathinfo'           => 's',
     // 兼容PATH_INFO获取
     'pathinfo_fetch'         => ['ORIG_PATH_INFO', 'REDIRECT_PATH_INFO', 'REDIRECT_URL'],
-    // pathinfo分隔符
-    'pathinfo_depr'          => '-',
     // URL伪静态后缀
     'url_html_suffix'        => 'html|htm|shtm|shtml|xml',
     // URL普通方式参数 用于自动生成
@@ -127,7 +128,7 @@ return [
         // 模板引擎类型 支持 php think 支持扩展
         'type'         => 'Think',
         // 模板路径
-        'view_path'    => './template/',
+        'view_path'    => file_exists(__DIR__.'/../application/data/install/install.lock') ? './template/' : '',
         // 模板后缀
         'view_suffix'  => 'html',
         // 模板文件名分隔符
@@ -141,7 +142,7 @@ return [
         // 标签库标签结束标记
         'taglib_end'   => '}',
         // 预先加载的标签库
-        'taglib_pre_load'     =>    'app\common\taglib\Maccms',
+        'taglib_pre_load'     =>    Maccms::class,
     ],
 
     // 视图输出字符串内容替换

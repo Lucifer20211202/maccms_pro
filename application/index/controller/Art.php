@@ -4,10 +4,6 @@ use think\Controller;
 
 class Art extends Base
 {
-    public function __construct()
-    {
-        parent::__construct();
-    }
 
     public function index()
     {
