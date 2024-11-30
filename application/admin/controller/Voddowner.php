@@ -1,10 +1,11 @@
 <?php
+
 namespace app\admin\controller;
-use think\Db;
 
 class VodDowner extends Base
 {
     var $_pre;
+
     public function __construct()
     {
         parent::__construct();
@@ -14,8 +15,8 @@ class VodDowner extends Base
     public function index()
     {
         $list = config($this->_pre);
-        $this->assign('list',$list);
-        $this->assign('title',lang('admin/voddowner/title'));
+        $this->assign('list', $list);
+        $this->assign('title', lang('admin/voddowner/title'));
         return $this->fetch('admin@voddowner/index');
     }
 
@@ -25,35 +26,36 @@ class VodDowner extends Base
         $list = config($this->_pre);
         if (Request()->isPost()) {
             $validate = \think\Loader::validate('Token');
-            if(!$validate->check($param)){
+            if (!$validate->check($param)) {
                 return $this->error($validate->getError());
             }
             unset($param['__token__']);
             unset($param['flag']);
-            if(is_numeric($param['from'])){
-                $param['from'] .='_';
+            if (is_numeric($param['from'])) {
+                $param['from'] .= '_';
             }
-            if (strpos($param['from'], '.') !== false || strpos($param['from'], '/') !== false || strpos($param['from'], '\\') !== false) {
+            if (strpos($param['from'], '.') !== false || strpos($param['from'], '/') !== false || strpos($param['from'],
+                    '\\') !== false) {
                 $this->error(lang('param_err'));
                 return;
             }
             $list[$param['from']] = $param;
-            $sort=[];
-            foreach ($list as $k=>&$v){
+            $sort = [];
+            foreach ($list as $k => &$v) {
                 $sort[] = $v['sort'];
             }
-            array_multisort($sort, SORT_DESC, SORT_FLAG_CASE , $list);
-            $res = mac_save_config_data(APP_PATH . 'extra/'.$this->_pre.'.php', $list);
-            if($res===false){
+            array_multisort($sort, SORT_DESC, SORT_FLAG_CASE, $list);
+            $res = mac_save_config_data(APP_PATH.'extra/'.$this->_pre.'.php', $list);
+            if ($res === false) {
                 return $this->error(lang('save_err'));
             }
-            cache('cache_data','1');
+            cache('cache_data', '1');
             return $this->success(lang('save_ok'));
         }
 
         $info = $list[$param['id']];
-        $this->assign('info',$info);
-        $this->assign('title',lang('admin/voddowner/title'));
+        $this->assign('info', $info);
+        $this->assign('title', lang('admin/voddowner/title'));
         return $this->fetch('admin@voddowner/info');
     }
 
@@ -62,11 +64,11 @@ class VodDowner extends Base
         $param = input();
         $list = config($this->_pre);
         unset($list[$param['ids']]);
-        $res = mac_save_config_data(APP_PATH . 'extra/'.$this->_pre.'.php', $list);
-        if($res===false){
+        $res = mac_save_config_data(APP_PATH.'extra/'.$this->_pre.'.php', $list);
+        if ($res === false) {
             return $this->error(lang('del_err'));
         }
-        cache('cache_data','1');
+        cache('cache_data', '1');
         return $this->success(lang('del_ok'));
     }
 
@@ -77,16 +79,16 @@ class VodDowner extends Base
         $col = $param['col'];
         $val = $param['val'];
 
-        if(!empty($ids) && in_array($col,['ps','status'])){
+        if (!empty($ids) && in_array($col, ['ps', 'status'])) {
             $list = config($this->_pre);
-            $ids = explode(',',$ids);
-            foreach($list as $k=>&$v){
-                if(in_array($k,$ids)){
+            $ids = explode(',', $ids);
+            foreach ($list as $k => &$v) {
+                if (in_array($k, $ids)) {
                     $v[$col] = $val;
                 }
             }
-            $res = mac_save_config_data(APP_PATH . 'extra/'.$this->_pre.'.php', $list);
-            if($res===false){
+            $res = mac_save_config_data(APP_PATH.'extra/'.$this->_pre.'.php', $list);
+            if ($res === false) {
                 return $this->error(lang('save_err'));
             }
             return $this->success(lang('save_ok'));

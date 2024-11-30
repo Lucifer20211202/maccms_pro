@@ -1,7 +1,6 @@
 <?php
+
 namespace app\index\controller;
-use think\Controller;
-use \think\Request;
 
 class Payment extends Base
 {
@@ -17,18 +16,16 @@ class Payment extends Base
                 exit;
             }
 
-            $cp = 'app\\common\\extend\\pay\\' . ucfirst($pay_type);
+            $cp = 'app\\common\\extend\\pay\\'.ucfirst($pay_type);
             if (class_exists($cp)) {
                 $c = new $cp;
                 $c->notify();
-            }
-            else{
+            } else {
                 echo lang('index/payment_not');
                 exit;
             }
-        }
-        else{
-            return $this->success(lang('index/payment_ok'), url('user/index') );
+        } else {
+            return $this->success(lang('index/payment_ok'), url('user/index'));
         }
     }
 }

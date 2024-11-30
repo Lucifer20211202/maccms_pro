@@ -1,24 +1,27 @@
 <?php
+
 namespace app\common\util;
 
 class Pinyin
 {
     private static $pinyins = null;
 
-    public function __construct() {
+    public function __construct()
+    {
 
     }
 
-    public static function get($str, $ret_format = 'all', $placeholder = '', $allow_chars = '/[a-zA-Z\d ]/') {
+    public static function get($str, $ret_format = 'all', $placeholder = '', $allow_chars = '/[a-zA-Z\d ]/')
+    {
 
         if (null === self::$pinyins) {
             $data = file_get_contents('./static/data/pinyin.dat');
 
             $rows = explode('|', $data);
 
-            self::$pinyins = array();
-            foreach($rows as $v) {
-                list($py, $vals) = explode(':', $v);
+            self::$pinyins = [];
+            foreach ($rows as $v) {
+                [$py, $vals] = explode(':', $v);
                 $chars = explode(',', $vals);
 
                 foreach ($chars as $char) {
@@ -41,7 +44,7 @@ class Pinyin
                 }
             } else { // 128-255
                 if (isset(self::$pinyins[$chr])) {
-                    $rs .= 'first' === $ret_format ? self::$pinyins[$chr][0] : (self::$pinyins[$chr] . '');
+                    $rs .= 'first' === $ret_format ? self::$pinyins[$chr][0] : (self::$pinyins[$chr].'');
                 } else {
                     $rs .= $placeholder;
                 }
@@ -51,7 +54,8 @@ class Pinyin
                 return $rs[0];
             }
         }
-        $rs = str_replace([' ','+','/','\\','|','\'','?','%','#','&','=','!','(',')',';',':','<','>'],'',$rs);
+        $rs = str_replace([' ', '+', '/', '\\', '|', '\'', '?', '%', '#', '&', '=', '!', '(', ')', ';', ':', '<', '>'],
+            '', $rs);
         return $rs;
     }
 

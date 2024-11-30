@@ -1,4 +1,5 @@
 <?php
+
 namespace app\admin\controller;
 
 class Link extends Base
@@ -7,27 +8,27 @@ class Link extends Base
     public function index()
     {
         $param = input();
-        $param['page'] = intval($param['page']) <1 ? 1 : $param['page'];
-        $param['limit'] = intval($param['limit']) <1 ? $this->_pagesize : $param['limit'];
-        $where=[];
+        $param['page'] = intval($param['page']) < 1 ? 1 : $param['page'];
+        $param['limit'] = intval($param['limit']) < 1 ? $this->_pagesize : $param['limit'];
+        $where = [];
 
-        if(!empty($param['wd'])){
+        if (!empty($param['wd'])) {
             $param['wd'] = htmlspecialchars(urldecode($param['wd']));
-            $where['link_name'] = ['like','%'.$param['wd'].'%'];
+            $where['link_name'] = ['like', '%'.$param['wd'].'%'];
         }
 
-        $order='link_id desc';
-        $res = model('Link')->listData($where,$order,$param['page'],$param['limit']);
+        $order = 'link_id desc';
+        $res = model('Link')->listData($where, $order, $param['page'], $param['limit']);
 
-        $this->assign('list',$res['list']);
-        $this->assign('total',$res['total']);
-        $this->assign('page',$res['page']);
-        $this->assign('limit',$res['limit']);
+        $this->assign('list', $res['list']);
+        $this->assign('total', $res['total']);
+        $this->assign('page', $res['page']);
+        $this->assign('limit', $res['limit']);
 
         $param['page'] = '{page}';
         $param['limit'] = '{limit}';
-        $this->assign('param',$param);
-        $this->assign('title',lang('admin/link/title'));
+        $this->assign('param', $param);
+        $this->assign('title', lang('admin/link/title'));
         return $this->fetch('admin@link/index');
     }
 
@@ -36,20 +37,20 @@ class Link extends Base
         if (Request()->isPost()) {
             $param = input();
             $res = model('Link')->saveData($param);
-            if($res['code']>1){
+            if ($res['code'] > 1) {
                 return $this->error($res['msg']);
             }
             return $this->success($res['msg']);
         }
 
         $id = input('id');
-        $where=[];
-        $where['link_id'] = ['eq',$id];
+        $where = [];
+        $where['link_id'] = ['eq', $id];
         $res = model('Link')->infoData($where);
 
 
-        $this->assign('info',$res['info']);
-        $this->assign('title',lang('admin/link/title'));
+        $this->assign('info', $res['info']);
+        $this->assign('title', lang('admin/link/title'));
         return $this->fetch('admin@link/info');
     }
 
@@ -58,11 +59,11 @@ class Link extends Base
         $param = input();
         $ids = $param['ids'];
 
-        if(!empty($ids)){
-            $where=[];
-            $where['link_id'] = ['in',$ids];
+        if (!empty($ids)) {
+            $where = [];
+            $where['link_id'] = ['in', $ids];
             $res = model('Link')->delData($where);
-            if($res['code']>1){
+            if ($res['code'] > 1) {
                 return $this->error($res['msg']);
             }
             return $this->success($res['msg']);
@@ -74,7 +75,7 @@ class Link extends Base
     {
         $param = input();
         $ids = $param['ids'];
-        foreach ($ids as $k=>$id) {
+        foreach ($ids as $k => $id) {
             $data = [];
             $data['link_id'] = intval($id);
             $data['link_name'] = $param['link_name'][$k];
@@ -87,7 +88,7 @@ class Link extends Base
                 $data['link_name'] = lang('unknown');
             }
             $res = model('Link')->saveData($data);
-            if($res['code']>1){
+            if ($res['code'] > 1) {
                 return $this->error($res['msg']);
             }
         }

@@ -1,4 +1,5 @@
 <?php
+
 namespace app\common\model;
 
 use think\Model;
@@ -6,7 +7,8 @@ use think\Db;
 use think\Cache;
 use think\Config as ThinkConfig;
 
-class Base extends Model {
+class Base extends Model
+{
     protected $tablePrefix;
     protected $primaryId;
     protected $readFromMaster;
@@ -18,7 +20,7 @@ class Base extends Model {
         parent::initialize();
         // 自定义的初始化
         $this->tablePrefix = isset($this->tablePrefix) ? $this->tablePrefix : ThinkConfig::get('database.prefix');
-        $this->primaryId = isset($this->primaryId) ? $this->primaryId : $this->name . '_id';
+        $this->primaryId = isset($this->primaryId) ? $this->primaryId : $this->name.'_id';
         $this->readFromMaster = isset($this->readFromMaster) ? $this->readFromMaster : false;
         // 表创建或修改
         if (method_exists($this, 'createTableIfNotExists')) {
@@ -41,7 +43,7 @@ class Base extends Model {
 
     public function getOneByCond($cond, $orderby = '', $fields = '*')
     {
-        $orderby = $orderby ?: ($this->primaryId . " DESC");
+        $orderby = $orderby ?: ($this->primaryId." DESC");
         $query_object = $this;
         if ($this->readFromMaster === true) {
             $query_object = $query_object->master();
@@ -53,7 +55,8 @@ class Base extends Model {
         return $object->getData();
     }
 
-    public function getValueByCond($cond, $field, $orderby = '') {
+    public function getValueByCond($cond, $field, $orderby = '')
+    {
         $query_object = $this;
         if ($this->readFromMaster === true) {
             $query_object = $query_object->master();
@@ -66,7 +69,7 @@ class Base extends Model {
     {
         $res = $this->allowField(true)->where($cond)->update($data);
         if (false === $res) {
-            return ['code' => 1004, 'msg' => '更新失败：' . $this->getError()];
+            return ['code' => 1004, 'msg' => '更新失败：'.$this->getError()];
         }
         return ['code' => 1, 'msg' => '更新成功'];
     }
@@ -82,12 +85,12 @@ class Base extends Model {
 
     public function getListByCond($offset, $limit, $cond, $orderby = '', $fields = "*", $transform = false)
     {
-        $orderby = $orderby ?: ($this->primaryId . " DESC");
+        $orderby = $orderby ?: ($this->primaryId." DESC");
         $query_object = $this;
         if ($this->readFromMaster === true) {
             $query_object = $query_object->master();
         }
-        $list = $query_object->where($cond)->field($fields)->order($orderby)->limit($offset . ',' . $limit)->select();
+        $list = $query_object->where($cond)->field($fields)->order($orderby)->limit($offset.','.$limit)->select();
         if (!$list) {
             return [];
         }
@@ -104,19 +107,21 @@ class Base extends Model {
 
     public function getAllByCond($cond, $orderby = '', $fields = "*", $transform = false)
     {
-        $orderby = $orderby ?: ($this->primaryId . " DESC");
+        $orderby = $orderby ?: ($this->primaryId." DESC");
         return $this->getListByCond(0, 999999, $cond, $orderby, $fields, $transform);
     }
 
-    public function getCountByCond($cond) {
+    public function getCountByCond($cond)
+    {
         $query_object = $this;
         if ($this->readFromMaster === true) {
             $query_object = $query_object->master();
         }
-        return (int)$query_object->where($cond)->count();
+        return (int) $query_object->where($cond)->count();
     }
 
-    public function transformRow($row, $extends = []) {
+    public function transformRow($row, $extends = [])
+    {
         return $row;
     }
 
@@ -124,35 +129,37 @@ class Base extends Model {
     {
         $res = $this->allowField(true)->where([$this->primaryId => $primary_id])->update($data);
         if ($res === false) {
-            return ['code' => 1002, 'msg' => '更新失败' . $this->getError()];
+            return ['code' => 1002, 'msg' => '更新失败'.$this->getError()];
         }
         return ['code' => 1, 'msg' => '更新成功'];
     }
 
-    public function rawInsert($data) {
+    public function rawInsert($data)
+    {
         $res = $this->allowField(true)->insert($data);
-        if(false === $res){
-            return ['code' => 1004, 'msg'=>'保存失败：' . $this->getError() ];
+        if (false === $res) {
+            return ['code' => 1004, 'msg' => '保存失败：'.$this->getError()];
         }
-        return ['code' => 1,'msg' => '保存成功'];
+        return ['code' => 1, 'msg' => '保存成功'];
     }
 
     public function delData($where)
     {
         $res = $this->where($where)->delete();
-        if($res===false){
-            return ['code'=>1001,'msg'=>lang('del_err').'：'.$this->getError() ];
+        if ($res === false) {
+            return ['code' => 1001, 'msg' => lang('del_err').'：'.$this->getError()];
         }
-        return ['code'=>1,'msg'=>lang('del_ok')];
+        return ['code' => 1, 'msg' => lang('del_ok')];
     }
 
     /**
      * 锁定表更新（通过缓存）
-     * 
-     * @param  int $version 
+     *
+     * @param  int  $version
      */
-    protected function lockTableUpdate($version) {
-        $cache_key = 'tbl:lock:' . $this->tablePrefix . $this->name . ':v1:' . $version;
+    protected function lockTableUpdate($version)
+    {
+        $cache_key = 'tbl:lock:'.$this->tablePrefix.$this->name.':v1:'.$version;
         if (Cache::get($cache_key)) {
             return true;
         }
@@ -163,10 +170,11 @@ class Base extends Model {
     /**
      * 检查更新字段，确认后执行更新
      */
-    protected function checkAndAlterTableField($field, $alter, $is_add = true) {
-        $has_field = !empty(Db::execute("DESCRIBE " . $this->tablePrefix . $this->name . " `{$field}`"));
+    protected function checkAndAlterTableField($field, $alter, $is_add = true)
+    {
+        $has_field = !empty(Db::execute("DESCRIBE ".$this->tablePrefix.$this->name." `{$field}`"));
         if (($is_add && !$has_field) || (!$is_add && $has_field)) {
-            $sql = "ALTER TABLE " . $this->tablePrefix . $this->name . " {$alter}";
+            $sql = "ALTER TABLE ".$this->tablePrefix.$this->name." {$alter}";
             Db::execute($sql);
         }
     }

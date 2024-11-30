@@ -1,23 +1,11 @@
 <?php
+
 namespace app\index\controller;
 
 use think\Cache;
 
 class Index extends Base
 {
-
-    public function arraySort($array,$keys,$sort='asc') {
-        $newArr = $valArr = array();
-        foreach ($array as $key=>$value) {
-            $valArr[$key] = $value[$keys];
-        }
-        ($sort == 'asc') ?  asort($valArr) : arsort($valArr);
-        reset($valArr);
-        foreach($valArr as $key=>$value) {
-            $newArr[$key] = $array[$key];
-        }
-        return $newArr;
-    }
 
     /**
      * @return mixed|string|string[]|null
@@ -34,7 +22,8 @@ class Index extends Base
             $config = $config['theme']['type']['hom'];
             $config_atr = explode(',', $config);
             // 最新影视
-            $vod_types = model('Type')->whereIn('type_id', $config_atr)->where('type_pid', 0)->column('type_name', 'type_id');
+            $vod_types = model('Type')->whereIn('type_id', $config_atr)->where('type_pid', 0)->column('type_name',
+                'type_id');
             $lists = [];
             foreach ($vod_types as $index => $item) {
                 $vod_list = model('Type')
@@ -65,7 +54,8 @@ class Index extends Base
                         }
                         $vod_count_num += $vod_count;
                     }
-                    $lists[$index]['vod_detail_array'] = array_slice($this->arraySort($lists[$index]['vod_detail_array'], 'vod_time_add', 'desc'), 0, 9);
+                    $lists[$index]['vod_detail_array'] = array_slice($this->arraySort($lists[$index]['vod_detail_array'],
+                        'vod_time_add', 'desc'), 0, 9);
                     $lists[$index]['vod_count'] = $vod_count_num;
                 } else {
                     $vod = model('Vod')
@@ -91,7 +81,8 @@ class Index extends Base
             }
             // 查询是否存在文章分类
             $art_type_array = model('Type')->where(['type_mid' => 2, 'type_status' => 1])->column('type_id');
-            $models = model('Art')->whereIn('type_id', $art_type_array)->order('art_time desc')->limit($count * 3)->select();
+            $models = model('Art')->whereIn('type_id',
+                $art_type_array)->order('art_time desc')->limit($count * 3)->select();
             $model_array = [];
             foreach ($models as $index => $model) {
                 array_push($model_array, $model->toArray());
@@ -99,22 +90,36 @@ class Index extends Base
             $config = config('maccms');
             $tips_text = $config['site']['site_announcement'];
             $cache = [
-                'model_array' => $model_array,
-                'lists' => $lists,
-                'count_num_1' => $count_num_1,
-                'tips_text' => $tips_text,
+                'model_array'    => $model_array,
+                'lists'          => $lists,
+                'count_num_1'    => $count_num_1,
+                'tips_text'      => $tips_text,
                 'art_type_array' => $art_type_array,
             ];
             Cache::set('index_data_cache', $cache, 60);
-        }else{
+        } else {
             $cache = Cache::get('index_data_cache');
         }
         return $this->label_fetch('index/index', 1, 'html', [
-            'models' => $cache['model_array'],
-            'last_updates' => $cache['lists'],
-            'count_num_1' => $cache['count_num_1'],
-            'tips_text' => $cache['tips_text'],
+            'models'         => $cache['model_array'],
+            'last_updates'   => $cache['lists'],
+            'count_num_1'    => $cache['count_num_1'],
+            'tips_text'      => $cache['tips_text'],
             'art_type_array' => $cache['art_type_array'],
         ]);
+    }
+
+    public function arraySort($array, $keys, $sort = 'asc')
+    {
+        $newArr = $valArr = [];
+        foreach ($array as $key => $value) {
+            $valArr[$key] = $value[$keys];
+        }
+        ($sort == 'asc') ? asort($valArr) : arsort($valArr);
+        reset($valArr);
+        foreach ($valArr as $key => $value) {
+            $newArr[$key] = $array[$key];
+        }
+        return $newArr;
     }
 }

@@ -18,7 +18,7 @@ class Index extends Base
         $lang = !empty($param['lang']) && in_array($param['lang'], $langs) ? $param['lang'] : $config['app']['lang'];
         // 导入多语言包
         Lang::range($lang);
-        Lang::load(APP_PATH . 'lang/' . $lang . '.php', $lang);
+        Lang::load(APP_PATH.'lang/'.$lang.'.php', $lang);
         if (request()->isPost()) {
             $data = input('post.');
             $res = model('Admin')->login($data);
@@ -28,18 +28,18 @@ class Index extends Base
             // 登录成功时，如果提交的和现有的不同，切换
             if ($config['app']['lang'] != $lang) {
                 $config['app']['lang'] = $lang;
-                mac_save_config_data(APP_PATH . 'extra/maccms.php', $config);
+                mac_save_config_data(APP_PATH.'extra/maccms.php', $config);
             }
             // 返回
             return $this->success($res['msg']);
         }
         Hook::listen("admin_login_init", $this->request);
         // 验证码，兼容未配置伪静态模式
-        $verify_img_src = MAC_BASE_URL_FULL . '/index.php?s=verify/index';
+        $verify_img_src = MAC_BASE_URL_FULL.'/index.php?s=verify/index';
         return $this->fetch('admin@index/login', [
             'verify_img_src' => $verify_img_src,
-            'langs' => $langs,
-            'lang' => $lang,
+            'langs'          => $langs,
+            'lang'           => $lang,
         ]);
     }
 
@@ -60,14 +60,14 @@ class Index extends Base
         $config = config('maccms');
         if ($config['app']['lang'] != $lang) {
             $config['app']['lang'] = $lang;
-            mac_save_config_data(APP_PATH . 'extra/maccms.php', $config);
+            mac_save_config_data(APP_PATH.'extra/maccms.php', $config);
         }
         return json(['select' => $config['app']['lang'], 'msg' => '语言切换成功', 'code' => 1], 200);
     }
 
     public function index()
     {
-        $menus = @include MAC_ADMIN_COMM . 'auth.php';
+        $menus = @include MAC_ADMIN_COMM.'auth.php';
 
         foreach ($menus as $k1 => $v1) {
             foreach ($v1['sub'] as $k2 => $v2) {
@@ -75,10 +75,10 @@ class Index extends Base
                     if (strpos($v2['action'], 'javascript') !== false) {
                         $url = $v2['action'];
                     } else {
-                        $url = url('admin/' . $v2['controller'] . '/' . $v2['action']);
+                        $url = url('admin/'.$v2['controller'].'/'.$v2['action']);
                     }
                     if (!empty($v2['param'])) {
-                        $url .= '?' . $v2['param'];
+                        $url .= '?'.$v2['param'];
                     }
                     if ($this->check_auth($v2['controller'], $v2['action'])) {
                         $menus[$k1]['sub'][$k2]['url'] = $url;
@@ -97,7 +97,7 @@ class Index extends Base
 
         $quickmenu = config('quickmenu');
         if (empty($quickmenu)) {
-            $quickmenu = mac_read_file(APP_PATH . 'data/config/quickmenu.txt');
+            $quickmenu = mac_read_file(APP_PATH.'data/config/quickmenu.txt');
             $quickmenu = explode(chr(13), $quickmenu);
         }
         if (!empty($quickmenu)) {
@@ -157,13 +157,13 @@ class Index extends Base
 
         if (!$provider->isLinuxOs() && !$provider->isWindowsOs()) {
             return [
-                'cpu_cores' => '-',
-                'cpu_usage' => '-',
-                'total_mem' => '-',
-                'used_mem' => '-',
+                'cpu_cores'  => '-',
+                'cpu_usage'  => '-',
+                'total_mem'  => '-',
+                'used_mem'   => '-',
                 'total_disk' => '-',
-                'free_disk' => '-',
-                'used_disk' => '-',
+                'free_disk'  => '-',
+                'used_disk'  => '-',
                 'check_time' => date('H:i:s'),
             ];
         }
@@ -172,11 +172,11 @@ class Index extends Base
 
             if (stripos(ini_get('disable_functions'), 'shell_exec') === false) {
                 $stat = shell_exec('top -b -n 1 2>&1');
-                $cpu_free = (int)rtrim(explode(",", explode("\n", $stat)[2])[3], ' id');
+                $cpu_free = (int) rtrim(explode(",", explode("\n", $stat)[2])[3], ' id');
                 $cpu_usage = 100 - $cpu_free;
 
-                $total_disk = $provider->getDiskTotal(). 'B';
-                $free_disk = $provider->getDiskFree() . 'B';
+                $total_disk = $provider->getDiskTotal().'B';
+                $free_disk = $provider->getDiskFree().'B';
                 $used_disk = $provider->getDiskUsage();
             } else {
                 $cpu_usage = round(array_sum($provider->getCpuUsage()), 2);
@@ -202,13 +202,13 @@ class Index extends Base
         }
 
         return [
-            'cpu_cores' => isset($cpu_cores) ? $cpu_cores : '-',
-            'cpu_usage' => isset($cpu_usage) ? $cpu_usage : '-',
-            'total_mem' => isset($total_mem) ? $total_mem : '-',
-            'used_mem' => isset($used_mem) ? $used_mem : '-',
+            'cpu_cores'  => isset($cpu_cores) ? $cpu_cores : '-',
+            'cpu_usage'  => isset($cpu_usage) ? $cpu_usage : '-',
+            'total_mem'  => isset($total_mem) ? $total_mem : '-',
+            'used_mem'   => isset($used_mem) ? $used_mem : '-',
             'total_disk' => isset($total_disk) ? $total_disk : '-',
-            'free_disk' => isset($free_disk) ? $free_disk : '-',
-            'used_disk' => isset($used_disk) ? end($used_disk)['usepercentage'] : '-',
+            'free_disk'  => isset($free_disk) ? $free_disk : '-',
+            'used_disk'  => isset($used_disk) ? end($used_disk)['usepercentage'] : '-',
             'check_time' => isset($not_exits_com) ? $not_exits_com : date('Y-m-d H:i:s', time()),
         ];
     }
@@ -224,7 +224,7 @@ class Index extends Base
             $quickmenu = input('post.quickmenu');
             $quickmenu = str_replace(chr(10), '', $quickmenu);
             $menu_arr = explode(chr(13), $quickmenu);
-            $res = mac_save_config_data(APP_PATH . 'extra/quickmenu.php', $menu_arr);
+            $res = mac_save_config_data(APP_PATH.'extra/quickmenu.php', $menu_arr);
             if ($res === false) {
                 return $this->error(lang('save_err'));
             }
@@ -232,7 +232,7 @@ class Index extends Base
         } else {
             $config_menu = config('quickmenu');
             if (empty($config_menu)) {
-                $quickmenu = mac_read_file(APP_PATH . 'data/config/quickmenu.txt');
+                $quickmenu = mac_read_file(APP_PATH.'data/config/quickmenu.txt');
             } else {
                 $quickmenu = array_values($config_menu);
                 $quickmenu = join(chr(13), $quickmenu);
@@ -345,7 +345,7 @@ class Index extends Base
         $this->assign('col', $col);
         $this->assign('ids', $ids);
         $this->assign('val', $val);
-        return $this->fetch('admin@public/' . $tpl);
+        return $this->fetch('admin@public/'.$tpl);
     }
 
 }

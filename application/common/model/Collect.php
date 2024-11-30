@@ -1,10 +1,13 @@
 <?php
+
 namespace app\common\model;
+
 use app\common\util\Pinyin;
 use think\Cache;
 use think\Db;
 
-class Collect extends Base {
+class Collect extends Base
+{
 
     // 设置数据表（不含前缀）
     protected $name = 'collect';
@@ -14,87 +17,85 @@ class Collect extends Base {
     protected $updateTime = '';
 
     // 自动完成
-    protected $auto       = [];
-    protected $insert     = [];
-    protected $update     = [];
+    protected $auto = [];
+    protected $insert = [];
+    protected $update = [];
 
-    public function listData($where,$order,$page=1,$limit=20,$start=0)
+    public function listData($where, $order, $page = 1, $limit = 20, $start = 0)
     {
         $total = $this->where($where)->count();
         $list = Db::name('Collect')->where($where)->order($order)->page($page)->limit($limit)->select();
-        return ['code'=>1,'msg'=>lang('data_list'),'page'=>$page,'pagecount'=>ceil($total/$limit),'limit'=>$limit,'total'=>$total,'list'=>$list];
+        return ['code'  => 1, 'msg' => lang('data_list'), 'page' => $page, 'pagecount' => ceil($total / $limit),
+                'limit' => $limit, 'total' => $total, 'list' => $list
+        ];
     }
 
-    public function infoData($where,$field='*')
+    public function infoData($where, $field = '*')
     {
-        if(empty($where) || !is_array($where)){
-            return ['code'=>1001,'msg'=>lang('param_err')];
+        if (empty($where) || !is_array($where)) {
+            return ['code' => 1001, 'msg' => lang('param_err')];
         }
         $info = $this->field($field)->where($where)->find();
 
-        if(empty($info)){
-            return ['code'=>1002,'msg'=>lang('obtain_err')];
+        if (empty($info)) {
+            return ['code' => 1002, 'msg' => lang('obtain_err')];
         }
         $info = $info->toArray();
-        return ['code'=>1,'msg'=>lang('obtain_ok'),'info'=>$info];
+        return ['code' => 1, 'msg' => lang('obtain_ok'), 'info' => $info];
     }
 
     public function saveData($data)
     {
         $validate = \think\Loader::validate('Collect');
-        if(!empty($data['collect_id'])){
-            if(!$validate->scene('edit')->check($data)){
-                return ['code'=>1001,'msg'=>lang('param_err').'：'.$validate->getError() ];
+        if (!empty($data['collect_id'])) {
+            if (!$validate->scene('edit')->check($data)) {
+                return ['code' => 1001, 'msg' => lang('param_err').'：'.$validate->getError()];
             }
 
-            $where=[];
-            $where['collect_id'] = ['eq',$data['collect_id']];
+            $where = [];
+            $where['collect_id'] = ['eq', $data['collect_id']];
             $res = $this->where($where)->update($data);
-        }
-        else{
-            if(!$validate->scene('edit')->check($data)){
-                return ['code'=>1002,'msg'=>lang('param_err').'：'.$validate->getError() ];
+        } else {
+            if (!$validate->scene('edit')->check($data)) {
+                return ['code' => 1002, 'msg' => lang('param_err').'：'.$validate->getError()];
             }
             $res = $this->insert($data);
         }
-        if(false === $res){
-            return ['code'=>1003,'msg'=>''.$this->getError() ];
+        if (false === $res) {
+            return ['code' => 1003, 'msg' => ''.$this->getError()];
         }
-        return ['code'=>1,'msg'=>lang('save_ok')];
+        return ['code' => 1, 'msg' => lang('save_ok')];
     }
 
     public function delData($where)
     {
         $res = $this->where($where)->delete();
-        if($res===false){
-            return ['code'=>1001,'msg'=>lang('del_err').'：'.$this->getError() ];
+        if ($res === false) {
+            return ['code' => 1001, 'msg' => lang('del_err').'：'.$this->getError()];
         }
-        return ['code'=>1,'msg'=>lang('del_ok')];
+        return ['code' => 1, 'msg' => lang('del_ok')];
     }
 
     public function check_flag($param)
     {
-        if($param['cjflag'] != md5($param['cjurl'])){
-            return ['code'=>9001, 'msg'=>lang('model/collect/flag_err')];
+        if ($param['cjflag'] != md5($param['cjurl'])) {
+            return ['code' => 9001, 'msg' => lang('model/collect/flag_err')];
         }
-        return ['code'=>1,'msg'=>'ok'];
+        return ['code' => 1, 'msg' => 'ok'];
     }
 
     public function vod($param)
     {
-        if($param['type'] == '1'){
+        if ($param['type'] == '1') {
             return $this->vod_xml($param);
-        }
-        elseif($param['type'] == '2'){
+        } elseif ($param['type'] == '2') {
             return $this->vod_json($param);
-        }
-        else{
+        } else {
             $data = $this->vod_json($param);
 
-            if($data['code'] == 1){
+            if ($data['code'] == 1) {
                 return $data;
-            }
-            else{
+            } else {
                 return $this->vod_xml($param);
             }
         }
@@ -122,20 +123,20 @@ class Collect extends Base {
 
     public function vod_xml_replace($url)
     {
-        $array_url = array();
-        $arr_ji = explode('#',str_replace('||','//',$url));
-        foreach($arr_ji as $key=>$value){
-            $urlji = explode('$',$value);
-            if( count($urlji) > 1 ){
+        $array_url = [];
+        $arr_ji = explode('#', str_replace('||', '//', $url));
+        foreach ($arr_ji as $key => $value) {
+            $urlji = explode('$', $value);
+            if (count($urlji) > 1) {
                 $array_url[$key] = $urlji[0].'$'.trim($urlji[1]);
-            }else{
+            } else {
                 $array_url[$key] = trim($urlji[0]);
             }
         }
-        return implode('#',$array_url);
+        return implode('#', $array_url);
     }
 
-    public function vod_xml($param,$html='')
+    public function vod_xml($param, $html = '')
     {
         $url_param = [];
         $url_param['ac'] = $param['ac'];
@@ -144,57 +145,56 @@ class Collect extends Base {
         $url_param['h'] = $param['h'];
         $url_param['ids'] = $param['ids'];
         $url_param['wd'] = $param['wd'];
-        if(empty($param['h']) && !empty($param['rday'])){
+        if (empty($param['h']) && !empty($param['rday'])) {
             $url_param['h'] = $param['rday'];
         }
 
-        if($param['ac']!='list'){
+        if ($param['ac'] != 'list') {
             $url_param['ac'] = 'videolist';
         }
 
         $url = $param['cjurl'];
-        if(strpos($url,'?')===false){
-            $url .='?';
+        if (strpos($url, '?') === false) {
+            $url .= '?';
+        } else {
+            $url .= '&';
         }
-        else{
-            $url .='&';
-        }
-        $url .= http_build_query($url_param). base64_decode($param['param']);
+        $url .= http_build_query($url_param).base64_decode($param['param']);
         $result = $this->checkCjUrl($url);
         if ($result['code'] > 1) {
             return $result;
         }
         $html = mac_curl_get($url);
-        if(empty($html)){
-            return ['code'=>1001, 'msg'=>lang('model/collect/get_html_err')];
+        if (empty($html)) {
+            return ['code' => 1001, 'msg' => lang('model/collect/get_html_err')];
         }
         $html = mac_filter_tags($html);
         $xml = @simplexml_load_string($html);
-        if(empty($xml)){
+        if (empty($xml)) {
             $labelRule = '<pic>'."(.*?)".'</pic>';
-            $labelRule = mac_buildregx($labelRule,"is");
-            preg_match_all($labelRule,$html,$tmparr);
-            $ec=false;
-            foreach($tmparr[1] as $tt){
-                if(strpos($tt,'[CDATA')===false){
-                    $ec=true;
-                    $ne = '<pic>'.'<![CDATA['.$tt .']]>'.'</pic>';
-                    $html = str_replace('<pic>'.$tt.'</pic>',$ne,$html);
+            $labelRule = mac_buildregx($labelRule, "is");
+            preg_match_all($labelRule, $html, $tmparr);
+            $ec = false;
+            foreach ($tmparr[1] as $tt) {
+                if (strpos($tt, '[CDATA') === false) {
+                    $ec = true;
+                    $ne = '<pic>'.'<![CDATA['.$tt.']]>'.'</pic>';
+                    $html = str_replace('<pic>'.$tt.'</pic>', $ne, $html);
                 }
             }
-            if($ec) {
+            if ($ec) {
                 $xml = @simplexml_load_string($html);
             }
-            if(empty($xml)) {
-                return ['code' => 1002, 'msg'=>lang('model/collect/xml_err')];
+            if (empty($xml)) {
+                return ['code' => 1002, 'msg' => lang('model/collect/xml_err')];
             }
         }
 
         $array_page = [];
-        $array_page['page'] = (string)$xml->list->attributes()->page;
-        $array_page['pagecount'] = (string)$xml->list->attributes()->pagecount;
-        $array_page['pagesize'] = (string)$xml->list->attributes()->pagesize;
-        $array_page['recordcount'] = (string)$xml->list->attributes()->recordcount;
+        $array_page['page'] = (string) $xml->list->attributes()->page;
+        $array_page['pagecount'] = (string) $xml->list->attributes()->pagecount;
+        $array_page['pagesize'] = (string) $xml->list->attributes()->pagesize;
+        $array_page['recordcount'] = (string) $xml->list->attributes()->recordcount;
         $array_page['url'] = $url;
 
         $type_list = model('Type')->getCache('type_list');
@@ -203,65 +203,63 @@ class Collect extends Base {
 
         $key = 0;
         $array_data = [];
-        foreach($xml->list->video as $video){
-            $bind_key = $param['cjflag'] .'_'.(string)$video->tid;
-            if($bind_list[$bind_key] >0){
+        foreach ($xml->list->video as $video) {
+            $bind_key = $param['cjflag'].'_'.(string) $video->tid;
+            if ($bind_list[$bind_key] > 0) {
                 $array_data[$key]['type_id'] = $bind_list[$bind_key];
-            }
-            else{
+            } else {
                 $array_data[$key]['type_id'] = 0;
             }
-            $array_data[$key]['vod_id'] = (string)$video->id;
+            $array_data[$key]['vod_id'] = (string) $video->id;
             //$array_data[$key]['type_id'] = (string)$video->tid;
-            $array_data[$key]['vod_name'] = mac_filter_xss((string)$video->name);
-            $array_data[$key]['vod_sub'] = mac_filter_xss((string)$video->subname);
-            $array_data[$key]['vod_remarks'] = mac_filter_xss((string)$video->note);
-            $array_data[$key]['type_name'] = mac_filter_xss((string)$video->type);
-            $array_data[$key]['vod_pic'] = mac_filter_xss((string)$video->pic);
-            $array_data[$key]['vod_lang'] = mac_filter_xss((string)$video->lang);
-            $array_data[$key]['vod_area'] = mac_filter_xss((string)$video->area);
-            $array_data[$key]['vod_year'] = mac_filter_xss((string)$video->year);
-            $array_data[$key]['vod_serial'] = mac_filter_xss((string)$video->state);
-            $array_data[$key]['vod_actor'] = mac_filter_xss((string)$video->actor);
-            $array_data[$key]['vod_director'] = mac_filter_xss((string)$video->director);
-            $array_data[$key]['vod_content'] = (string)$video->des;
+            $array_data[$key]['vod_name'] = mac_filter_xss((string) $video->name);
+            $array_data[$key]['vod_sub'] = mac_filter_xss((string) $video->subname);
+            $array_data[$key]['vod_remarks'] = mac_filter_xss((string) $video->note);
+            $array_data[$key]['type_name'] = mac_filter_xss((string) $video->type);
+            $array_data[$key]['vod_pic'] = mac_filter_xss((string) $video->pic);
+            $array_data[$key]['vod_lang'] = mac_filter_xss((string) $video->lang);
+            $array_data[$key]['vod_area'] = mac_filter_xss((string) $video->area);
+            $array_data[$key]['vod_year'] = mac_filter_xss((string) $video->year);
+            $array_data[$key]['vod_serial'] = mac_filter_xss((string) $video->state);
+            $array_data[$key]['vod_actor'] = mac_filter_xss((string) $video->actor);
+            $array_data[$key]['vod_director'] = mac_filter_xss((string) $video->director);
+            $array_data[$key]['vod_content'] = (string) $video->des;
 
             $array_data[$key]['vod_status'] = 1;
             $array_data[$key]['vod_type'] = mac_filter_xss($array_data[$key]['list_name']);
-            $array_data[$key]['vod_time'] = mac_filter_xss((string)$video->last);
+            $array_data[$key]['vod_time'] = mac_filter_xss((string) $video->last);
             $array_data[$key]['vod_total'] = 0;
             $array_data[$key]['vod_isend'] = 1;
-            if($array_data[$key]['vod_serial']){
+            if ($array_data[$key]['vod_serial']) {
                 $array_data[$key]['vod_isend'] = 0;
             }
             //格式化地址与播放器
             $array_from = [];
             $array_url = [];
-            $array_server=[];
-            $array_note=[];
+            $array_server = [];
+            $array_note = [];
             //videolist|list播放列表不同
-            if($count=count($video->dl->dd)){
-                for($i=0; $i<$count; $i++){
-                    $array_from[$i] = (string)$video->dl->dd[$i]['flag'];
-                    $array_url[$i] = $this->vod_xml_replace((string)$video->dl->dd[$i]);
+            if ($count = count($video->dl->dd)) {
+                for ($i = 0; $i < $count; $i++) {
+                    $array_from[$i] = (string) $video->dl->dd[$i]['flag'];
+                    $array_url[$i] = $this->vod_xml_replace((string) $video->dl->dd[$i]);
                     $array_server[$i] = 'no';
                     $array_note[$i] = '';
 
                 }
-            }else{
-                $array_from[]=(string)$video->dt;
-                $array_url[] ='';
-                $array_server[]='';
-                $array_note[]='';
+            } else {
+                $array_from[] = (string) $video->dt;
+                $array_url[] = '';
+                $array_server[] = '';
+                $array_note[] = '';
             }
 
-            if(strpos(base64_decode($param['param']),'ct=1')!==false){
+            if (strpos(base64_decode($param['param']), 'ct=1') !== false) {
                 $array_data[$key]['vod_down_from'] = implode('$$$', $array_from);
                 $array_data[$key]['vod_down_url'] = implode('$$$', $array_url);
                 $array_data[$key]['vod_down_server'] = implode('$$$', $array_server);
                 $array_data[$key]['vod_down_note'] = implode('$$$', $array_note);
-            }
-            else{
+            } else {
                 $array_data[$key]['vod_play_from'] = implode('$$$', $array_from);
                 $array_data[$key]['vod_play_url'] = implode('$$$', $array_url);
                 $array_data[$key]['vod_play_server'] = implode('$$$', $array_server);
@@ -272,17 +270,17 @@ class Collect extends Base {
         }
 
         $array_type = [];
-        $key=0;
+        $key = 0;
         //分类列表
-        if($param['ac'] == 'list'){
-            foreach($xml->class->ty as $ty){
-                $array_type[$key]['type_id'] = (string)$ty->attributes()->id;
-                $array_type[$key]['type_name'] = mac_filter_xss((string)$ty);
+        if ($param['ac'] == 'list') {
+            foreach ($xml->class->ty as $ty) {
+                $array_type[$key]['type_id'] = (string) $ty->attributes()->id;
+                $array_type[$key]['type_name'] = mac_filter_xss((string) $ty);
                 $key++;
             }
         }
 
-        $res = ['code'=>1, 'msg'=>'xml', 'page'=>$array_page, 'type'=>$array_type, 'data'=>$array_data ];
+        $res = ['code' => 1, 'msg' => 'xml', 'page' => $array_page, 'type' => $array_type, 'data' => $array_data];
         return $res;
     }
 
@@ -296,30 +294,29 @@ class Collect extends Base {
         $url_param['ids'] = $param['ids'];
         $url_param['wd'] = $param['wd'];
 
-        if($param['ac']!='list'){
+        if ($param['ac'] != 'list') {
             $url_param['ac'] = 'videolist';
         }
 
         $url = $param['cjurl'];
-        if(strpos($url,'?')===false){
-            $url .='?';
+        if (strpos($url, '?') === false) {
+            $url .= '?';
+        } else {
+            $url .= '&';
         }
-        else{
-            $url .='&';
-        }
-        $url .= http_build_query($url_param). base64_decode($param['param']);
+        $url .= http_build_query($url_param).base64_decode($param['param']);
         $result = $this->checkCjUrl($url);
         if ($result['code'] > 1) {
             return $result;
         }
         $html = mac_curl_get($url);
-        if(empty($html)){
-            return ['code'=>1001, 'msg'=>lang('model/collect/get_html_err')];
+        if (empty($html)) {
+            return ['code' => 1001, 'msg' => lang('model/collect/get_html_err')];
         }
         $html = mac_filter_tags($html);
-        $json = json_decode($html,true);
-        if(!$json){
-            return ['code'=>1002, 'msg'=>lang('model/collect/json_err')];
+        $json = json_decode($html, true);
+        if (!$json) {
+            return ['code' => 1002, 'msg' => lang('model/collect/json_err')];
         }
 
         $array_page = [];
@@ -334,17 +331,16 @@ class Collect extends Base {
 
         $key = 0;
         $array_data = [];
-        foreach($json['list'] as $key=>$v){
+        foreach ($json['list'] as $key => $v) {
             $array_data[$key] = $v;
-            $bind_key = $param['cjflag'] .'_'.$v['type_id'];
-            if($bind_list[$bind_key] >0){
+            $bind_key = $param['cjflag'].'_'.$v['type_id'];
+            if ($bind_list[$bind_key] > 0) {
                 $array_data[$key]['type_id'] = $bind_list[$bind_key];
-            }
-            else{
+            } else {
                 $array_data[$key]['type_id'] = 0;
             }
 
-            if(!empty($v['dl'])) {
+            if (!empty($v['dl'])) {
                 //格式化地址与播放器
                 $array_from = [];
                 $array_url = [];
@@ -366,17 +362,17 @@ class Collect extends Base {
         }
 
         $array_type = [];
-        $key=0;
+        $key = 0;
         //分类列表
-        if($param['ac'] == 'list'){
-            foreach($json['class'] as $k=>$v){
+        if ($param['ac'] == 'list') {
+            foreach ($json['class'] as $k => $v) {
                 $array_type[$key]['type_id'] = $v['type_id'];
                 $array_type[$key]['type_name'] = mac_filter_xss($v['type_name']);
                 $key++;
             }
         }
 
-        $res = ['code'=>1, 'msg'=>'json', 'page'=>$array_page, 'type'=>$array_type, 'data'=>$array_data ];
+        $res = ['code' => 1, 'msg' => 'json', 'page' => $array_page, 'type' => $array_type, 'data' => $array_data];
         return $res;
     }
 
@@ -385,33 +381,33 @@ class Collect extends Base {
      *
      * @param $pic_status int 是否同步。为1时，同步图片
      * @param $pic_url
-     * @param string $flag
+     * @param  string  $flag
      * @return array
      */
-    private function syncImages($pic_status,$pic_url,$flag='vod')
+    private function syncImages($pic_status, $pic_url, $flag = 'vod')
     {
-        if($pic_status == 1){
+        if ($pic_status == 1) {
             $img_url = model('Image')->down_load($pic_url, $GLOBALS['config']['upload'], $flag);
-            if(substr($img_url,0,7)=='upload/'){
-                $link = MAC_PATH . $img_url;
-            }
-            else{
+            if (substr($img_url, 0, 7) == 'upload/') {
+                $link = MAC_PATH.$img_url;
+            } else {
                 $link = str_replace('mac:', $GLOBALS['config']['upload']['protocol'].':', $img_url);
             }
             if ($img_url == $pic_url) {
-                $des = '<a href="' . $pic_url . '" target="_blank">' . $pic_url . '</a><font color=red>'.lang('download_err').'!</font>';
+                $des = '<a href="'.$pic_url.'" target="_blank">'.$pic_url.'</a><font color=red>'.lang('download_err').'!</font>';
             } else {
                 $pic_url = $img_url;
-                $des = '<a href="' . $link . '" target="_blank">' . $link . '</a><font color=green>'.lang('download_ok').'!</font>';
+                $des = '<a href="'.$link.'" target="_blank">'.$link.'</a><font color=green>'.lang('download_ok').'!</font>';
             }
         }
-        return ['pic'=>$pic_url,'msg'=>$des];
+        return ['pic' => $pic_url, 'msg' => $des];
     }
 
-    public function vod_data($param,$data,$show=1)
+    public function vod_data($param, $data, $show = 1)
     {
-        if($show==1) {
-            mac_echo('[' . __FUNCTION__ . '] ' . lang('model/collect/data_tip1', [$data['page']['page'],$data['page']['pagecount'],$data['page']['url']]));
+        if ($show == 1) {
+            mac_echo('['.__FUNCTION__.'] '.lang('model/collect/data_tip1',
+                    [$data['page']['page'], $data['page']['pagecount'], $data['page']['url']]));
         }
 
         $config = config('maccms.collect');
@@ -421,31 +417,30 @@ class Collect extends Base {
         $downers = config('voddowner');
 
         $type_list = model('Type')->getCache('type_list');
-        $filter_arr = explode(',',$config['filter']); $filter_arr = array_filter($filter_arr);
-        $pse_rnd = explode('#',$config['words']); $pse_rnd = array_filter($pse_rnd);
-        $pse_name =  mac_txt_explain($config['namewords']);
+        $filter_arr = explode(',', $config['filter']);
+        $filter_arr = array_filter($filter_arr);
+        $pse_rnd = explode('#', $config['words']);
+        $pse_rnd = array_filter($pse_rnd);
+        $pse_name = mac_txt_explain($config['namewords']);
         $pse_syn = mac_txt_explain($config['thesaurus']);
 
-        foreach($data['data'] as $k=>$v){
-            $color='red';
-            $des='';
-            $msg='';
-            $tmp='';
+        foreach ($data['data'] as $k => $v) {
+            $color = 'red';
+            $des = '';
+            $msg = '';
+            $tmp = '';
 
-            if($v['type_id'] ==0){
+            if ($v['type_id'] == 0) {
                 $des = lang('model/collect/type_err');
-            }
-            elseif(empty($v['vod_name'])) {
+            } elseif (empty($v['vod_name'])) {
                 $des = lang('model/collect/name_err');
-            }
-            elseif( mac_array_filter($filter_arr,$v['vod_name']) !==false) {
+            } elseif (mac_array_filter($filter_arr, $v['vod_name']) !== false) {
                 $des = lang('model/collect/name_in_filter_err');
-            }
-            else {
+            } else {
                 unset($v['vod_id']);
 
-                foreach($v as $k2=>$v2){
-                    if(strpos($k2,'_content')===false && $k2!=='vod_plot_detail') {
+                foreach ($v as $k2 => $v2) {
+                    if (strpos($k2, '_content') === false && $k2 !== 'vod_plot_detail') {
                         $v[$k2] = strip_tags($v2);
                     }
                 }
@@ -453,7 +448,7 @@ class Collect extends Base {
                 $v['vod_name'] = mac_filter_xss($v['vod_name']);
                 $v['type_id_1'] = intval($type_list[$v['type_id']]['type_pid']);
                 $v['vod_en'] = Pinyin::get($v['vod_name']);
-                $v['vod_letter'] = strtoupper(substr($v['vod_en'],0,1));
+                $v['vod_letter'] = strtoupper(substr($v['vod_en'], 0, 1));
                 // 使用资源站的添加时间，更新时间保持当前
                 if (empty($v['vod_time_add']) || strlen($v['vod_time_add']) != 10) {
                     $v['vod_time_add'] = time();
@@ -461,7 +456,7 @@ class Collect extends Base {
                 $v['vod_time'] = time();
                 $v['vod_status'] = intval($config['status']);
                 $v['vod_lock'] = intval($v['vod_lock']);
-                if(!empty($v['vod_status'])) {
+                if (!empty($v['vod_status'])) {
                     $v['vod_status'] = intval($v['vod_status']);
                 }
                 $v['vod_year'] = intval($v['vod_year']);
@@ -483,39 +478,39 @@ class Collect extends Base {
                 $v['vod_score_all'] = intval($v['vod_score_all']);
                 $v['vod_score_num'] = intval($v['vod_score_num']);
 
-                $v['vod_class'] = mac_txt_merge($v['vod_class'],$v['type_name']);
+                $v['vod_class'] = mac_txt_merge($v['vod_class'], $v['type_name']);
 
                 $v['vod_actor'] = mac_format_text($v['vod_actor']);
                 $v['vod_director'] = mac_format_text($v['vod_director']);
                 $v['vod_class'] = mac_format_text($v['vod_class']);
                 $v['vod_tag'] = mac_format_text($v['vod_tag']);
 
-                $v['vod_plot_name'] = mac_filter_xss((string)$v['vod_plot_name']);
-                $v['vod_plot_detail'] = mac_filter_xss((string)$v['vod_plot_detail']);
+                $v['vod_plot_name'] = mac_filter_xss((string) $v['vod_plot_name']);
+                $v['vod_plot_detail'] = mac_filter_xss((string) $v['vod_plot_detail']);
 
-                if(!empty($v['vod_plot_name'])){
+                if (!empty($v['vod_plot_name'])) {
                     $v['vod_plot'] = 1;
-                    $v['vod_plot_name'] = trim($v['vod_plot_name'],'$$$');
+                    $v['vod_plot_name'] = trim($v['vod_plot_name'], '$$$');
                 }
-                if(!empty($v['vod_plot_detail'])){
-                    $v['vod_plot_detail'] = trim($v['vod_plot_detail'],'$$$');
+                if (!empty($v['vod_plot_detail'])) {
+                    $v['vod_plot_detail'] = trim($v['vod_plot_detail'], '$$$');
                 }
-                if(empty($v['vod_isend']) && !empty($v['vod_serial'])){
+                if (empty($v['vod_isend']) && !empty($v['vod_serial'])) {
                     $v['vod_isend'] = 0;
                 }
-                if($config['hits_start']>0 && $config['hits_end']>0) {
+                if ($config['hits_start'] > 0 && $config['hits_end'] > 0) {
                     $v['vod_hits'] = rand($config['hits_start'], $config['hits_end']);
                     $v['vod_hits_day'] = rand($config['hits_start'], $config['hits_end']);
                     $v['vod_hits_week'] = rand($config['hits_start'], $config['hits_end']);
                     $v['vod_hits_month'] = rand($config['hits_start'], $config['hits_end']);
                 }
 
-                if($config['updown_start']>0 && $config['updown_end']){
+                if ($config['updown_start'] > 0 && $config['updown_end']) {
                     $v['vod_up'] = rand($config['updown_start'], $config['updown_end']);
                     $v['vod_down'] = rand($config['updown_start'], $config['updown_end']);
                 }
 
-                if($config['score']==1) {
+                if ($config['score'] == 1) {
                     $v['vod_score_num'] = rand(1, 1000);
                     $v['vod_score_all'] = $v['vod_score_num'] * rand(1, 10);
                     $v['vod_score'] = round($v['vod_score_all'] / $v['vod_score_num'], 1);
@@ -532,64 +527,64 @@ class Collect extends Base {
                     $v['vod_content'] = mac_rep_pse_syn($pse_syn, $v['vod_content']);
                 }
 
-                if(empty($v['vod_blurb'])){
-                    $v['vod_blurb'] = mac_substring( strip_tags($v['vod_content']) ,100);
+                if (empty($v['vod_blurb'])) {
+                    $v['vod_blurb'] = mac_substring(strip_tags($v['vod_content']), 100);
                 }
 
                 $where = [];
                 $where['vod_name'] = $v['vod_name'];
-                $blend=false;
-                if (strpos($config['inrule'], 'b')!==false) {
+                $blend = false;
+                if (strpos($config['inrule'], 'b') !== false) {
                     $where['type_id'] = $v['type_id'];
                 }
-                if (strpos($config['inrule'], 'c')!==false) {
+                if (strpos($config['inrule'], 'c') !== false) {
                     $where['vod_year'] = $v['vod_year'];
                 }
-                if (strpos($config['inrule'], 'd')!==false) {
+                if (strpos($config['inrule'], 'd') !== false) {
                     $where['vod_area'] = $v['vod_area'];
                 }
-                if (strpos($config['inrule'], 'e')!==false) {
+                if (strpos($config['inrule'], 'e') !== false) {
                     $where['vod_lang'] = $v['vod_lang'];
                 }
-                if (strpos($config['inrule'], 'f')!==false) {
+                if (strpos($config['inrule'], 'f') !== false) {
                     $where['vod_actor'] = ['like', mac_like_arr($v['vod_actor']), 'OR'];
                 }
-                if (strpos($config['inrule'], 'g')!==false) {
+                if (strpos($config['inrule'], 'g') !== false) {
                     $where['vod_director'] = $v['vod_director'];
                 }
                 if ($config['tag'] == 1) {
                     $v['vod_tag'] = mac_get_tag($v['vod_name'], $v['vod_content']);
                 }
 
-                if(!empty($where['vod_actor']) && !empty($where['vod_director'])){
+                if (!empty($where['vod_actor']) && !empty($where['vod_director'])) {
                     $blend = true;
                     $GLOBALS['blend'] = [
-                        'vod_actor' => $where['vod_actor'],
+                        'vod_actor'    => $where['vod_actor'],
                         'vod_director' => $where['vod_director']
                     ];
-                    unset($where['vod_actor'],$where['vod_director']);
+                    unset($where['vod_actor'], $where['vod_director']);
                 }
 
-                if(empty($v['vod_play_url'])){
+                if (empty($v['vod_play_url'])) {
                     $v['vod_play_url'] = '';
                 }
-                if(empty($v['vod_down_url'])){
+                if (empty($v['vod_down_url'])) {
                     $v['vod_down_url'] = '';
                 }
                 //验证地址
-                $cj_play_from_arr = explode('$$$',$v['vod_play_from'] );
-                $cj_play_url_arr = explode('$$$',$v['vod_play_url']);
-                $cj_play_server_arr = explode('$$$',$v['vod_play_server']);
-                $cj_play_note_arr = explode('$$$',$v['vod_play_note']);
-                $cj_down_from_arr = explode('$$$',$v['vod_down_from'] );
-                $cj_down_url_arr = explode('$$$',$v['vod_down_url']);
-                $cj_down_server_arr = explode('$$$',$v['vod_down_server']);
-                $cj_down_note_arr = explode('$$$',$v['vod_down_note']);
+                $cj_play_from_arr = explode('$$$', $v['vod_play_from']);
+                $cj_play_url_arr = explode('$$$', $v['vod_play_url']);
+                $cj_play_server_arr = explode('$$$', $v['vod_play_server']);
+                $cj_play_note_arr = explode('$$$', $v['vod_play_note']);
+                $cj_down_from_arr = explode('$$$', $v['vod_down_from']);
+                $cj_down_url_arr = explode('$$$', $v['vod_down_url']);
+                $cj_down_server_arr = explode('$$$', $v['vod_down_server']);
+                $cj_down_note_arr = explode('$$$', $v['vod_down_note']);
 
 
-                $collect_filter=[];
-                foreach($cj_play_from_arr as $kk=>$vv){
-                    if(empty($vv)){
+                $collect_filter = [];
+                foreach ($cj_play_from_arr as $kk => $vv) {
+                    if (empty($vv)) {
                         unset($cj_play_from_arr[$kk]);
                         unset($cj_play_url_arr[$kk]);
                         unset($cj_play_server_arr[$kk]);
@@ -597,7 +592,7 @@ class Collect extends Base {
                         continue;
                     }
 
-                    if(empty($players[$vv])){
+                    if (empty($players[$vv])) {
                         unset($cj_play_from_arr[$kk]);
                         unset($cj_play_url_arr[$kk]);
                         unset($cj_play_server_arr[$kk]);
@@ -605,12 +600,12 @@ class Collect extends Base {
                         continue;
                     }
 
-                    $cj_play_url_arr[$kk] = rtrim($cj_play_url_arr[$kk],'#');
+                    $cj_play_url_arr[$kk] = rtrim($cj_play_url_arr[$kk], '#');
                     $cj_play_server_arr[$kk] = $cj_play_server_arr[$kk];
                     $cj_play_note_arr[$kk] = $cj_play_note_arr[$kk];
 
-                    if($param['filter'] > 0){
-                        if(strpos(','.$param['filter_from'].',',$vv)!==false) {
+                    if ($param['filter'] > 0) {
+                        if (strpos(','.$param['filter_from'].',', $vv) !== false) {
                             $collect_filter['play'][$param['filter']]['cj_play_from_arr'][$kk] = $vv;
                             $collect_filter['play'][$param['filter']]['cj_play_url_arr'][$kk] = $cj_play_url_arr[$kk];
                             $collect_filter['play'][$param['filter']]['cj_play_server_arr'][$kk] = $cj_play_server_arr[$kk];
@@ -618,15 +613,15 @@ class Collect extends Base {
                         }
                     }
                 }
-                foreach($cj_down_from_arr as $kk=>$vv){
-                    if(empty($vv)){
+                foreach ($cj_down_from_arr as $kk => $vv) {
+                    if (empty($vv)) {
                         unset($cj_down_from_arr[$kk]);
                         unset($cj_down_url_arr[$kk]);
                         unset($cj_down_server_arr[$kk]);
                         unset($cj_down_note_arr[$kk]);
                         continue;
                     }
-                    if(empty($downers[$vv])){
+                    if (empty($downers[$vv])) {
                         unset($cj_down_from_arr[$kk]);
                         unset($cj_down_url_arr[$kk]);
                         unset($cj_down_server_arr[$kk]);
@@ -638,8 +633,8 @@ class Collect extends Base {
                     $cj_down_server_arr[$kk] = $cj_down_server_arr[$kk];
                     $cj_down_note_arr[$kk] = $cj_down_note_arr[$kk];
 
-                    if($param['filter'] > 0){
-                        if(strpos(','.$param['filter_from'].',',$vv)!==false) {
+                    if ($param['filter'] > 0) {
+                        if (strpos(','.$param['filter_from'].',', $vv) !== false) {
                             $collect_filter['down'][$param['filter']]['cj_down_from_arr'][$kk] = $vv;
                             $collect_filter['down'][$param['filter']]['cj_down_url_arr'][$kk] = $cj_down_url_arr[$kk];
                             $collect_filter['down'][$param['filter']]['cj_down_server_arr'][$kk] = $cj_down_server_arr[$kk];
@@ -647,23 +642,22 @@ class Collect extends Base {
                         }
                     }
                 }
-                $v['vod_play_from'] = (string)join('$$$',$cj_play_from_arr);
-                $v['vod_play_url'] = (string)join('$$$',$cj_play_url_arr);
-                $v['vod_play_server'] = (string)join('$$$',$cj_play_server_arr);
-                $v['vod_play_note'] = (string)join('$$$',$cj_play_note_arr);
-                $v['vod_down_from'] = (string)join('$$$',$cj_down_from_arr);
-                $v['vod_down_url'] = (string)join('$$$',$cj_down_url_arr);
-                $v['vod_down_server'] = (string)join('$$$',$cj_down_server_arr);
-                $v['vod_down_note'] = (string)join('$$$',$cj_down_note_arr);
+                $v['vod_play_from'] = (string) join('$$$', $cj_play_from_arr);
+                $v['vod_play_url'] = (string) join('$$$', $cj_play_url_arr);
+                $v['vod_play_server'] = (string) join('$$$', $cj_play_server_arr);
+                $v['vod_play_note'] = (string) join('$$$', $cj_play_note_arr);
+                $v['vod_down_from'] = (string) join('$$$', $cj_down_from_arr);
+                $v['vod_down_url'] = (string) join('$$$', $cj_down_url_arr);
+                $v['vod_down_server'] = (string) join('$$$', $cj_down_server_arr);
+                $v['vod_down_note'] = (string) join('$$$', $cj_down_note_arr);
 
-                if($blend===false){
+                if ($blend === false) {
                     $info = model('Vod')->where($where)->find();
-                }
-                else{
+                } else {
                     $info = model('Vod')->where($where)
-                        ->where(function($query){
-                            $query->where('vod_director',$GLOBALS['blend']['vod_director'])
-                                    ->whereOr('vod_actor',$GLOBALS['blend']['vod_actor']);
+                        ->where(function ($query) {
+                            $query->where('vod_director', $GLOBALS['blend']['vod_director'])
+                                ->whereOr('vod_actor', $GLOBALS['blend']['vod_actor']);
                         })
                         ->find();
                 }
@@ -671,22 +665,29 @@ class Collect extends Base {
 
                 if (!$info) {
                     // 新增
-                    if($param['opt'] == 2){
-                        $des= lang('model/collect/not_check_add');
-                    }
-                    else {
+                    if ($param['opt'] == 2) {
+                        $des = lang('model/collect/not_check_add');
+                    } else {
                         if ($param['filter'] == 1 || $param['filter'] == 2) {
-                            $v['vod_play_from'] = (string)join('$$$', $collect_filter['play'][$param['filter']]['cj_play_from_arr']);
-                            $v['vod_play_url'] = (string)join('$$$', $collect_filter['play'][$param['filter']]['cj_play_url_arr']);
-                            $v['vod_play_server'] = (string)join('$$$', $collect_filter['play'][$param['filter']]['cj_play_server_arr']);
-                            $v['vod_play_note'] = (string)join('$$$', $collect_filter['play'][$param['filter']]['cj_play_note_arr']);
-                            $v['vod_down_from'] = (string)join('$$$', $collect_filter['down'][$param['filter']]['cj_down_from_arr']);
-                            $v['vod_down_url'] = (string)join('$$$', $collect_filter['down'][$param['filter']]['cj_down_url_arr']);
-                            $v['vod_down_server'] = (string)join('$$$', $collect_filter['down'][$param['filter']]['cj_down_server_arr']);
-                            $v['vod_down_note'] = (string)join('$$$', $collect_filter['down'][$param['filter']]['cj_down_note_arr']);
+                            $v['vod_play_from'] = (string) join('$$$',
+                                $collect_filter['play'][$param['filter']]['cj_play_from_arr']);
+                            $v['vod_play_url'] = (string) join('$$$',
+                                $collect_filter['play'][$param['filter']]['cj_play_url_arr']);
+                            $v['vod_play_server'] = (string) join('$$$',
+                                $collect_filter['play'][$param['filter']]['cj_play_server_arr']);
+                            $v['vod_play_note'] = (string) join('$$$',
+                                $collect_filter['play'][$param['filter']]['cj_play_note_arr']);
+                            $v['vod_down_from'] = (string) join('$$$',
+                                $collect_filter['down'][$param['filter']]['cj_down_from_arr']);
+                            $v['vod_down_url'] = (string) join('$$$',
+                                $collect_filter['down'][$param['filter']]['cj_down_url_arr']);
+                            $v['vod_down_server'] = (string) join('$$$',
+                                $collect_filter['down'][$param['filter']]['cj_down_server_arr']);
+                            $v['vod_down_note'] = (string) join('$$$',
+                                $collect_filter['down'][$param['filter']]['cj_down_note_arr']);
                         }
-                        $tmp = $this->syncImages($config_sync_pic,  $v['vod_pic'], 'vod');
-                        $v['vod_pic'] = mac_filter_xss((string)$tmp['pic']);
+                        $tmp = $this->syncImages($config_sync_pic, $v['vod_pic'], 'vod');
+                        $v['vod_pic'] = mac_filter_xss((string) $tmp['pic']);
                         $msg = $tmp['msg'];
                         $res = model('Vod')->insert($v);
                         if ($res === false) {
@@ -697,22 +698,19 @@ class Collect extends Base {
                     }
                 } else {
                     // 更新
-                    if(empty($config['uprule'])){
+                    if (empty($config['uprule'])) {
                         $des = lang('model/collect/uprule_empty');
-                    }
-                    elseif ($info['vod_lock'] == 1) {
+                    } elseif ($info['vod_lock'] == 1) {
                         $des = lang('model/collect/data_lock');
-                    }
-                    elseif($param['opt'] == 1){
+                    } elseif ($param['opt'] == 1) {
                         $des = lang('model/collect/not_check_update');
-                    }
-                    else {
+                    } else {
                         unset($v['vod_time_add']);
 
                         $update = [];
-                        $ec=false;
+                        $ec = false;
 
-                        if($param['filter'] ==1 || $param['filter']==3){
+                        if ($param['filter'] == 1 || $param['filter'] == 3) {
                             $cj_play_from_arr = $collect_filter['play'][$param['filter']]['cj_play_from_arr'];
                             $cj_play_url_arr = $collect_filter['play'][$param['filter']]['cj_play_url_arr'];
                             $cj_play_server_arr = $collect_filter['play'][$param['filter']]['cj_play_server_arr'];
@@ -723,7 +721,7 @@ class Collect extends Base {
                             $cj_down_note_arr = $collect_filter['down'][$param['filter']]['cj_down_note_arr'];
                         }
 
-                        if (strpos(',' . $config['uprule'], 'a')!==false && !empty($v['vod_play_from'])) {
+                        if (strpos(','.$config['uprule'], 'a') !== false && !empty($v['vod_play_from'])) {
                             $old_play_from = $info['vod_play_from'];
                             $old_play_url = $info['vod_play_url'];
                             $old_play_server = $info['vod_play_server'];
@@ -737,44 +735,45 @@ class Collect extends Base {
                                     $des .= lang('model/collect/playurl_same');
                                 } elseif (empty($cj_play_from)) {
                                     $des .= lang('model/collect/playfrom_empty');
-                                } elseif (strpos('$$$'.$info['vod_play_from'].'$$$', '$$$'.$cj_play_from.'$$$') === false) {
+                                } elseif (strpos('$$$'.$info['vod_play_from'].'$$$',
+                                        '$$$'.$cj_play_from.'$$$') === false) {
                                     $color = 'green';
-                                    $des .= lang('model/collect/playgroup_add_ok',[$cj_play_from]);
-                                    if(!empty($old_play_from)){
-                                        $old_play_url .="$$$";
-                                        $old_play_from .= "$$$" ;
-                                        $old_play_server .= "$$$" ;
-                                        $old_play_note .= "$$$" ;
+                                    $des .= lang('model/collect/playgroup_add_ok', [$cj_play_from]);
+                                    if (!empty($old_play_from)) {
+                                        $old_play_url .= "$$$";
+                                        $old_play_from .= "$$$";
+                                        $old_play_server .= "$$$";
+                                        $old_play_note .= "$$$";
                                     }
-                                    $old_play_url .= "" . $cj_play_url;
-                                    $old_play_from .= "" . $cj_play_from;
-                                    $old_play_server .= "" . $cj_play_server;
-                                    $old_play_note .= "" . $cj_play_note;
-                                    $ec=true;
-                                }  elseif (!empty($cj_play_url)) {
+                                    $old_play_url .= "".$cj_play_url;
+                                    $old_play_from .= "".$cj_play_from;
+                                    $old_play_server .= "".$cj_play_server;
+                                    $old_play_note .= "".$cj_play_note;
+                                    $ec = true;
+                                } elseif (!empty($cj_play_url)) {
                                     $arr1 = explode("$$$", $old_play_url);
                                     $arr2 = explode("$$$", $old_play_from);
                                     $play_key = array_search($cj_play_from, $arr2);
                                     if ($arr1[$play_key] == $cj_play_url) {
-                                        $des .= lang('model/collect/playgroup_same',[$cj_play_from]);;
+                                        $des .= lang('model/collect/playgroup_same', [$cj_play_from]);;
                                     } else {
                                         $color = 'green';
-                                        $des .= lang('model/collect/playgroup_update_ok',[$cj_play_from]);
+                                        $des .= lang('model/collect/playgroup_update_ok', [$cj_play_from]);
                                         if ($config['urlrole'] == 1) {
-                                            $tmp1 = explode('#',$arr1[$play_key]);
-                                            $tmp2 = explode('#',$cj_play_url);
-                                            $tmp1 = array_merge($tmp1,$tmp2);
+                                            $tmp1 = explode('#', $arr1[$play_key]);
+                                            $tmp2 = explode('#', $cj_play_url);
+                                            $tmp1 = array_merge($tmp1, $tmp2);
                                             $tmp1 = array_unique($tmp1);
-                                            $cj_play_url = join('#',$tmp1);
-                                            unset($tmp1,$tmp2);
+                                            $cj_play_url = join('#', $tmp1);
+                                            unset($tmp1, $tmp2);
                                         }
                                         $arr1[$play_key] = $cj_play_url;
-                                        $ec=true;
+                                        $ec = true;
                                     }
                                     $old_play_url = join('$$$', $arr1);
                                 }
                             }
-                            if($ec) {
+                            if ($ec) {
                                 $update['vod_play_from'] = $old_play_from;
                                 $update['vod_play_url'] = $old_play_url;
                                 $update['vod_play_server'] = $old_play_server;
@@ -782,8 +781,8 @@ class Collect extends Base {
                             }
                         }
 
-                        $ec=false;
-                        if (strpos(',' . $config['uprule'], 'b')!==false && !empty($v['vod_down_from'])) {
+                        $ec = false;
+                        if (strpos(','.$config['uprule'], 'b') !== false && !empty($v['vod_down_from'])) {
                             $old_down_from = $info['vod_down_from'];
                             $old_down_url = $info['vod_down_url'];
                             $old_down_server = $info['vod_down_server'];
@@ -800,38 +799,39 @@ class Collect extends Base {
                                     $des .= lang('model/collect/downurl_same');
                                 } elseif (empty($cj_down_from)) {
                                     $des .= lang('model/collect/downfrom_empty');
-                                } elseif (strpos('$$$'.$info['vod_down_from'].'$$$', '$$$'.$cj_down_from.'$$$')===false) {
+                                } elseif (strpos('$$$'.$info['vod_down_from'].'$$$',
+                                        '$$$'.$cj_down_from.'$$$') === false) {
                                     $color = 'green';
-                                    $des .= lang('model/collect/downgroup_add_ok',[$cj_down_from]);
-                                    if(!empty($old_down_from)){
-                                        $old_down_url .="$$$";
-                                        $old_down_from .= "$$$" ;
-                                        $old_down_server .= "$$$" ;
-                                        $old_down_note .= "$$$" ;
+                                    $des .= lang('model/collect/downgroup_add_ok', [$cj_down_from]);
+                                    if (!empty($old_down_from)) {
+                                        $old_down_url .= "$$$";
+                                        $old_down_from .= "$$$";
+                                        $old_down_server .= "$$$";
+                                        $old_down_note .= "$$$";
                                     }
 
-                                    $old_down_url .= "" .$cj_down_url;
-                                    $old_down_from .= "" .$cj_down_from;
-                                    $old_down_server .= "" .$cj_down_server;
-                                    $old_down_note .= "" .$cj_down_note;
-                                    $ec=true;
+                                    $old_down_url .= "".$cj_down_url;
+                                    $old_down_from .= "".$cj_down_from;
+                                    $old_down_server .= "".$cj_down_server;
+                                    $old_down_note .= "".$cj_down_note;
+                                    $ec = true;
                                 } elseif (!empty($cj_down_url)) {
                                     $arr1 = explode("$$$", $old_down_url);
                                     $arr2 = explode("$$$", $old_down_from);
                                     $down_key = array_search($cj_down_from, $arr2);
                                     if ($arr1[$down_key] == $cj_down_url) {
-                                        $des .= lang('model/collect/downgroup_same',[$cj_down_from]);
+                                        $des .= lang('model/collect/downgroup_same', [$cj_down_from]);
                                     } else {
                                         $color = 'green';
-                                        $des .= lang('model/collect/downgroup_update_ok',[$cj_down_from]);
+                                        $des .= lang('model/collect/downgroup_update_ok', [$cj_down_from]);
                                         $arr1[$down_key] = $cj_down_url;
-                                        $ec=true;
+                                        $ec = true;
                                     }
                                     $old_down_url = join('$$$', $arr1);
                                 }
                             }
 
-                            if($ec) {
+                            if ($ec) {
                                 $update['vod_down_from'] = $old_down_from;
                                 $update['vod_down_url'] = $old_down_url;
                                 $update['vod_down_server'] = $old_down_server;
@@ -839,75 +839,96 @@ class Collect extends Base {
                             }
                         }
 
-                        if (strpos(',' . $config['uprule'], 'c')!==false && !empty($v['vod_serial']) && $v['vod_serial']!=$info['vod_serial']) {
+                        if (strpos(','.$config['uprule'],
+                                'c') !== false && !empty($v['vod_serial']) && $v['vod_serial'] != $info['vod_serial']) {
                             $update['vod_serial'] = $v['vod_serial'];
                         }
-                        if (strpos(',' . $config['uprule'], 'd')!==false && !empty($v['vod_remarks']) && $v['vod_remarks']!=$info['vod_remarks']) {
+                        if (strpos(','.$config['uprule'],
+                                'd') !== false && !empty($v['vod_remarks']) && $v['vod_remarks'] != $info['vod_remarks']) {
                             $update['vod_remarks'] = $v['vod_remarks'];
                         }
-                        if (strpos(',' . $config['uprule'], 'e')!==false && !empty($v['vod_director']) && $v['vod_director']!=$info['vod_director']) {
+                        if (strpos(','.$config['uprule'],
+                                'e') !== false && !empty($v['vod_director']) && $v['vod_director'] != $info['vod_director']) {
                             $update['vod_director'] = $v['vod_director'];
                         }
-                        if (strpos(',' . $config['uprule'], 'f')!==false && !empty($v['vod_actor']) && $v['vod_actor']!=$info['vod_actor']) {
+                        if (strpos(','.$config['uprule'],
+                                'f') !== false && !empty($v['vod_actor']) && $v['vod_actor'] != $info['vod_actor']) {
                             $update['vod_actor'] = $v['vod_actor'];
                         }
-                        if (strpos(',' . $config['uprule'], 'g')!==false && !empty($v['vod_year']) && $v['vod_year']!=$info['vod_year']) {
+                        if (strpos(','.$config['uprule'],
+                                'g') !== false && !empty($v['vod_year']) && $v['vod_year'] != $info['vod_year']) {
                             $update['vod_year'] = $v['vod_year'];
                         }
-                        if (strpos(',' . $config['uprule'], 'h')!==false && !empty($v['vod_area']) && $v['vod_area']!=$info['vod_area']) {
+                        if (strpos(','.$config['uprule'],
+                                'h') !== false && !empty($v['vod_area']) && $v['vod_area'] != $info['vod_area']) {
                             $update['vod_area'] = $v['vod_area'];
                         }
-                        if (strpos(',' . $config['uprule'], 'i')!==false && !empty($v['vod_lang']) && $v['vod_lang']!=$info['vod_lang']) {
+                        if (strpos(','.$config['uprule'],
+                                'i') !== false && !empty($v['vod_lang']) && $v['vod_lang'] != $info['vod_lang']) {
                             $update['vod_lang'] = $v['vod_lang'];
                         }
-                        if (strpos(',' . $config['uprule'], 'j')!==false && (substr($info["vod_pic"], 0, 4) == "http" || empty($info['vod_pic']) ) && $v['vod_pic']!=$info['vod_pic'] ) {
-                            $tmp = $this->syncImages($config_sync_pic, $v['vod_pic'],'vod');
-                            $update['vod_pic'] = mac_filter_xss((string)$tmp['pic']);
-                            $msg =$tmp['msg'];
+                        if (strpos(','.$config['uprule'], 'j') !== false && (substr($info["vod_pic"], 0,
+                                    4) == "http" || empty($info['vod_pic'])) && $v['vod_pic'] != $info['vod_pic']) {
+                            $tmp = $this->syncImages($config_sync_pic, $v['vod_pic'], 'vod');
+                            $update['vod_pic'] = mac_filter_xss((string) $tmp['pic']);
+                            $msg = $tmp['msg'];
                         }
-                        if (strpos(',' . $config['uprule'], 'k')!==false && !empty($v['vod_content']) && $v['vod_content']!=$info['vod_content']) {
+                        if (strpos(','.$config['uprule'],
+                                'k') !== false && !empty($v['vod_content']) && $v['vod_content'] != $info['vod_content']) {
                             $update['vod_content'] = $v['vod_content'];
                         }
-                        if (strpos(',' . $config['uprule'], 'l')!==false && !empty($v['vod_tag']) && $v['vod_tag']!=$info['vod_tag']) {
+                        if (strpos(','.$config['uprule'],
+                                'l') !== false && !empty($v['vod_tag']) && $v['vod_tag'] != $info['vod_tag']) {
                             $update['vod_tag'] = $v['vod_tag'];
                         }
-                        if (strpos(',' . $config['uprule'], 'm')!==false && !empty($v['vod_sub']) && $v['vod_sub']!=$info['vod_sub']) {
+                        if (strpos(','.$config['uprule'],
+                                'm') !== false && !empty($v['vod_sub']) && $v['vod_sub'] != $info['vod_sub']) {
                             $update['vod_sub'] = $v['vod_sub'];
                         }
-                        if (strpos(',' . $config['uprule'], 'n')!==false && !empty($v['vod_class']) && $v['vod_class']!=$info['vod_class']) {
+                        if (strpos(','.$config['uprule'],
+                                'n') !== false && !empty($v['vod_class']) && $v['vod_class'] != $info['vod_class']) {
                             $update['vod_class'] = mac_txt_merge($info['vod_class'], $v['vod_class']);
                         }
-                        if (strpos(',' . $config['uprule'], 'o')!==false && !empty($v['vod_writer']) && $v['vod_writer']!=$info['vod_writer']) {
+                        if (strpos(','.$config['uprule'],
+                                'o') !== false && !empty($v['vod_writer']) && $v['vod_writer'] != $info['vod_writer']) {
                             $update['vod_writer'] = $v['vod_writer'];
                         }
-                        if (strpos(',' . $config['uprule'], 'p')!==false && !empty($v['vod_version']) && $v['vod_version']!=$info['vod_version']) {
+                        if (strpos(','.$config['uprule'],
+                                'p') !== false && !empty($v['vod_version']) && $v['vod_version'] != $info['vod_version']) {
                             $update['vod_version'] = $v['vod_version'];
                         }
-                        if (strpos(',' . $config['uprule'], 'q')!==false && !empty($v['vod_state']) && $v['vod_state']!=$info['vod_state']) {
+                        if (strpos(','.$config['uprule'],
+                                'q') !== false && !empty($v['vod_state']) && $v['vod_state'] != $info['vod_state']) {
                             $update['vod_state'] = $v['vod_state'];
                         }
-                        if (strpos(',' . $config['uprule'], 'r')!==false && !empty($v['vod_blurb']) && $v['vod_blurb']!=$info['vod_blurb']) {
+                        if (strpos(','.$config['uprule'],
+                                'r') !== false && !empty($v['vod_blurb']) && $v['vod_blurb'] != $info['vod_blurb']) {
                             $update['vod_blurb'] = $v['vod_blurb'];
                         }
-                        if (strpos(',' . $config['uprule'], 's')!==false && !empty($v['vod_tv']) && $v['vod_tv']!=$info['vod_tv']) {
+                        if (strpos(','.$config['uprule'],
+                                's') !== false && !empty($v['vod_tv']) && $v['vod_tv'] != $info['vod_tv']) {
                             $update['vod_tv'] = $v['vod_tv'];
                         }
-                        if (strpos(',' . $config['uprule'], 't')!==false && !empty($v['vod_weekday']) && $v['vod_weekday']!=$info['vod_weekday']) {
+                        if (strpos(','.$config['uprule'],
+                                't') !== false && !empty($v['vod_weekday']) && $v['vod_weekday'] != $info['vod_weekday']) {
                             $update['vod_weekday'] = $v['vod_weekday'];
                         }
-                        if (strpos(',' . $config['uprule'], 'u')!==false && !empty($v['vod_total']) && $v['vod_total']!=$info['vod_total']) {
+                        if (strpos(','.$config['uprule'],
+                                'u') !== false && !empty($v['vod_total']) && $v['vod_total'] != $info['vod_total']) {
                             $update['vod_total'] = $v['vod_total'];
                         }
-                        if (strpos(',' . $config['uprule'], 'v')!==false && !empty($v['vod_isend']) && $v['vod_isend']!=$info['vod_isend']) {
+                        if (strpos(','.$config['uprule'],
+                                'v') !== false && !empty($v['vod_isend']) && $v['vod_isend'] != $info['vod_isend']) {
                             $update['vod_isend'] = $v['vod_isend'];
                         }
-                        if (strpos(',' . $config['uprule'], 'w')!==false && !empty($v['vod_plot_name']) && $v['vod_plot_name']!=$info['vod_plot_name']) {
+                        if (strpos(','.$config['uprule'],
+                                'w') !== false && !empty($v['vod_plot_name']) && $v['vod_plot_name'] != $info['vod_plot_name']) {
                             $update['vod_plot'] = 1;
                             $update['vod_plot_name'] = $v['vod_plot_name'];
                             $update['vod_plot_detail'] = $v['vod_plot_detail'];
                         }
 
-                        if(count($update)>0){
+                        if (count($update) > 0) {
                             $update['vod_time'] = time();
                             $where = [];
                             $where['vod_id'] = $info['vod_id'];
@@ -916,50 +937,48 @@ class Collect extends Base {
                             if ($res === false) {
 
                             }
-                        }
-                        else{
+                        } else {
                             $des = lang('model/collect/not_need_update');
                         }
 
                     }
                 }
             }
-            if($show==1) {
-                mac_echo( ($k + 1) .'、'. $v['vod_name'] . "<font color=$color>" .$des .'</font>'. $msg.'' );
-            }
-            else{
-                return ['code'=>($color=='red' ? 1001 : 1),'msg'=>$des ];
+            if ($show == 1) {
+                mac_echo(($k + 1).'、'.$v['vod_name']."<font color=$color>".$des.'</font>'.$msg.'');
+            } else {
+                return ['code' => ($color == 'red' ? 1001 : 1), 'msg' => $des];
             }
         }
 
-        $key = $GLOBALS['config']['app']['cache_flag']. '_'.'collect_break_vod';
-        if(ENTRANCE=='api'){
+        $key = $GLOBALS['config']['app']['cache_flag'].'_'.'collect_break_vod';
+        if (ENTRANCE == 'api') {
             Cache::rm($key);
             if ($data['page']['page'] < $data['page']['pagecount']) {
                 $param['page'] = intval($data['page']['page']) + 1;
                 $res = $this->vod($param);
-                if($res['code']>1){
+                if ($res['code'] > 1) {
                     return $this->error($res['msg']);
                 }
-                $this->vod_data($param,$res );
+                $this->vod_data($param, $res);
             }
             mac_echo(lang('model/collect/is_over'));
             die;
         }
 
-        if(empty($GLOBALS['config']['app']['collect_timespan'])){
+        if (empty($GLOBALS['config']['app']['collect_timespan'])) {
             $GLOBALS['config']['app']['collect_timespan'] = 3;
         }
-        if($show==1) {
+        if ($show == 1) {
             if ($param['ac'] == 'cjsel') {
                 Cache::rm($key);
                 mac_echo(lang('model/collect/is_over'));
                 unset($param['ids']);
                 $param['ac'] = 'list';
-                $url = url('api') . '?' . http_build_query($param);
+                $url = url('api').'?'.http_build_query($param);
                 $ref = $_SERVER["HTTP_REFERER"];
-                if(!empty($ref)){
-                   $url = $ref;
+                if (!empty($ref)) {
+                    $url = $ref;
                 }
 
                 mac_jump($url, $GLOBALS['config']['app']['collect_timespan']);
@@ -967,14 +986,14 @@ class Collect extends Base {
                 if ($data['page']['page'] >= $data['page']['pagecount']) {
                     Cache::rm($key);
                     mac_echo(lang('model/collect/is_over'));
-                    unset($param['page'],$param['ids']);
+                    unset($param['page'], $param['ids']);
                     $param['ac'] = 'list';
-                    $url = url('api') . '?' . http_build_query($param);
+                    $url = url('api').'?'.http_build_query($param);
                     mac_jump($url, $GLOBALS['config']['app']['collect_timespan']);
                 } else {
                     $param['page'] = intval($data['page']['page']) + 1;
-                    $url = url('api') . '?' . http_build_query($param);
-                    mac_jump($url, $GLOBALS['config']['app']['collect_timespan'] );
+                    $url = url('api').'?'.http_build_query($param);
+                    mac_jump($url, $GLOBALS['config']['app']['collect_timespan']);
                 }
             }
         }
@@ -990,31 +1009,30 @@ class Collect extends Base {
         $url_param['ids'] = $param['ids'];
         $url_param['wd'] = $param['wd'];
 
-        if($param['ac']!='list'){
+        if ($param['ac'] != 'list') {
             $url_param['ac'] = 'detail';
         }
 
         $url = $param['cjurl'];
-        if(strpos($url,'?')===false){
-            $url .='?';
-        }
-        else{
-            $url .='&';
+        if (strpos($url, '?') === false) {
+            $url .= '?';
+        } else {
+            $url .= '&';
         }
 
-        $url .= http_build_query($url_param). base64_decode($param['param']);
+        $url .= http_build_query($url_param).base64_decode($param['param']);
         $result = $this->checkCjUrl($url);
         if ($result['code'] > 1) {
             return $result;
         }
         $html = mac_curl_get($url);
-        if(empty($html)){
-            return ['code'=>1001, 'msg'=>lang('model/collect/get_html_err')];
+        if (empty($html)) {
+            return ['code' => 1001, 'msg' => lang('model/collect/get_html_err')];
         }
         $html = mac_filter_tags($html);
-        $json = json_decode($html,true);
-        if(!$json){
-            return ['code'=>1002, 'msg'=>lang('model/collect/json_err')];
+        $json = json_decode($html, true);
+        if (!$json) {
+            return ['code' => 1002, 'msg' => lang('model/collect/json_err')];
         }
 
         $array_page = [];
@@ -1029,36 +1047,36 @@ class Collect extends Base {
 
         $key = 0;
         $array_data = [];
-        foreach($json['list'] as $key=>$v){
+        foreach ($json['list'] as $key => $v) {
             $array_data[$key] = $v;
-            $bind_key = $param['cjflag'] .'_'.$v['type_id'];
-            if($bind_list[$bind_key] >0){
+            $bind_key = $param['cjflag'].'_'.$v['type_id'];
+            if ($bind_list[$bind_key] > 0) {
                 $array_data[$key]['type_id'] = $bind_list[$bind_key];
-            }
-            else{
+            } else {
                 $array_data[$key]['type_id'] = 0;
             }
         }
 
         $array_type = [];
-        $key=0;
+        $key = 0;
         //分类列表
-        if($param['ac'] == 'list'){
-            foreach($json['class'] as $k=>$v){
+        if ($param['ac'] == 'list') {
+            foreach ($json['class'] as $k => $v) {
                 $array_type[$key]['type_id'] = $v['type_id'];
                 $array_type[$key]['type_name'] = mac_filter_xss($v['type_name']);
                 $key++;
             }
         }
 
-        $res = ['code'=>1, 'msg'=>'ok', 'page'=>$array_page, 'type'=>$array_type, 'data'=>$array_data ];
+        $res = ['code' => 1, 'msg' => 'ok', 'page' => $array_page, 'type' => $array_type, 'data' => $array_data];
         return $res;
     }
 
-    public function art_data($param,$data,$show=1)
+    public function art_data($param, $data, $show = 1)
     {
-        if($show==1) {
-            mac_echo('[' . __FUNCTION__ . '] ' . lang('model/collect/data_tip1',[$data['page']['page'],$data['page']['pagecount'],$data['page']['url']]));
+        if ($show == 1) {
+            mac_echo('['.__FUNCTION__.'] '.lang('model/collect/data_tip1',
+                    [$data['page']['page'], $data['page']['pagecount'], $data['page']['url']]));
         }
 
         $config = config('maccms.collect');
@@ -1066,43 +1084,42 @@ class Collect extends Base {
         $config_sync_pic = $param['sync_pic_opt'] > 0 ? $param['sync_pic_opt'] : $config['pic'];
 
         $type_list = model('Type')->getCache('type_list');
-        $filter_arr = explode(',',$config['filter']); $filter_arr = array_filter($filter_arr);
-        $pse_rnd = explode('#',$config['words']); $pse_rnd = array_filter($pse_rnd);
+        $filter_arr = explode(',', $config['filter']);
+        $filter_arr = array_filter($filter_arr);
+        $pse_rnd = explode('#', $config['words']);
+        $pse_rnd = array_filter($pse_rnd);
         $pse_syn = mac_txt_explain($config['thesaurus']);
 
 
-        foreach($data['data'] as $k=>$v){
-            $color='red';
-            $des='';
-            $msg='';
-            $tmp='';
+        foreach ($data['data'] as $k => $v) {
+            $color = 'red';
+            $des = '';
+            $msg = '';
+            $tmp = '';
 
-            if($v['type_id'] ==0){
+            if ($v['type_id'] == 0) {
                 $des = lang('model/collect/type_err');
-            }
-            elseif(empty($v['art_name'])) {
+            } elseif (empty($v['art_name'])) {
                 $des = lang('model/collect/name_err');
-            }
-            elseif( mac_array_filter($filter_arr,$v['art_name']) !==false) {
+            } elseif (mac_array_filter($filter_arr, $v['art_name']) !== false) {
                 $des = lang('model/collect/name_in_filter_err');
-            }
-            else {
+            } else {
                 unset($v['art_id']);
 
-                foreach($v as $k2=>$v2){
-                    if(strpos($k2,'_content')===false) {
+                foreach ($v as $k2 => $v2) {
+                    if (strpos($k2, '_content') === false) {
                         $v[$k2] = strip_tags($v2);
                     }
                 }
                 $v['art_name'] = trim($v['art_name']);
                 $v['type_id_1'] = intval($type_list[$v['type_id']]['type_pid']);
                 $v['art_en'] = Pinyin::get($v['art_name']);
-                $v['art_letter'] = strtoupper(substr($v['art_en'],0,1));
+                $v['art_letter'] = strtoupper(substr($v['art_en'], 0, 1));
                 $v['art_time_add'] = time();
                 $v['art_time'] = time();
                 $v['art_status'] = intval($config['status']);
                 $v['art_lock'] = intval($v['art_lock']);
-                if(!empty($v['art_status'])) {
+                if (!empty($v['art_status'])) {
                     $v['art_status'] = intval($v['art_status']);
                 }
                 $v['art_level'] = intval($v['art_level']);
@@ -1120,19 +1137,19 @@ class Collect extends Base {
                 $v['art_score_all'] = intval($v['art_score_all']);
                 $v['art_score_num'] = intval($v['art_score_num']);
 
-                if($config['hits_start']>0 && $config['hits_end']>0) {
+                if ($config['hits_start'] > 0 && $config['hits_end'] > 0) {
                     $v['art_hits'] = rand($config['hits_start'], $config['hits_end']);
                     $v['art_hits_day'] = rand($config['hits_start'], $config['hits_end']);
                     $v['art_hits_week'] = rand($config['hits_start'], $config['hits_end']);
                     $v['art_hits_month'] = rand($config['hits_start'], $config['hits_end']);
                 }
 
-                if($config['updown_start']>0 && $config['updown_end']){
+                if ($config['updown_start'] > 0 && $config['updown_end']) {
                     $v['art_up'] = rand($config['updown_start'], $config['updown_end']);
                     $v['art_down'] = rand($config['updown_start'], $config['updown_end']);
                 }
 
-                if($config['score']==1) {
+                if ($config['score'] == 1) {
                     $v['art_score_num'] = rand(1, 1000);
                     $v['art_score_all'] = $v['art_score_num'] * rand(1, 10);
                     $v['art_score'] = round($v['art_score_all'] / $v['art_score_num'], 1);
@@ -1145,57 +1162,54 @@ class Collect extends Base {
                     $v['art_content'] = mac_rep_pse_syn($pse_syn, $v['art_content']);
                 }
 
-                if(empty($v['art_blurb'])){
-                    $v['art_blurb'] = mac_substring( strip_tags( str_replace('$$$','',$v['art_content']) ) ,100);
+                if (empty($v['art_blurb'])) {
+                    $v['art_blurb'] = mac_substring(strip_tags(str_replace('$$$', '', $v['art_content'])), 100);
                 }
 
                 $where = [];
                 $where['art_name'] = $v['art_name'];
-                if (strpos($config['inrule'], 'b')!==false) {
+                if (strpos($config['inrule'], 'b') !== false) {
                     $where['type_id'] = $v['type_id'];
                 }
 
                 //验证地址
-                $cj_title_arr = explode('$$$',$v['art_title'] );
-                $cj_note_arr = explode('$$$',$v['art_note']);
-                $cj_content_arr = explode('$$$',$v['art_content']);
+                $cj_title_arr = explode('$$$', $v['art_title']);
+                $cj_note_arr = explode('$$$', $v['art_note']);
+                $cj_content_arr = explode('$$$', $v['art_content']);
 
-                $tmp_title_arr=[];
-                $tmp_note_arr=[];
-                $tmp_content_arr=[];
-                foreach($cj_content_arr as $kk=>$vv){
+                $tmp_title_arr = [];
+                $tmp_note_arr = [];
+                $tmp_content_arr = [];
+                foreach ($cj_content_arr as $kk => $vv) {
                     $tmp_content_arr[] = $vv;
                     $tmp_title_arr[] = $cj_title_arr[$kk];
                     $tmp_note_arr[] = $cj_note_arr[$kk];
                 }
-                $v['art_title'] = join('$$$',$tmp_title_arr);
-                $v['art_note'] = join('$$$',$tmp_note_arr);
-                $v['art_content'] = join('$$$',$tmp_content_arr);
+                $v['art_title'] = join('$$$', $tmp_title_arr);
+                $v['art_note'] = join('$$$', $tmp_note_arr);
+                $v['art_content'] = join('$$$', $tmp_content_arr);
 
 
                 $info = model('Art')->where($where)->find();
                 if (!$info) {
-                    $tmp = $this->syncImages($config_sync_pic, $v['art_pic'],'art');
-                    $v['art_pic'] = mac_filter_xss((string)$tmp['pic']);
+                    $tmp = $this->syncImages($config_sync_pic, $v['art_pic'], 'art');
+                    $v['art_pic'] = mac_filter_xss((string) $tmp['pic']);
 
                     $msg = $tmp['msg'];
                     $res = model('Art')->insert($v);
-                    if($res===false){
+                    if ($res === false) {
 
                     }
-                    $color ='green';
-                    $des= lang('model/collect/add_ok');
-                }
-                else {
+                    $color = 'green';
+                    $des = lang('model/collect/add_ok');
+                } else {
 
 
-                    if(empty($config['uprule'])){
+                    if (empty($config['uprule'])) {
                         $des = lang('model/collect/uprule_empty');
-                    }
-                    elseif($info['art_lock'] == 1) {
+                    } elseif ($info['art_lock'] == 1) {
                         $des = lang('model/collect/data_lock');
-                    }
-                    else {
+                    } else {
                         unset($v['art_time_add']);
 
                         $old_art_title = $info['art_title'];
@@ -1206,45 +1220,50 @@ class Collect extends Base {
                         $cj_art_note = $v['art_note'];
                         $cj_art_content = $v['art_content'];
 
-                        $rc=true;
+                        $rc = true;
 
-                        if($rc){
-                            $update=[];
+                        if ($rc) {
+                            $update = [];
 
-                            if(strpos(','.$config['uprule'],'a')!==false && !empty($v['art_content']) && $v['art_content']!=$info['art_content']){
+                            if (strpos(','.$config['uprule'],
+                                    'a') !== false && !empty($v['art_content']) && $v['art_content'] != $info['art_content']) {
                                 $update['art_content'] = $v['art_content'];
                             }
-                            if(strpos(','.$config['uprule'],'b')!==false && !empty($v['art_author']) && $v['art_author']!=$info['art_author']){
+                            if (strpos(','.$config['uprule'],
+                                    'b') !== false && !empty($v['art_author']) && $v['art_author'] != $info['art_author']) {
                                 $update['art_author'] = $v['art_author'];
                             }
-                            if(strpos(','.$config['uprule'],'c')!==false && !empty($v['art_from']) && $v['art_from']!=$info['art_from']){
+                            if (strpos(','.$config['uprule'],
+                                    'c') !== false && !empty($v['art_from']) && $v['art_from'] != $info['art_from']) {
                                 $update['art_from'] = $v['art_from'];
                             }
 
-                            if(strpos(','.$config['uprule'],'d')!==false && (substr($info["art_pic"], 0, 4) == "http" || empty($info['art_pic']))  && $v['art_pic']!=$info['art_pic'] ){
-                                $tmp = $this->syncImages($config_sync_pic, $v['art_pic'],'art');
-                                $update['art_pic'] = mac_filter_xss((string)$tmp['pic']);
-                                $msg =$tmp['msg'];
+                            if (strpos(','.$config['uprule'], 'd') !== false && (substr($info["art_pic"], 0,
+                                        4) == "http" || empty($info['art_pic'])) && $v['art_pic'] != $info['art_pic']) {
+                                $tmp = $this->syncImages($config_sync_pic, $v['art_pic'], 'art');
+                                $update['art_pic'] = mac_filter_xss((string) $tmp['pic']);
+                                $msg = $tmp['msg'];
                             }
-                            if(strpos(','.$config['uprule'],'e')!==false && !empty($v['art_tag']) && $v['art_tag']!=$info['art_tag']){
+                            if (strpos(','.$config['uprule'],
+                                    'e') !== false && !empty($v['art_tag']) && $v['art_tag'] != $info['art_tag']) {
                                 $update['art_tag'] = $v['art_tag'];
                             }
-                            if(strpos(','.$config['uprule'],'f')!==false && !empty($v['art_blurb']) && $v['art_blurb']!=$info['art_blurb']){
+                            if (strpos(','.$config['uprule'],
+                                    'f') !== false && !empty($v['art_blurb']) && $v['art_blurb'] != $info['art_blurb']) {
                                 $update['art_blurb'] = $v['art_blurb'];
                             }
 
 
-                            if(count($update)>0){
+                            if (count($update) > 0) {
                                 $update['art_time'] = time();
                                 $where = [];
                                 $where['art_id'] = $info['art_id'];
                                 $res = model('Art')->where($where)->update($update);
                                 $color = 'green';
-                                if($res===false){
+                                if ($res === false) {
 
                                 }
-                            }
-                            else{
+                            } else {
                                 $des = lang('model/collect/not_need_update');
                             }
                         }
@@ -1252,42 +1271,41 @@ class Collect extends Base {
                     }
                 }
             }
-            if($show==1) {
-                mac_echo( ($k + 1) . $v['art_name'] . "<font color=$color>" .$des .'</font>'. $msg . '');
-            }
-            else{
-                return ['code'=>($color=='red' ? 1001 : 1),'msg'=> $v['art_name'] .' '.$des ];
+            if ($show == 1) {
+                mac_echo(($k + 1).$v['art_name']."<font color=$color>".$des.'</font>'.$msg.'');
+            } else {
+                return ['code' => ($color == 'red' ? 1001 : 1), 'msg' => $v['art_name'].' '.$des];
             }
         }
 
-        $key = $GLOBALS['config']['app']['cache_flag']. '_'.'collect_break_art';
-        if(ENTRANCE=='api'){
+        $key = $GLOBALS['config']['app']['cache_flag'].'_'.'collect_break_art';
+        if (ENTRANCE == 'api') {
             Cache::rm($key);
             if ($data['page']['page'] < $data['page']['pagecount']) {
                 $param['page'] = intval($data['page']['page']) + 1;
                 $res = $this->art($param);
-                if($res['code']>1){
+                if ($res['code'] > 1) {
                     return $this->error($res['msg']);
                 }
-                $this->art_data($param,$res );
+                $this->art_data($param, $res);
             }
             mac_echo(lang('model/collect/is_over'));
             die;
         }
 
-        if(empty($GLOBALS['config']['app']['collect_timespan'])){
+        if (empty($GLOBALS['config']['app']['collect_timespan'])) {
             $GLOBALS['config']['app']['collect_timespan'] = 3;
         }
 
-        if($show==1) {
+        if ($show == 1) {
             if ($param['ac'] == 'cjsel') {
                 Cache::rm($key);
                 mac_echo(lang('model/collect/is_over'));
                 unset($param['ids']);
                 $param['ac'] = 'list';
-                $url = url('api') . '?' . http_build_query($param);
+                $url = url('api').'?'.http_build_query($param);
                 $ref = $_SERVER["HTTP_REFERER"];
-                if(!empty($ref)){
+                if (!empty($ref)) {
                     $url = $ref;
                 }
                 mac_jump($url, $GLOBALS['config']['app']['collect_timespan']);
@@ -1297,11 +1315,11 @@ class Collect extends Base {
                     mac_echo(lang('model/collect/is_over'));
                     unset($param['page']);
                     $param['ac'] = 'list';
-                    $url = url('api') . '?' . http_build_query($param);
+                    $url = url('api').'?'.http_build_query($param);
                     mac_jump($url, $GLOBALS['config']['app']['collect_timespan']);
                 } else {
                     $param['page'] = intval($data['page']['page']) + 1;
-                    $url = url('api') . '?' . http_build_query($param);
+                    $url = url('api').'?'.http_build_query($param);
                     mac_jump($url, $GLOBALS['config']['app']['collect_timespan']);
                 }
             }
@@ -1318,16 +1336,15 @@ class Collect extends Base {
         $url_param['ids'] = $param['ids'];
         $url_param['wd'] = $param['wd'];
 
-        if($param['ac']!='list'){
+        if ($param['ac'] != 'list') {
             $url_param['ac'] = 'detail';
         }
 
         $url = $param['cjurl'];
-        if(strpos($url,'?')===false){
-            $url .='?';
-        }
-        else{
-            $url .='&';
+        if (strpos($url, '?') === false) {
+            $url .= '?';
+        } else {
+            $url .= '&';
         }
         $url .= http_build_query($url_param).base64_decode($param['param']);
         $result = $this->checkCjUrl($url);
@@ -1335,13 +1352,13 @@ class Collect extends Base {
             return $result;
         }
         $html = mac_curl_get($url);
-        if(empty($html)){
-            return ['code'=>1001, 'msg'=>lang('model/collect/get_html_err')];
+        if (empty($html)) {
+            return ['code' => 1001, 'msg' => lang('model/collect/get_html_err')];
         }
         $html = mac_filter_tags($html);
-        $json = json_decode($html,true);
-        if(!$json){
-            return ['code'=>1002, 'msg'=>lang('model/collect/json_err')];
+        $json = json_decode($html, true);
+        if (!$json) {
+            return ['code' => 1002, 'msg' => lang('model/collect/json_err')];
         }
 
         $array_page = [];
@@ -1356,36 +1373,36 @@ class Collect extends Base {
 
         $key = 0;
         $array_data = [];
-        foreach($json['list'] as $key=>$v){
+        foreach ($json['list'] as $key => $v) {
             $array_data[$key] = $v;
-            $bind_key = $param['cjflag'] .'_'.$v['type_id'];
-            if($bind_list[$bind_key] >0){
+            $bind_key = $param['cjflag'].'_'.$v['type_id'];
+            if ($bind_list[$bind_key] > 0) {
                 $array_data[$key]['type_id'] = $bind_list[$bind_key];
-            }
-            else{
+            } else {
                 $array_data[$key]['type_id'] = 0;
             }
         }
 
         $array_type = [];
-        $key=0;
+        $key = 0;
         //分类列表
-        if($param['ac'] == 'list'){
-            foreach($json['class'] as $k=>$v){
+        if ($param['ac'] == 'list') {
+            foreach ($json['class'] as $k => $v) {
                 $array_type[$key]['type_id'] = $v['type_id'];
                 $array_type[$key]['type_name'] = mac_filter_xss($v['type_name']);
                 $key++;
             }
         }
 
-        $res = ['code'=>1, 'msg'=>'ok', 'page'=>$array_page, 'type'=>$array_type, 'data'=>$array_data ];
+        $res = ['code' => 1, 'msg' => 'ok', 'page' => $array_page, 'type' => $array_type, 'data' => $array_data];
         return $res;
     }
 
-    public function actor_data($param,$data,$show=1)
+    public function actor_data($param, $data, $show = 1)
     {
-        if($show==1) {
-            mac_echo('[' . __FUNCTION__ . '] ' . lang('model/collect/data_tip1',[$data['page']['page'],$data['page']['pagecount'],$data['page']['url']]));
+        if ($show == 1) {
+            mac_echo('['.__FUNCTION__.'] '.lang('model/collect/data_tip1',
+                    [$data['page']['page'], $data['page']['pagecount'], $data['page']['url']]));
         }
 
         $config = config('maccms.collect');
@@ -1393,43 +1410,42 @@ class Collect extends Base {
         $config_sync_pic = $param['sync_pic_opt'] > 0 ? $param['sync_pic_opt'] : $config['pic'];
 
         $type_list = model('Type')->getCache('type_list');
-        $filter_arr = explode(',',$config['filter']); $filter_arr = array_filter($filter_arr);
-        $pse_rnd = explode('#',$config['words']); $pse_rnd = array_filter($pse_rnd);
+        $filter_arr = explode(',', $config['filter']);
+        $filter_arr = array_filter($filter_arr);
+        $pse_rnd = explode('#', $config['words']);
+        $pse_rnd = array_filter($pse_rnd);
         $pse_syn = mac_txt_explain($config['thesaurus']);
 
-        foreach($data['data'] as $k=>$v){
+        foreach ($data['data'] as $k => $v) {
 
-            $color='red';
-            $des='';
-            $msg='';
-            $tmp='';
+            $color = 'red';
+            $des = '';
+            $msg = '';
+            $tmp = '';
 
-            if($v['type_id'] ==0){
+            if ($v['type_id'] == 0) {
                 $des = lang('model/collect/type_err');
-            }
-            elseif(empty($v['actor_name']) || !in_array($v['actor_sex'], [1, 2])) {
+            } elseif (empty($v['actor_name']) || !in_array($v['actor_sex'], [1, 2])) {
                 $des = lang('odel/collect/actor_data_require');
-            }
-            elseif( mac_array_filter($filter_arr,$v['actor_name'])!==false) {
+            } elseif (mac_array_filter($filter_arr, $v['actor_name']) !== false) {
                 $des = lang('model/collect/name_in_filter_err');
-            }
-            else {
+            } else {
                 unset($v['actor_id']);
 
-                foreach($v as $k2=>$v2){
-                    if(strpos($k2,'_content')===false) {
+                foreach ($v as $k2 => $v2) {
+                    if (strpos($k2, '_content') === false) {
                         $v[$k2] = strip_tags($v2);
                     }
                 }
                 $v['actor_name'] = trim($v['actor_name']);
                 $v['type_id_1'] = intval($type_list[$v['type_id']]['type_pid']);
                 $v['actor_en'] = Pinyin::get($v['actor_name']);
-                $v['actor_letter'] = strtoupper(substr($v['actor_en'],0,1));
+                $v['actor_letter'] = strtoupper(substr($v['actor_en'], 0, 1));
                 $v['actor_time_add'] = time();
                 $v['actor_time'] = time();
                 $v['actor_status'] = intval($config['status']);
                 $v['actor_lock'] = intval($v['actor_lock']);
-                if(!empty($v['actor_status'])) {
+                if (!empty($v['actor_status'])) {
                     $v['actor_status'] = intval($v['actor_status']);
                 }
                 $v['actor_level'] = intval($v['actor_level']);
@@ -1445,19 +1461,19 @@ class Collect extends Base {
                 $v['actor_score_all'] = intval($v['actor_score_all']);
                 $v['actor_score_num'] = intval($v['actor_score_num']);
 
-                if($config['hits_start']>0 && $config['hits_end']>0) {
+                if ($config['hits_start'] > 0 && $config['hits_end'] > 0) {
                     $v['actor_hits'] = rand($config['hits_start'], $config['hits_end']);
                     $v['actor_hits_day'] = rand($config['hits_start'], $config['hits_end']);
                     $v['actor_hits_week'] = rand($config['hits_start'], $config['hits_end']);
                     $v['actor_hits_month'] = rand($config['hits_start'], $config['hits_end']);
                 }
 
-                if($config['updown_start']>0 && $config['updown_end']){
+                if ($config['updown_start'] > 0 && $config['updown_end']) {
                     $v['actor_up'] = rand($config['updown_start'], $config['updown_end']);
                     $v['actor_down'] = rand($config['updown_start'], $config['updown_end']);
                 }
 
-                if($config['score']==1) {
+                if ($config['score'] == 1) {
                     $v['actor_score_num'] = rand(1, 1000);
                     $v['actor_score_all'] = $v['actor_score_num'] * rand(1, 10);
                     $v['actor_score'] = round($v['actor_score_all'] / $v['actor_score_num'], 1);
@@ -1470,73 +1486,75 @@ class Collect extends Base {
                     $v['actor_content'] = mac_rep_pse_syn($pse_syn, $v['actor_content']);
                 }
 
-                if(empty($v['actor_blurb'])){
-                    $v['actor_blurb'] = mac_substring( strip_tags($v['actor_content']) ,100);
+                if (empty($v['actor_blurb'])) {
+                    $v['actor_blurb'] = mac_substring(strip_tags($v['actor_content']), 100);
                 }
 
                 $where = [];
                 $where['actor_name'] = $v['actor_name'];
-                if (strpos($config['inrule'], 'b')!==false) {
+                if (strpos($config['inrule'], 'b') !== false) {
                     $where['actor_sex'] = $v['actor_sex'];
                 }
-                if (strpos($config['inrule'], 'c')!==false) {
+                if (strpos($config['inrule'], 'c') !== false) {
                     $where['type_id'] = $v['type_id'];
                 }
 
                 $info = model('Actor')->where($where)->find();
                 if (!$info) {
-                    $tmp = $this->syncImages($config_sync_pic, $v['actor_pic'],'actor');
+                    $tmp = $this->syncImages($config_sync_pic, $v['actor_pic'], 'actor');
                     $v['actor_pic'] = $tmp['pic'];
                     $msg = $tmp['msg'];
                     $res = model('Actor')->insert($v);
-                    if($res===false){
+                    if ($res === false) {
 
                     }
-                    $color ='green';
-                    $des= lang('model/collect/add_ok');
+                    $color = 'green';
+                    $des = lang('model/collect/add_ok');
                 } else {
 
-                    if(empty($config['uprule'])){
+                    if (empty($config['uprule'])) {
                         $des = lang('model/collect/uprule_empty');
-                    }
-                    elseif ($info['actor_lock'] == 1) {
+                    } elseif ($info['actor_lock'] == 1) {
                         $des = lang('model/collect/data_lock');
-                    }
-                    else {
+                    } else {
                         unset($v['actor_time_add']);
-                        $rc=true;
-                        if($rc){
-                            $update=[];
+                        $rc = true;
+                        if ($rc) {
+                            $update = [];
 
-                            if(strpos(','.$config['uprule'],'a')!==false && !empty($v['actor_content']) && $v['actor_content']!=$info['actor_content']){
+                            if (strpos(','.$config['uprule'],
+                                    'a') !== false && !empty($v['actor_content']) && $v['actor_content'] != $info['actor_content']) {
                                 $update['actor_content'] = $v['actor_content'];
                             }
-                            if(strpos(','.$config['uprule'],'b')!==false && !empty($v['actor_blurb']) && $v['actor_blurb']!=$info['actor_blurb']){
+                            if (strpos(','.$config['uprule'],
+                                    'b') !== false && !empty($v['actor_blurb']) && $v['actor_blurb'] != $info['actor_blurb']) {
                                 $update['actor_blurb'] = $v['actor_blurb'];
                             }
-                            if(strpos(','.$config['uprule'],'c')!==false && !empty($v['actor_remarks']) && $v['actor_remarks']!=$info['actor_remarks']){
+                            if (strpos(','.$config['uprule'],
+                                    'c') !== false && !empty($v['actor_remarks']) && $v['actor_remarks'] != $info['actor_remarks']) {
                                 $update['actor_remarks'] = $v['actor_remarks'];
                             }
-                            if(strpos(','.$config['uprule'],'d')!==false && !empty($v['actor_works']) && $v['actor_works']!=$info['actor_works']){
+                            if (strpos(','.$config['uprule'],
+                                    'd') !== false && !empty($v['actor_works']) && $v['actor_works'] != $info['actor_works']) {
                                 $update['actor_works'] = $v['actor_works'];
                             }
-                            if(strpos(','.$config['uprule'],'e')!==false && (substr($info["actor_pic"], 0, 4) == "http" ||empty($info['actor_pic']) ) && $v['actor_pic']!=$info['actor_pic'] ){
-                                $tmp = $this->syncImages($config_sync_pic, $v['actor_pic'],'actor');
-                                $update['actor_pic'] =$tmp['pic'];
-                                $msg =$tmp['msg'];
+                            if (strpos(','.$config['uprule'], 'e') !== false && (substr($info["actor_pic"], 0,
+                                        4) == "http" || empty($info['actor_pic'])) && $v['actor_pic'] != $info['actor_pic']) {
+                                $tmp = $this->syncImages($config_sync_pic, $v['actor_pic'], 'actor');
+                                $update['actor_pic'] = $tmp['pic'];
+                                $msg = $tmp['msg'];
                             }
 
-                            if(count($update)>0){
+                            if (count($update) > 0) {
                                 $update['actor_time'] = time();
                                 $where = [];
                                 $where['actor_id'] = $info['actor_id'];
                                 $res = model('Actor')->where($where)->update($update);
                                 $color = 'green';
-                                if($res===false){
+                                if ($res === false) {
 
                                 }
-                            }
-                            else{
+                            } else {
                                 $des = lang('model/collect/not_need_update');
                             }
                         }
@@ -1544,42 +1562,41 @@ class Collect extends Base {
                     }
                 }
             }
-            if($show==1) {
-                mac_echo( ($k + 1) . $v['actor_name'] . "<font color=$color>" .$des .'</font>'. $msg . '');
-            }
-            else{
-                return ['code'=>($color=='red' ? 1001 : 1),'msg'=> $v['actor_name'] .' '.$des ];
+            if ($show == 1) {
+                mac_echo(($k + 1).$v['actor_name']."<font color=$color>".$des.'</font>'.$msg.'');
+            } else {
+                return ['code' => ($color == 'red' ? 1001 : 1), 'msg' => $v['actor_name'].' '.$des];
             }
         }
 
-        $key = $GLOBALS['config']['app']['cache_flag']. '_'.'collect_break_actor';
-        if(ENTRANCE=='api'){
+        $key = $GLOBALS['config']['app']['cache_flag'].'_'.'collect_break_actor';
+        if (ENTRANCE == 'api') {
             Cache::rm($key);
             if ($data['page']['page'] < $data['page']['pagecount']) {
                 $param['page'] = intval($data['page']['page']) + 1;
                 $res = $this->actor($param);
-                if($res['code']>1){
+                if ($res['code'] > 1) {
                     return $this->error($res['msg']);
                 }
-                $this->actor_data($param,$res );
+                $this->actor_data($param, $res);
             }
             mac_echo(lang('model/collect/is_over'));
             die;
         }
 
-        if(empty($GLOBALS['config']['app']['collect_timespan'])){
+        if (empty($GLOBALS['config']['app']['collect_timespan'])) {
             $GLOBALS['config']['app']['collect_timespan'] = 3;
         }
 
-        if($show==1) {
+        if ($show == 1) {
             if ($param['ac'] == 'cjsel') {
                 Cache::rm($key);
                 mac_echo(lang('model/collect/is_over'));
                 unset($param['ids']);
                 $param['ac'] = 'list';
-                $url = url('api') . '?' . http_build_query($param);
+                $url = url('api').'?'.http_build_query($param);
                 $ref = $_SERVER["HTTP_REFERER"];
-                if(!empty($ref)){
+                if (!empty($ref)) {
                     $url = $ref;
                 }
                 mac_jump($url, $GLOBALS['config']['app']['collect_timespan']);
@@ -1589,11 +1606,11 @@ class Collect extends Base {
                     mac_echo(lang('model/collect/is_over'));
                     unset($param['page']);
                     $param['ac'] = 'list';
-                    $url = url('api') . '?' . http_build_query($param);
+                    $url = url('api').'?'.http_build_query($param);
                     mac_jump($url, $GLOBALS['config']['app']['collect_timespan']);
                 } else {
                     $param['page'] = intval($data['page']['page']) + 1;
-                    $url = url('api') . '?' . http_build_query($param);
+                    $url = url('api').'?'.http_build_query($param);
                     mac_jump($url, $GLOBALS['config']['app']['collect_timespan']);
                 }
             }
@@ -1610,16 +1627,15 @@ class Collect extends Base {
         $url_param['ids'] = $param['ids'];
         $url_param['wd'] = $param['wd'];
 
-        if($param['ac']!='list'){
+        if ($param['ac'] != 'list') {
             $url_param['ac'] = 'detail';
         }
 
         $url = $param['cjurl'];
-        if(strpos($url,'?')===false){
-            $url .='?';
-        }
-        else{
-            $url .='&';
+        if (strpos($url, '?') === false) {
+            $url .= '?';
+        } else {
+            $url .= '&';
         }
         $url .= http_build_query($url_param).base64_decode($param['param']);
         $result = $this->checkCjUrl($url);
@@ -1627,13 +1643,13 @@ class Collect extends Base {
             return $result;
         }
         $html = mac_curl_get($url);
-        if(empty($html)){
-            return ['code'=>1001, 'msg'=>lang('model/collect/get_html_err')];
+        if (empty($html)) {
+            return ['code' => 1001, 'msg' => lang('model/collect/get_html_err')];
         }
         $html = mac_filter_tags($html);
-        $json = json_decode($html,true);
-        if(!$json){
-            return ['code'=>1002, 'msg'=>lang('model/collect/json_err')];
+        $json = json_decode($html, true);
+        if (!$json) {
+            return ['code' => 1002, 'msg' => lang('model/collect/json_err')];
         }
 
         $array_page = [];
@@ -1645,58 +1661,59 @@ class Collect extends Base {
 
         $key = 0;
         $array_data = [];
-        foreach($json['list'] as $key=>$v){
+        foreach ($json['list'] as $key => $v) {
             $array_data[$key] = $v;
         }
 
 
-        $res = ['code'=>1, 'msg'=>'ok', 'page'=>$array_page, 'data'=>$array_data ];
+        $res = ['code' => 1, 'msg' => 'ok', 'page' => $array_page, 'data' => $array_data];
         return $res;
     }
 
-    public function role_data($param,$data,$show=1)
+    public function role_data($param, $data, $show = 1)
     {
-        if($show==1) {
-            mac_echo('[' . __FUNCTION__ . '] ' . lang('model/collect/data_tip1',[$data['page']['page'],$data['page']['pagecount'],$data['page']['url']]));
+        if ($show == 1) {
+            mac_echo('['.__FUNCTION__.'] '.lang('model/collect/data_tip1',
+                    [$data['page']['page'], $data['page']['pagecount'], $data['page']['url']]));
         }
 
         $config = config('maccms.collect');
         $config = $config['role'];
         $config_sync_pic = $param['sync_pic_opt'] > 0 ? $param['sync_pic_opt'] : $config['pic'];
 
-        $filter_arr = explode(',',$config['filter']); $filter_arr = array_filter($filter_arr);
-        $pse_rnd = explode('#',$config['words']); $pse_rnd = array_filter($pse_rnd);
+        $filter_arr = explode(',', $config['filter']);
+        $filter_arr = array_filter($filter_arr);
+        $pse_rnd = explode('#', $config['words']);
+        $pse_rnd = array_filter($pse_rnd);
         $pse_syn = mac_txt_explain($config['thesaurus']);
 
-        foreach($data['data'] as $k=>$v){
+        foreach ($data['data'] as $k => $v) {
 
-            $color='red';
-            $des='';
-            $msg='';
-            $tmp='';
+            $color = 'red';
+            $des = '';
+            $msg = '';
+            $tmp = '';
 
-            if(empty($v['role_name']) || empty($v['role_actor']) || empty($v['vod_name']) ) {
+            if (empty($v['role_name']) || empty($v['role_actor']) || empty($v['vod_name'])) {
                 $des = lang('model/collect/role_data_require');
-            }
-            elseif( mac_array_filter($filter_arr,$v['role_name']) !==false) {
+            } elseif (mac_array_filter($filter_arr, $v['role_name']) !== false) {
                 $des = lang('model/collect/name_in_filter_err');
-            }
-            else {
+            } else {
                 unset($v['role_id']);
 
-                foreach($v as $k2=>$v2){
-                    if(strpos($k2,'_content')===false) {
+                foreach ($v as $k2 => $v2) {
+                    if (strpos($k2, '_content') === false) {
                         $v[$k2] = strip_tags($v2);
                     }
                 }
 
                 $v['role_en'] = Pinyin::get($v['role_name']);
-                $v['role_letter'] = strtoupper(substr($v['role_en'],0,1));
+                $v['role_letter'] = strtoupper(substr($v['role_en'], 0, 1));
                 $v['role_time_add'] = time();
                 $v['role_time'] = time();
                 $v['role_status'] = intval($config['status']);
                 $v['role_lock'] = intval($v['role_lock']);
-                if(!empty($v['role_status'])) {
+                if (!empty($v['role_status'])) {
                     $v['role_status'] = intval($v['role_status']);
                 }
                 $v['role_level'] = intval($v['role_level']);
@@ -1712,19 +1729,19 @@ class Collect extends Base {
                 $v['role_score_all'] = intval($v['role_score_all']);
                 $v['role_score_num'] = intval($v['role_score_num']);
 
-                if($config['hits_start']>0 && $config['hits_end']>0) {
+                if ($config['hits_start'] > 0 && $config['hits_end'] > 0) {
                     $v['role_hits'] = rand($config['hits_start'], $config['hits_end']);
                     $v['role_hits_day'] = rand($config['hits_start'], $config['hits_end']);
                     $v['role_hits_week'] = rand($config['hits_start'], $config['hits_end']);
                     $v['role_hits_month'] = rand($config['hits_start'], $config['hits_end']);
                 }
 
-                if($config['updown_start']>0 && $config['updown_end']){
+                if ($config['updown_start'] > 0 && $config['updown_end']) {
                     $v['role_up'] = rand($config['updown_start'], $config['updown_end']);
                     $v['role_down'] = rand($config['updown_start'], $config['updown_end']);
                 }
 
-                if($config['score']==1) {
+                if ($config['score'] == 1) {
                     $v['role_score_num'] = rand(1, 1000);
                     $v['role_score_all'] = $v['role_score_num'] * rand(1, 10);
                     $v['role_score'] = round($v['role_score_all'] / $v['role_score_num'], 1);
@@ -1744,51 +1761,48 @@ class Collect extends Base {
                 $where2 = [];
                 $blend = false;
 
-                if(!empty($v['douban_id'])){
-                    $where2['vod_douban_id'] = ['eq',$v['douban_id']];
+                if (!empty($v['douban_id'])) {
+                    $where2['vod_douban_id'] = ['eq', $v['douban_id']];
                     unset($v['douban_id']);
-                }
-                else{
-                    $where2['vod_name'] = ['eq',$v['vod_name']];
+                } else {
+                    $where2['vod_name'] = ['eq', $v['vod_name']];
                 }
 
-                if (strpos($config['inrule'], 'c')!==false) {
+                if (strpos($config['inrule'], 'c') !== false) {
                     $where2['vod_actor'] = ['like', mac_like_arr($v['role_actor']), 'OR'];
                 }
-                if (strpos($config['inrule'], 'd')!==false) {
+                if (strpos($config['inrule'], 'd') !== false) {
                     $where2['vod_director'] = ['like', mac_like_arr($v['role_actor']), 'OR'];
                 }
-                if(!empty($where2['vod_actor']) && !empty($where2['vod_director'])){
+                if (!empty($where2['vod_actor']) && !empty($where2['vod_director'])) {
                     $blend = true;
                     $GLOBALS['blend'] = [
-                        'vod_actor' => $where2['vod_actor'],
+                        'vod_actor'    => $where2['vod_actor'],
                         'vod_director' => $where2['vod_director']
                     ];
-                    unset($where2['vod_actor'],$where2['vod_director']);
+                    unset($where2['vod_actor'], $where2['vod_director']);
                 }
 
-                if($blend===false){
+                if ($blend === false) {
                     $vod_info = model('Vod')->where($where2)->find();
 
-                }
-                else{
+                } else {
                     $vod_info = model('Vod')->where($where2)
-                        ->where(function($query){
-                            $query->where('vod_director',$GLOBALS['blend']['vod_director'])
-                                ->whereOr('vod_actor',$GLOBALS['blend']['vod_actor']);
+                        ->where(function ($query) {
+                            $query->where('vod_director', $GLOBALS['blend']['vod_director'])
+                                ->whereOr('vod_actor', $GLOBALS['blend']['vod_actor']);
                         })
                         ->find();
                 }
 
                 if (!$vod_info) {
                     $des = lang('model/collect/not_found_rel_vod');
-                }
-                else {
+                } else {
                     $v['role_rid'] = $vod_info['vod_id'];
                     $where['role_rid'] = $vod_info['vod_id'];
                     $info = model('Role')->where($where)->find();
                     if (!$info) {
-                        $tmp = $this->syncImages($config_sync_pic,  $v['role_pic'], 'role');
+                        $tmp = $this->syncImages($config_sync_pic, $v['role_pic'], 'role');
                         $v['role_pic'] = $tmp['pic'];
                         $msg = $tmp['msg'];
                         $res = model('Role')->insert($v);
@@ -1799,31 +1813,32 @@ class Collect extends Base {
                         $des = lang('model/collect/add_ok');
                     } else {
 
-                        if(empty($config['uprule'])){
+                        if (empty($config['uprule'])) {
                             $des = lang('model/collect/uprule_empty');
-                        }
-                        elseif ($info['role_lock'] == 1) {
+                        } elseif ($info['role_lock'] == 1) {
                             $des = lang('model/collect/data_lock');
-                        }
-                        else {
+                        } else {
                             unset($v['role_time_add']);
                             $rc = true;
                             if ($rc) {
                                 $update = [];
 
-                                if (strpos(',' . $config['uprule'], 'a') !== false && !empty($v['role_content']) && $v['role_content'] != $info['role_content']) {
+                                if (strpos(','.$config['uprule'],
+                                        'a') !== false && !empty($v['role_content']) && $v['role_content'] != $info['role_content']) {
                                     $update['role_content'] = $v['role_content'];
                                 }
-                                if (strpos(',' . $config['uprule'], 'b') !== false && !empty($v['role_remarks']) && $v['role_remarks'] != $info['role_remarks']) {
+                                if (strpos(','.$config['uprule'],
+                                        'b') !== false && !empty($v['role_remarks']) && $v['role_remarks'] != $info['role_remarks']) {
                                     $update['role_remarks'] = $v['role_remarks'];
                                 }
-                                if (strpos(',' . $config['uprule'], 'c') !== false && (substr($info["role_pic"], 0, 4) == "http" || empty($info['role_pic'])) && $v['role_pic'] != $info['role_pic']) {
-                                    $tmp = $this->syncImages($config_sync_pic,  $v['role_pic'], 'role');
+                                if (strpos(','.$config['uprule'], 'c') !== false && (substr($info["role_pic"], 0,
+                                            4) == "http" || empty($info['role_pic'])) && $v['role_pic'] != $info['role_pic']) {
+                                    $tmp = $this->syncImages($config_sync_pic, $v['role_pic'], 'role');
                                     $update['role_pic'] = $tmp['pic'];
                                     $msg = $tmp['msg'];
                                 }
 
-                                if(count($update)>0){
+                                if (count($update) > 0) {
                                     $update['role_time'] = time();
                                     $where = [];
                                     $where['role_id'] = $info['role_id'];
@@ -1832,8 +1847,7 @@ class Collect extends Base {
                                     if ($res === false) {
 
                                     }
-                                }
-                                else{
+                                } else {
                                     $des = lang('model/collect/not_need_update');
                                 }
                             }
@@ -1843,42 +1857,41 @@ class Collect extends Base {
                 }
 
             }
-            if($show==1) {
-                mac_echo( ($k + 1) . $v['role_name'] . "<font color=$color>" .$des .'</font>'. $msg . '');
-            }
-            else{
-                return ['code'=>($color=='red' ? 1001 : 1),'msg'=> $v['role_name'] .' '.$des ];
+            if ($show == 1) {
+                mac_echo(($k + 1).$v['role_name']."<font color=$color>".$des.'</font>'.$msg.'');
+            } else {
+                return ['code' => ($color == 'red' ? 1001 : 1), 'msg' => $v['role_name'].' '.$des];
             }
         }
 
-        $key = $GLOBALS['config']['app']['cache_flag']. '_'.'collect_break_role';
-        if(ENTRANCE=='api'){
+        $key = $GLOBALS['config']['app']['cache_flag'].'_'.'collect_break_role';
+        if (ENTRANCE == 'api') {
             Cache::rm($key);
             if ($data['page']['page'] < $data['page']['pagecount']) {
                 $param['page'] = intval($data['page']['page']) + 1;
                 $res = $this->role($param);
-                if($res['code']>1){
+                if ($res['code'] > 1) {
                     return $this->error($res['msg']);
                 }
-                $this->actor_data($param,$res );
+                $this->actor_data($param, $res);
             }
             mac_echo(lang('model/collect/is_over'));
             die;
         }
 
-        if(empty($GLOBALS['config']['app']['collect_timespan'])){
+        if (empty($GLOBALS['config']['app']['collect_timespan'])) {
             $GLOBALS['config']['app']['collect_timespan'] = 3;
         }
 
-        if($show==1) {
+        if ($show == 1) {
             if ($param['ac'] == 'cjsel') {
                 Cache::rm($key);
                 mac_echo(lang('model/collect/is_over'));
                 unset($param['ids']);
                 $param['ac'] = 'list';
-                $url = url('api') . '?' . http_build_query($param);
+                $url = url('api').'?'.http_build_query($param);
                 $ref = $_SERVER["HTTP_REFERER"];
-                if(!empty($ref)){
+                if (!empty($ref)) {
                     $url = $ref;
                 }
                 mac_jump($url, $GLOBALS['config']['app']['collect_timespan']);
@@ -1888,11 +1901,11 @@ class Collect extends Base {
                     mac_echo(lang('model/collect/is_over'));
                     unset($param['page']);
                     $param['ac'] = 'list';
-                    $url = url('api') . '?' . http_build_query($param);
+                    $url = url('api').'?'.http_build_query($param);
                     mac_jump($url, $GLOBALS['config']['app']['collect_timespan']);
                 } else {
                     $param['page'] = intval($data['page']['page']) + 1;
-                    $url = url('api') . '?' . http_build_query($param);
+                    $url = url('api').'?'.http_build_query($param);
                     mac_jump($url, $GLOBALS['config']['app']['collect_timespan']);
                 }
             }
@@ -1909,16 +1922,15 @@ class Collect extends Base {
         $url_param['ids'] = $param['ids'];
         $url_param['wd'] = $param['wd'];
 
-        if($param['ac']!='list'){
+        if ($param['ac'] != 'list') {
             $url_param['ac'] = 'detail';
         }
 
         $url = $param['cjurl'];
-        if(strpos($url,'?')===false){
-            $url .='?';
-        }
-        else{
-            $url .='&';
+        if (strpos($url, '?') === false) {
+            $url .= '?';
+        } else {
+            $url .= '&';
         }
         $url .= http_build_query($url_param).base64_decode($param['param']);
         $result = $this->checkCjUrl($url);
@@ -1926,13 +1938,13 @@ class Collect extends Base {
             return $result;
         }
         $html = mac_curl_get($url);
-        if(empty($html)){
-            return ['code'=>1001, 'msg'=>lang('model/collect/get_html_err')];
+        if (empty($html)) {
+            return ['code' => 1001, 'msg' => lang('model/collect/get_html_err')];
         }
         $html = mac_filter_tags($html);
-        $json = json_decode($html,true);
-        if(!$json){
-            return ['code'=>1002, 'msg'=>lang('model/collect/json_err')];
+        $json = json_decode($html, true);
+        if (!$json) {
+            return ['code' => 1002, 'msg' => lang('model/collect/json_err')];
         }
 
         $array_page = [];
@@ -1947,36 +1959,36 @@ class Collect extends Base {
 
         $key = 0;
         $array_data = [];
-        foreach($json['list'] as $key=>$v){
+        foreach ($json['list'] as $key => $v) {
             $array_data[$key] = $v;
-            $bind_key = $param['cjflag'] .'_'.$v['type_id'];
-            if($bind_list[$bind_key] >0){
+            $bind_key = $param['cjflag'].'_'.$v['type_id'];
+            if ($bind_list[$bind_key] > 0) {
                 $array_data[$key]['type_id'] = $bind_list[$bind_key];
-            }
-            else{
+            } else {
                 $array_data[$key]['type_id'] = 0;
             }
         }
 
         $array_type = [];
-        $key=0;
+        $key = 0;
         //分类列表
-        if($param['ac'] == 'list'){
-            foreach($json['class'] as $k=>$v){
+        if ($param['ac'] == 'list') {
+            foreach ($json['class'] as $k => $v) {
                 $array_type[$key]['type_id'] = $v['type_id'];
                 $array_type[$key]['type_name'] = mac_filter_xss($v['type_name']);
                 $key++;
             }
         }
 
-        $res = ['code'=>1, 'msg'=>'ok', 'page'=>$array_page, 'type'=>$array_type, 'data'=>$array_data ];
+        $res = ['code' => 1, 'msg' => 'ok', 'page' => $array_page, 'type' => $array_type, 'data' => $array_data];
         return $res;
     }
 
-    public function website_data($param,$data,$show=1)
+    public function website_data($param, $data, $show = 1)
     {
-        if($show==1) {
-            mac_echo('[' . __FUNCTION__ . '] ' . lang('model/collect/data_tip1',[$data['page']['page'],$data['page']['pagecount'],$data['page']['url']]));
+        if ($show == 1) {
+            mac_echo('['.__FUNCTION__.'] '.lang('model/collect/data_tip1',
+                    [$data['page']['page'], $data['page']['pagecount'], $data['page']['url']]));
         }
 
         $config = config('maccms.collect');
@@ -1984,43 +1996,42 @@ class Collect extends Base {
         $config_sync_pic = $param['sync_pic_opt'] > 0 ? $param['sync_pic_opt'] : $config['pic'];
 
         $type_list = model('Type')->getCache('type_list');
-        $filter_arr = explode(',',$config['filter']); $filter_arr = array_filter($filter_arr);
-        $pse_rnd = explode('#',$config['words']); $pse_rnd = array_filter($pse_rnd);
+        $filter_arr = explode(',', $config['filter']);
+        $filter_arr = array_filter($filter_arr);
+        $pse_rnd = explode('#', $config['words']);
+        $pse_rnd = array_filter($pse_rnd);
         $pse_syn = mac_txt_explain($config['thesaurus']);
 
-        foreach($data['data'] as $k=>$v){
+        foreach ($data['data'] as $k => $v) {
 
-            $color='red';
-            $des='';
-            $msg='';
-            $tmp='';
+            $color = 'red';
+            $des = '';
+            $msg = '';
+            $tmp = '';
 
-            if($v['type_id'] ==0){
+            if ($v['type_id'] == 0) {
                 $des = lang('model/collect/type_err');
-            }
-            elseif(empty($v['website_name'])) {
+            } elseif (empty($v['website_name'])) {
                 $des = lang('model/collect/name_err');
-            }
-            elseif( mac_array_filter($filter_arr,$v['website_name'])!==false) {
+            } elseif (mac_array_filter($filter_arr, $v['website_name']) !== false) {
                 $des = lang('model/collect/name_in_filter_err');
-            }
-            else {
+            } else {
                 unset($v['website_id']);
 
-                foreach($v as $k2=>$v2){
-                    if(strpos($k2,'_content')===false) {
+                foreach ($v as $k2 => $v2) {
+                    if (strpos($k2, '_content') === false) {
                         $v[$k2] = strip_tags($v2);
                     }
                 }
                 $v['website_name'] = trim($v['website_name']);
                 $v['type_id_1'] = intval($type_list[$v['type_id']]['type_pid']);
                 $v['website_en'] = Pinyin::get($v['website_name']);
-                $v['website_letter'] = strtoupper(substr($v['website_en'],0,1));
+                $v['website_letter'] = strtoupper(substr($v['website_en'], 0, 1));
                 $v['website_time_add'] = time();
                 $v['website_time'] = time();
                 $v['website_status'] = intval($config['status']);
                 $v['website_lock'] = intval($v['website_lock']);
-                if(!empty($v['website_status'])) {
+                if (!empty($v['website_status'])) {
                     $v['website_status'] = intval($v['website_status']);
                 }
                 $v['website_level'] = intval($v['website_level']);
@@ -2036,19 +2047,19 @@ class Collect extends Base {
                 $v['website_score_all'] = intval($v['website_score_all']);
                 $v['website_score_num'] = intval($v['website_score_num']);
 
-                if($config['hits_start']>0 && $config['hits_end']>0) {
+                if ($config['hits_start'] > 0 && $config['hits_end'] > 0) {
                     $v['website_hits'] = rand($config['hits_start'], $config['hits_end']);
                     $v['website_hits_day'] = rand($config['hits_start'], $config['hits_end']);
                     $v['website_hits_week'] = rand($config['hits_start'], $config['hits_end']);
                     $v['website_hits_month'] = rand($config['hits_start'], $config['hits_end']);
                 }
 
-                if($config['updown_start']>0 && $config['updown_end']){
+                if ($config['updown_start'] > 0 && $config['updown_end']) {
                     $v['website_up'] = rand($config['updown_start'], $config['updown_end']);
                     $v['website_down'] = rand($config['updown_start'], $config['updown_end']);
                 }
 
-                if($config['score']==1) {
+                if ($config['score'] == 1) {
                     $v['website_score_num'] = rand(1, 1000);
                     $v['website_score_all'] = $v['website_score_num'] * rand(1, 10);
                     $v['website_score'] = round($v['website_score_all'] / $v['website_score_num'], 1);
@@ -2061,71 +2072,73 @@ class Collect extends Base {
                     $v['website_content'] = mac_rep_pse_syn($pse_syn, $v['website_content']);
                 }
 
-                if(empty($v['website_blurb'])){
-                    $v['website_blurb'] = mac_substring( strip_tags($v['website_content']) ,100);
+                if (empty($v['website_blurb'])) {
+                    $v['website_blurb'] = mac_substring(strip_tags($v['website_content']), 100);
                 }
 
                 $where = [];
                 $where['website_name'] = $v['website_name'];
 
-                if (strpos($config['inrule'], 'b')!==false) {
+                if (strpos($config['inrule'], 'b') !== false) {
                     $where['type_id'] = $v['type_id'];
                 }
 
                 $info = model('Website')->where($where)->find();
                 if (!$info) {
-                    $tmp = $this->syncImages($config_sync_pic, $v['website_pic'],'website');
+                    $tmp = $this->syncImages($config_sync_pic, $v['website_pic'], 'website');
                     $v['website_pic'] = $tmp['pic'];
                     $msg = $tmp['msg'];
                     $res = model('Website')->insert($v);
-                    if($res===false){
+                    if ($res === false) {
 
                     }
-                    $color ='green';
-                    $des= lang('model/collect/add_ok');
+                    $color = 'green';
+                    $des = lang('model/collect/add_ok');
                 } else {
 
-                    if(empty($config['uprule'])){
+                    if (empty($config['uprule'])) {
                         $des = lang('model/collect/uprule_empty');
-                    }
-                    elseif ($info['website_lock'] == 1) {
+                    } elseif ($info['website_lock'] == 1) {
                         $des = lang('model/collect/data_lock');
-                    }
-                    else {
+                    } else {
                         unset($v['website_time_add']);
-                        $rc=true;
-                        if($rc){
-                            $update=[];
+                        $rc = true;
+                        if ($rc) {
+                            $update = [];
 
-                            if(strpos(','.$config['uprule'],'a')!==false && !empty($v['website_content']) && $v['website_content']!=$info['website_content']){
+                            if (strpos(','.$config['uprule'],
+                                    'a') !== false && !empty($v['website_content']) && $v['website_content'] != $info['website_content']) {
                                 $update['website_content'] = $v['website_content'];
                             }
-                            if(strpos(','.$config['uprule'],'b')!==false && !empty($v['website_blurb']) && $v['website_blurb']!=$info['website_blurb']){
+                            if (strpos(','.$config['uprule'],
+                                    'b') !== false && !empty($v['website_blurb']) && $v['website_blurb'] != $info['website_blurb']) {
                                 $update['website_blurb'] = $v['website_blurb'];
                             }
-                            if(strpos(','.$config['uprule'],'c')!==false && !empty($v['website_remarks']) && $v['website_remarks']!=$info['website_remarks']){
+                            if (strpos(','.$config['uprule'],
+                                    'c') !== false && !empty($v['website_remarks']) && $v['website_remarks'] != $info['website_remarks']) {
                                 $update['website_remarks'] = $v['website_remarks'];
                             }
-                            if(strpos(','.$config['uprule'],'d')!==false && !empty($v['website_jumpurl']) && $v['website_jumpurl']!=$info['website_jumpurl']){
+                            if (strpos(','.$config['uprule'],
+                                    'd') !== false && !empty($v['website_jumpurl']) && $v['website_jumpurl'] != $info['website_jumpurl']) {
                                 $update['website_jumpurl'] = $v['website_jumpurl'];
                             }
-                            if(strpos(','.$config['uprule'],'e')!==false && (substr($info["website_pic"], 0, 4) == "http" ||empty($info['website_pic']) ) && $v['website_pic']!=$info['website_pic'] ){
-                                $tmp = $this->syncImages($config_sync_pic, $v['website_pic'],'website');
-                                $update['website_pic'] =$tmp['pic'];
-                                $msg =$tmp['msg'];
+                            if (strpos(','.$config['uprule'], 'e') !== false && (substr($info["website_pic"], 0,
+                                        4) == "http" || empty($info['website_pic'])) && $v['website_pic'] != $info['website_pic']) {
+                                $tmp = $this->syncImages($config_sync_pic, $v['website_pic'], 'website');
+                                $update['website_pic'] = $tmp['pic'];
+                                $msg = $tmp['msg'];
                             }
 
-                            if(count($update)>0){
+                            if (count($update) > 0) {
                                 $update['website_time'] = time();
                                 $where = [];
                                 $where['website_id'] = $info['website_id'];
                                 $res = model('Website')->where($where)->update($update);
                                 $color = 'green';
-                                if($res===false){
+                                if ($res === false) {
 
                                 }
-                            }
-                            else{
+                            } else {
                                 $des = lang('model/collect/not_need_update');
                             }
                         }
@@ -2133,42 +2146,41 @@ class Collect extends Base {
                     }
                 }
             }
-            if($show==1) {
-                mac_echo( ($k + 1) . $v['website_name'] . "<font color=$color>" .$des .'</font>'. $msg . '');
-            }
-            else{
-                return ['code'=>($color=='red' ? 1001 : 1),'msg'=> $v['website_name'] .' '.$des ];
+            if ($show == 1) {
+                mac_echo(($k + 1).$v['website_name']."<font color=$color>".$des.'</font>'.$msg.'');
+            } else {
+                return ['code' => ($color == 'red' ? 1001 : 1), 'msg' => $v['website_name'].' '.$des];
             }
         }
 
-        $key = $GLOBALS['config']['app']['cache_flag']. '_'.'collect_break_website';
-        if(ENTRANCE=='api'){
+        $key = $GLOBALS['config']['app']['cache_flag'].'_'.'collect_break_website';
+        if (ENTRANCE == 'api') {
             Cache::rm($key);
             if ($data['page']['page'] < $data['page']['pagecount']) {
                 $param['page'] = intval($data['page']['page']) + 1;
                 $res = $this->actor($param);
-                if($res['code']>1){
+                if ($res['code'] > 1) {
                     return $this->error($res['msg']);
                 }
-                $this->website_data($param,$res );
+                $this->website_data($param, $res);
             }
             mac_echo(lang('model/collect/is_over'));
             die;
         }
 
-        if(empty($GLOBALS['config']['app']['collect_timespan'])){
+        if (empty($GLOBALS['config']['app']['collect_timespan'])) {
             $GLOBALS['config']['app']['collect_timespan'] = 3;
         }
 
-        if($show==1) {
+        if ($show == 1) {
             if ($param['ac'] == 'cjsel') {
                 Cache::rm($key);
                 mac_echo(lang('model/collect/is_over'));
                 unset($param['ids']);
                 $param['ac'] = 'list';
-                $url = url('api') . '?' . http_build_query($param);
+                $url = url('api').'?'.http_build_query($param);
                 $ref = $_SERVER["HTTP_REFERER"];
-                if(!empty($ref)){
+                if (!empty($ref)) {
                     $url = $ref;
                 }
                 mac_jump($url, $GLOBALS['config']['app']['collect_timespan']);
@@ -2178,11 +2190,11 @@ class Collect extends Base {
                     mac_echo(lang('model/collect/is_over'));
                     unset($param['page']);
                     $param['ac'] = 'list';
-                    $url = url('api') . '?' . http_build_query($param);
+                    $url = url('api').'?'.http_build_query($param);
                     mac_jump($url, $GLOBALS['config']['app']['collect_timespan']);
                 } else {
                     $param['page'] = intval($data['page']['page']) + 1;
-                    $url = url('api') . '?' . http_build_query($param);
+                    $url = url('api').'?'.http_build_query($param);
                     mac_jump($url, $GLOBALS['config']['app']['collect_timespan']);
                 }
             }
@@ -2199,16 +2211,15 @@ class Collect extends Base {
         $url_param['ids'] = $param['ids'];
         $url_param['wd'] = $param['wd'];
 
-        if($param['ac']!='list'){
+        if ($param['ac'] != 'list') {
             $url_param['ac'] = 'detail';
         }
 
         $url = $param['cjurl'];
-        if(strpos($url,'?')===false){
-            $url .='?';
-        }
-        else{
-            $url .='&';
+        if (strpos($url, '?') === false) {
+            $url .= '?';
+        } else {
+            $url .= '&';
         }
         $url .= http_build_query($url_param).base64_decode($param['param']);
         $result = $this->checkCjUrl($url);
@@ -2216,13 +2227,13 @@ class Collect extends Base {
             return $result;
         }
         $html = mac_curl_get($url);
-        if(empty($html)){
-            return ['code'=>1001, 'msg'=>lang('model/collect/get_html_err')];
+        if (empty($html)) {
+            return ['code' => 1001, 'msg' => lang('model/collect/get_html_err')];
         }
         $html = mac_filter_tags($html);
-        $json = json_decode($html,true);
-        if(!$json){
-            return ['code'=>1002, 'msg'=>lang('model/collect/json_err')];
+        $json = json_decode($html, true);
+        if (!$json) {
+            return ['code' => 1002, 'msg' => lang('model/collect/json_err')];
         }
 
         $array_page = [];
@@ -2234,47 +2245,48 @@ class Collect extends Base {
 
         $key = 0;
         $array_data = [];
-        foreach($json['list'] as $key=>$v){
+        foreach ($json['list'] as $key => $v) {
             $array_data[$key] = $v;
         }
 
 
-        $res = ['code'=>1, 'msg'=>'ok', 'page'=>$array_page, 'data'=>$array_data ];
+        $res = ['code' => 1, 'msg' => 'ok', 'page' => $array_page, 'data' => $array_data];
         return $res;
     }
 
-    public function comment_data($param,$data,$show=1)
+    public function comment_data($param, $data, $show = 1)
     {
-        if($show==1) {
-            mac_echo('[' . __FUNCTION__ . '] ' . lang('model/collect/data_tip1',[$data['page']['page'],$data['page']['pagecount'],$data['page']['url']]));
+        if ($show == 1) {
+            mac_echo('['.__FUNCTION__.'] '.lang('model/collect/data_tip1',
+                    [$data['page']['page'], $data['page']['pagecount'], $data['page']['url']]));
         }
 
         $config = config('maccms.collect');
         $config = $config['comment'];
         $config_sync_pic = $param['sync_pic_opt'] > 0 ? $param['sync_pic_opt'] : $config['pic'];
 
-        $filter_arr = explode(',',$config['filter']); $filter_arr = array_filter($filter_arr);
-        $pse_rnd = explode('#',$config['words']); $pse_rnd = array_filter($pse_rnd);
+        $filter_arr = explode(',', $config['filter']);
+        $filter_arr = array_filter($filter_arr);
+        $pse_rnd = explode('#', $config['words']);
+        $pse_rnd = array_filter($pse_rnd);
         $pse_syn = mac_txt_explain($config['thesaurus']);
 
-        foreach($data['data'] as $k=>$v){
+        foreach ($data['data'] as $k => $v) {
 
-            $color='red';
-            $des='';
-            $msg='';
-            $tmp='';
+            $color = 'red';
+            $des = '';
+            $msg = '';
+            $tmp = '';
 
-            if(empty($v['comment_name']) || empty($v['comment_content']) || empty($v['rel_name']) ) {
+            if (empty($v['comment_name']) || empty($v['comment_content']) || empty($v['rel_name'])) {
                 $des = lang('model/collect/comment_data_require');
-            }
-            elseif( mac_array_filter($filter_arr,$v['comment_content']) !==false) {
+            } elseif (mac_array_filter($filter_arr, $v['comment_content']) !== false) {
                 $des = lang('model/collect/name_in_filter_err');
-            }
-            else {
+            } else {
                 unset($v['comment_id']);
 
-                foreach($v as $k2=>$v2){
-                    if(strpos($k2,'_content')===false) {
+                foreach ($v as $k2 => $v2) {
+                    if (strpos($k2, '_content') === false) {
                         $v[$k2] = strip_tags($v2);
                     }
                 }
@@ -2284,11 +2296,11 @@ class Collect extends Base {
                 $v['comment_up'] = intval($v['comment_up']);
                 $v['comment_down'] = intval($v['comment_down']);
                 $v['comment_mid'] = intval($v['comment_mid']);
-                if(!empty($v['comment_ip']) && !is_numeric($v['comment_ip'])){
+                if (!empty($v['comment_ip']) && !is_numeric($v['comment_ip'])) {
                     $v['comment_ip'] = mac_get_ip_long($v['comment_ip']);
                 }
 
-                if($config['updown_start']>0 && $config['updown_end']){
+                if ($config['updown_start'] > 0 && $config['updown_end']) {
                     $v['comment_up'] = rand($config['updown_start'], $config['updown_end']);
                     $v['comment_down'] = rand($config['updown_start'], $config['updown_end']);
                 }
@@ -2303,60 +2315,52 @@ class Collect extends Base {
                 $where2 = [];
                 $blend = false;
 
-                if (strpos($config['inrule'], 'b')!==false) {
+                if (strpos($config['inrule'], 'b') !== false) {
                     $where['comment_content'] = ['eq', $v['comment_content']];
                 }
-                if (strpos($config['inrule'], 'c')!==false) {
+                if (strpos($config['inrule'], 'c') !== false) {
                     $where['comment_name'] = ['eq', $v['comment_name']];
                 }
 
-                if(empty($v['rel_id'])){
-                    if($v['comment_mid']==1){
-                        if(!empty($v['douban_id'])){
-                            $where2['vod_douban_id'] = ['eq',$v['douban_id']];
+                if (empty($v['rel_id'])) {
+                    if ($v['comment_mid'] == 1) {
+                        if (!empty($v['douban_id'])) {
+                            $where2['vod_douban_id'] = ['eq', $v['douban_id']];
                             unset($v['douban_id']);
-                        }
-                        else{
-                            $where2['vod_name'] = ['eq',$v['rel_name']];
+                        } else {
+                            $where2['vod_name'] = ['eq', $v['rel_name']];
                         }
                         $rel_info = model('Vod')->where($where2)->find();
-                    }
-                    elseif($v['comment_mid']==2){
-                        $where2['art_name'] = ['eq',$v['rel_name']];
+                    } elseif ($v['comment_mid'] == 2) {
+                        $where2['art_name'] = ['eq', $v['rel_name']];
                         $rel_info = model('Art')->where($where2)->find();
-                    }
-                    elseif($v['comment_mid']==3){
-                        $where2['topic_name'] = ['eq',$v['rel_name']];
+                    } elseif ($v['comment_mid'] == 3) {
+                        $where2['topic_name'] = ['eq', $v['rel_name']];
                         $rel_info = model('Topic')->where($where2)->find();
-                    }
-                    elseif($v['comment_mid']==8){
-                        $where2['actor_name'] = ['eq',$v['rel_name']];
+                    } elseif ($v['comment_mid'] == 8) {
+                        $where2['actor_name'] = ['eq', $v['rel_name']];
                         $rel_info = model('Actor')->where($where2)->find();
-                    }
-                    elseif($v['comment_mid']==9){
-                        $where2['role_name'] = ['eq',$v['rel_name']];
+                    } elseif ($v['comment_mid'] == 9) {
+                        $where2['role_name'] = ['eq', $v['rel_name']];
                         $rel_info = model('Role')->where($where2)->find();
-                    }
-                    elseif($v['comment_mid']==11){
-                        $where2['website_name'] = ['eq',$v['rel_name']];
+                    } elseif ($v['comment_mid'] == 11) {
+                        $where2['website_name'] = ['eq', $v['rel_name']];
                         $rel_info = model('Website')->where($where2)->find();
                     }
 
                     $rel_id = $rel_info[mac_get_mid_code($v['comment_mid']).'_id'];
-                }
-                else{
+                } else {
                     $rel_id = $v['rel_id'];
                 }
 
-                if(empty($rel_id)){
+                if (empty($rel_id)) {
                     $des = lang('model/collect/not_found_rel_data');
-                }
-                else {
+                } else {
 
                     $v['comment_rid'] = $rel_id;
-                    $info=false;
+                    $info = false;
 
-                    if(!empty($where)) {
+                    if (!empty($where)) {
                         $where['comment_rid'] = $rel_id;
                         $info = model('Comment')->where($where)->find();
                     }
@@ -2370,19 +2374,19 @@ class Collect extends Base {
                         $des = lang('model/collect/add_ok');
                     } else {
 
-                        if(empty($config['uprule'])){
+                        if (empty($config['uprule'])) {
                             $des = lang('model/collect/uprule_empty');
-                        }
-                        else {
+                        } else {
                             $rc = true;
                             if ($rc) {
                                 $update = [];
 
-                                if (strpos(',' . $config['uprule'], 'a') !== false && !empty($v['comment_time']) && $v['comment_time'] != $info['comment_time']) {
+                                if (strpos(','.$config['uprule'],
+                                        'a') !== false && !empty($v['comment_time']) && $v['comment_time'] != $info['comment_time']) {
                                     $update['comment_time'] = $v['comment_time'];
                                 }
 
-                                if(count($update)>0){
+                                if (count($update) > 0) {
                                     $update['comment_time'] = time();
                                     $where = [];
                                     $where['comment_id'] = $info['comment_id'];
@@ -2391,8 +2395,7 @@ class Collect extends Base {
                                     if ($res === false) {
 
                                     }
-                                }
-                                else{
+                                } else {
                                     $des = lang('model/collect/not_need_update');
                                 }
                             }
@@ -2402,42 +2405,41 @@ class Collect extends Base {
                 }
 
             }
-            if($show==1) {
-                mac_echo( ($k + 1) . $v['comment_content'] . "<font color=$color>" .$des .'</font>'. $msg . '');
-            }
-            else{
-                return ['code'=>($color=='red' ? 1001 : 1),'msg'=> $v['comment_content'] .' '.$des ];
+            if ($show == 1) {
+                mac_echo(($k + 1).$v['comment_content']."<font color=$color>".$des.'</font>'.$msg.'');
+            } else {
+                return ['code' => ($color == 'red' ? 1001 : 1), 'msg' => $v['comment_content'].' '.$des];
             }
         }
 
-        $key = $GLOBALS['config']['app']['cache_flag']. '_'.'collect_break_comment';
-        if(ENTRANCE=='api'){
+        $key = $GLOBALS['config']['app']['cache_flag'].'_'.'collect_break_comment';
+        if (ENTRANCE == 'api') {
             Cache::rm($key);
             if ($data['page']['page'] < $data['page']['pagecount']) {
                 $param['page'] = intval($data['page']['page']) + 1;
                 $res = $this->role($param);
-                if($res['code']>1){
+                if ($res['code'] > 1) {
                     return $this->error($res['msg']);
                 }
-                $this->actor_data($param,$res );
+                $this->actor_data($param, $res);
             }
             mac_echo(lang('model/collect/is_over'));
             die;
         }
 
-        if(empty($GLOBALS['config']['app']['collect_timespan'])){
+        if (empty($GLOBALS['config']['app']['collect_timespan'])) {
             $GLOBALS['config']['app']['collect_timespan'] = 3;
         }
 
-        if($show==1) {
+        if ($show == 1) {
             if ($param['ac'] == 'cjsel') {
                 Cache::rm($key);
                 mac_echo(lang('model/collect/is_over'));
                 unset($param['ids']);
                 $param['ac'] = 'list';
-                $url = url('api') . '?' . http_build_query($param);
+                $url = url('api').'?'.http_build_query($param);
                 $ref = $_SERVER["HTTP_REFERER"];
-                if(!empty($ref)){
+                if (!empty($ref)) {
                     $url = $ref;
                 }
                 mac_jump($url, $GLOBALS['config']['app']['collect_timespan']);
@@ -2447,11 +2449,11 @@ class Collect extends Base {
                     mac_echo(lang('model/collect/is_over'));
                     unset($param['page']);
                     $param['ac'] = 'list';
-                    $url = url('api') . '?' . http_build_query($param);
+                    $url = url('api').'?'.http_build_query($param);
                     mac_jump($url, $GLOBALS['config']['app']['collect_timespan']);
                 } else {
                     $param['page'] = intval($data['page']['page']) + 1;
-                    $url = url('api') . '?' . http_build_query($param);
+                    $url = url('api').'?'.http_build_query($param);
                     mac_jump($url, $GLOBALS['config']['app']['collect_timespan']);
                 }
             }
@@ -2470,11 +2472,13 @@ class Collect extends Base {
         return ['code' => 1];
     }
 
-    public function createTableIfNotExists() {
+    public function createTableIfNotExists()
+    {
         if ($this->lockTableUpdate(1) === true) {
             return true;
         }
         // 1
-        $this->checkAndAlterTableField('collect_sync_pic_opt', "ADD `collect_sync_pic_opt` tinyint(1) UNSIGNED NOT NULL DEFAULT 0 COMMENT '同步图片选项，0-跟随全局，1-开启，2-关闭'");
+        $this->checkAndAlterTableField('collect_sync_pic_opt',
+            "ADD `collect_sync_pic_opt` tinyint(1) UNSIGNED NOT NULL DEFAULT 0 COMMENT '同步图片选项，0-跟随全局，1-开启，2-关闭'");
     }
 }

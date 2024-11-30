@@ -2,7 +2,6 @@
 
 namespace app\api\controller;
 
-use think\Db;
 use think\Request;
 
 class Link extends Base
@@ -16,7 +15,7 @@ class Link extends Base
     /**
      *  获取列表
      *
-     * @param Request $request
+     * @param  Request  $request
      * @return \think\response\Json
      */
     public function get_list(Request $request)
@@ -27,37 +26,37 @@ class Link extends Base
         if (!$validate->scene($request->action())->check($param)) {
             return json([
                 'code' => 1001,
-                'msg'  => '参数错误: ' . $validate->getError(),
+                'msg'  => '参数错误: '.$validate->getError(),
             ]);
         }
         // 查询条件组装
         $where = [];
 
-        $offset = isset($param['offset']) ? (int)$param['offset'] : 0;
-        $limit = isset($param['limit']) ? (int)$param['limit'] : 20;
+        $offset = isset($param['offset']) ? (int) $param['offset'] : 0;
+        $limit = isset($param['limit']) ? (int) $param['limit'] : 20;
 
         if (isset($param['id'])) {
-            $where['link_id'] = (int)$param['id'];
+            $where['link_id'] = (int) $param['id'];
         }
 
         if (isset($param['type'])) {
-            $where['link_type'] = (int)$param['type'];
+            $where['link_type'] = (int) $param['type'];
         }
 
         if (isset($param['sort'])) {
-            $where['link_sort'] = (int)$param['sort'];
+            $where['link_sort'] = (int) $param['sort'];
         }
 
         if (isset($param['name']) && strlen($param['name']) > 0) {
-            $where['link_name'] = ['like', '%' . format_sql_string($param['name']) . '%'];
+            $where['link_name'] = ['like', '%'.format_sql_string($param['name']).'%'];
         }
 
         if (isset($param['time_end']) && isset($param['time_start'])) {
-            $where['link_time'] = ['between', [(int)$param['time_start'], (int)$param['time_end']]];
-        }elseif (isset($param['time_end'])) {
-            $where['link_time'] = ['<=', (int)$param['time_end']];
-        }elseif (isset($param['time_start'])) {
-            $where['link_time'] = ['>=', (int)$param['time_start']];
+            $where['link_time'] = ['between', [(int) $param['time_start'], (int) $param['time_end']]];
+        } elseif (isset($param['time_end'])) {
+            $where['link_time'] = ['<=', (int) $param['time_end']];
+        } elseif (isset($param['time_start'])) {
+            $where['link_time'] = ['>=', (int) $param['time_start']];
         }
 
         // 数据获取
@@ -68,7 +67,7 @@ class Link extends Base
             $order = "link_time DESC";
             $field = '*';
             if (strlen($param['orderby']) > 0) {
-                $order = 'link_' . $param['orderby'] . " DESC";
+                $order = 'link_'.$param['orderby']." DESC";
             }
             $list = model('Link')->getListByCond($offset, $limit, $where, $order, $field, []);
         }

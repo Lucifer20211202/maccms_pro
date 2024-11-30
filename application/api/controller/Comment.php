@@ -2,7 +2,6 @@
 
 namespace app\api\controller;
 
-use think\Db;
 use think\Request;
 
 class Comment extends Base
@@ -16,7 +15,7 @@ class Comment extends Base
     /**
      *  获取列表
      *
-     * @param Request $request
+     * @param  Request  $request
      * @return \think\response\Json
      */
     public function get_list(Request $request)
@@ -27,16 +26,16 @@ class Comment extends Base
         if (!$validate->scene($request->action())->check($param)) {
             return json([
                 'code' => 1001,
-                'msg'  => '参数错误: ' . $validate->getError(),
+                'msg'  => '参数错误: '.$validate->getError(),
             ]);
         }
-        $offset = isset($param['offset']) ? (int)$param['offset'] : 0;
-        $limit = isset($param['limit']) ? (int)$param['limit'] : 20;
+        $offset = isset($param['offset']) ? (int) $param['offset'] : 0;
+        $limit = isset($param['limit']) ? (int) $param['limit'] : 20;
         // 查询条件组装
         $where = [];
 
         if (isset($param['rid'])) {
-            $where['comment_rid'] = (int)$param['rid'];
+            $where['comment_rid'] = (int) $param['rid'];
         }
 
         // 数据获取
@@ -46,7 +45,7 @@ class Comment extends Base
             // 排序
             $order = "comment_time DESC";
             if (strlen($param['orderby']) > 0) {
-                $order = 'comment_' . $param['orderby'] . " DESC";
+                $order = 'comment_'.$param['orderby']." DESC";
             }
             $field = '*';
             $list = model('Comment')->getListByCond($offset, $limit, $where, $order, $field, []);

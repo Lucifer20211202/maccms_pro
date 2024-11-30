@@ -31,7 +31,7 @@ class BannerCat extends Base
         if (!is_array($where)) {
             $where = json_decode($where, true);
         }
-        $limit_str = ($limit * ($page - 1) + $start) . "," . $limit;
+        $limit_str = ($limit * ($page - 1) + $start).",".$limit;
         if ($totalshow == 1) {
             $total = $this->where($where)->count();
         }
@@ -42,7 +42,9 @@ class BannerCat extends Base
             $list[$v['cat_id']] = $v;
         }
 
-        return ['code' => 1, 'msg' => '数据列表', 'page' => $page, 'pagecount' => ceil($total / $limit), 'limit' => $limit, 'total' => $total, 'list' => $list];
+        return ['code'  => 1, 'msg' => '数据列表', 'page' => $page, 'pagecount' => ceil($total / $limit),
+                'limit' => $limit, 'total' => $total, 'list' => $list
+        ];
     }
 
     public function infoData($where, $field = '*', $cache = 0)
@@ -50,7 +52,7 @@ class BannerCat extends Base
         if (empty($where) || !is_array($where)) {
             return ['code' => 1001, 'msg' => '参数错误'];
         }
-        $key = 'cat_detail_' . $where['cat_id'][1] . '_' . $where['cat_en'][1];
+        $key = 'cat_detail_'.$where['cat_id'][1].'_'.$where['cat_en'][1];
         $info = Cache::get($key);
 
         if ($GLOBALS['config']['app']['cache_core'] == 0 || $cache == 0 || empty($info['cat_id'])) {
@@ -71,9 +73,9 @@ class BannerCat extends Base
     {
         $validate = \think\Loader::validate('BannerCat');
         if (!$validate->check($data)) {
-            return ['code' => 1001, 'msg' => lang('param_err') . '：' . $validate->getError()];
+            return ['code' => 1001, 'msg' => lang('param_err').'：'.$validate->getError()];
         }
-        $key = 'cat_detail_' . $data['cat_id'];
+        $key = 'cat_detail_'.$data['cat_id'];
         Cache::rm($key);
 
         if (!empty($data['cat_id'])) {
@@ -84,7 +86,7 @@ class BannerCat extends Base
             $res = $this->allowField(true)->insert($data);
         }
         if (false === $res) {
-            return ['code' => 1002, 'msg' => lang('save_err') . '：' . $this->getError()];
+            return ['code' => 1002, 'msg' => lang('save_err').'：'.$this->getError()];
         }
         return ['code' => 1, 'msg' => lang('save_ok')];
     }
@@ -94,8 +96,8 @@ class BannerCat extends Base
         if ($this->lockTableUpdate(0) === true) {
             return true;
         }
-        if (!Db::execute("SHOW TABLES LIKE '" . config('database.prefix') . $this->name . "'")) {
-            $sql = "CREATE TABLE `" . config('database.prefix') . $this->name . "` (
+        if (!Db::execute("SHOW TABLES LIKE '".config('database.prefix').$this->name."'")) {
+            $sql = "CREATE TABLE `".config('database.prefix').$this->name."` (
                 `cat_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
                 `cat_title` varchar(50) NOT NULL,
                 `cat_code` varchar(20) NOT NULL,

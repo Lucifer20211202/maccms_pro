@@ -16,7 +16,7 @@ class Website extends Base
     /**
      *  获取列表
      *
-     * @param Request $request
+     * @param  Request  $request
      * @return \think\response\Json
      */
     public function get_list(Request $request)
@@ -27,36 +27,36 @@ class Website extends Base
         if (!$validate->scene($request->action())->check($param)) {
             return json([
                 'code' => 1001,
-                'msg'  => '参数错误: ' . $validate->getError(),
+                'msg'  => '参数错误: '.$validate->getError(),
             ]);
         }
-        $offset = isset($param['offset']) ? (int)$param['offset'] : 0;
-        $limit = isset($param['limit']) ? (int)$param['limit'] : 20;
+        $offset = isset($param['offset']) ? (int) $param['offset'] : 0;
+        $limit = isset($param['limit']) ? (int) $param['limit'] : 20;
         // 查询条件组装
         $where = [];
 
         if (isset($param['type_id'])) {
-            $where['type_id'] = (int)$param['type_id'];
+            $where['type_id'] = (int) $param['type_id'];
         }
 
         if (isset($param['status'])) {
-            $where['website_status'] = (int)$param['status'];
+            $where['website_status'] = (int) $param['status'];
         }
 
         if (isset($param['level'])) {
-            $where['website_level'] = (int)$param['level'];
+            $where['website_level'] = (int) $param['level'];
         }
 
         if (isset($param['name']) && strlen($param['name']) > 0) {
-            $where['website_name'] = ['like', '%' . format_sql_string($param['name']) . '%'];
+            $where['website_name'] = ['like', '%'.format_sql_string($param['name']).'%'];
         }
 
         if (isset($param['sub']) && strlen($param['sub']) > 0) {
-            $where['website_sub'] = ['like', '%' . format_sql_string($param['sub']) . '%'];
+            $where['website_sub'] = ['like', '%'.format_sql_string($param['sub']).'%'];
         }
 
         if (isset($param['en']) && strlen($param['en']) > 0) {
-            $where['website_en'] = ['like', '%' . format_sql_string($param['en']) . '%'];
+            $where['website_en'] = ['like', '%'.format_sql_string($param['en']).'%'];
         }
 
         if (isset($param['letter']) && strlen($param['letter']) == 1) {
@@ -64,23 +64,23 @@ class Website extends Base
         }
 
         if (isset($param['area']) && strlen($param['area']) > 0) {
-            $where['website_area'] = ['like', '%' . format_sql_string($param['area']) . '%'];
+            $where['website_area'] = ['like', '%'.format_sql_string($param['area']).'%'];
         }
 
         if (isset($param['lang']) && strlen($param['lang']) > 0) {
-            $where['website_lang'] = ['like', '%' . format_sql_string($param['lang']) . '%'];
+            $where['website_lang'] = ['like', '%'.format_sql_string($param['lang']).'%'];
         }
 
         if (isset($param['tag']) && strlen($param['tag']) > 0) {
-            $where['website_tag'] = ['like', '%' . format_sql_string($param['tag']) . '%'];
+            $where['website_tag'] = ['like', '%'.format_sql_string($param['tag']).'%'];
         }
 
         if (isset($param['time_end']) && isset($param['time_start'])) {
-            $where['website_time'] = ['between', [(int)$param['time_start'], (int)$param['time_end']]];
-        }elseif (isset($param['time_end'])) {
-            $where['website_time'] = ['<', (int)$param['time_end']];
-        }elseif (isset($param['time_start'])) {
-            $where['website_time'] = ['>', (int)$param['time_start']];
+            $where['website_time'] = ['between', [(int) $param['time_start'], (int) $param['time_end']]];
+        } elseif (isset($param['time_end'])) {
+            $where['website_time'] = ['<', (int) $param['time_end']];
+        } elseif (isset($param['time_start'])) {
+            $where['website_time'] = ['>', (int) $param['time_start']];
         }
 
         // 数据获取
@@ -90,7 +90,7 @@ class Website extends Base
             // 排序
             $order = "website_time DESC";
             if (strlen($param['orderby']) > 0) {
-                $order = 'website_' . $param['orderby'] . " DESC";
+                $order = 'website_'.$param['orderby']." DESC";
             }
             $field = '*';
             $list = model('Website')->getListByCond($offset, $limit, $where, $order, $field, []);
@@ -120,7 +120,7 @@ class Website extends Base
         if (!$validate->scene($request->action())->check($param)) {
             return json([
                 'code' => 1001,
-                'msg'  => '参数错误: ' . $validate->getError(),
+                'msg'  => '参数错误: '.$validate->getError(),
             ]);
         }
 

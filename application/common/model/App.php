@@ -1,10 +1,11 @@
 <?php
-namespace app\common\model;
-use think\Db;
-use think\Cache;
-use app\common\util\Pinyin;
 
-class App extends Base {
+namespace app\common\model;
+
+use think\Db;
+
+class App extends Base
+{
     // 设置数据表（不含前缀）
     protected $name = 'app';
 
@@ -14,9 +15,9 @@ class App extends Base {
     protected $autoWriteTimestamp = true;
 
     // 自动完成
-    protected $auto       = [];
-    protected $insert     = [];
-    protected $update     = [];
+    protected $auto = [];
+    protected $insert = [];
+    protected $update = [];
 
     /**
      * 根据条件查询记录个数   作者:walle
@@ -34,49 +35,51 @@ class App extends Base {
      * 根据条件查询记录列表     作者:walle
      * @param $where
      * @param $order
-     * @param int $page
-     * @param int $limit
-     * @param int $start
-     * @param string $field
-     * @param int $totalshow
+     * @param  int  $page
+     * @param  int  $limit
+     * @param  int  $start
+     * @param  string  $field
+     * @param  int  $totalshow
      * @return array
      * @throws \think\Exception
      * @throws \think\db\exception\DataNotFoundException
      * @throws \think\db\exception\ModelNotFoundException
      * @throws \think\exception\DbException
      */
-    public function listData($where,$order,$page=1,$limit=20,$start=0,$field='*',$totalshow=1)
+    public function listData($where, $order, $page = 1, $limit = 20, $start = 0, $field = '*', $totalshow = 1)
     {
-        if(!is_array($where)){
-            $where = json_decode($where,true);
+        if (!is_array($where)) {
+            $where = json_decode($where, true);
         }
-        $limit_str = ($limit * ($page-1) + $start) .",".$limit;
-        if($totalshow==1) {
-            if ($where){
+        $limit_str = ($limit * ($page - 1) + $start).",".$limit;
+        if ($totalshow == 1) {
+            if ($where) {
                 $total = $this->where($where)->count();
-            }else{
+            } else {
                 $total = $this->count();
             }
 
         }
         $list = [];
-        if ($where){
+        if ($where) {
             $list = $this->where($where)->order($order)->limit($limit_str)->select();
-        }else{
+        } else {
             $list = $this->order($order)->limit($limit_str)->select();
         }
 
-        return ['code'=>1,'msg'=>'数据列表','page'=>$page,'pagecount'=>ceil($total/$limit),'limit'=>$limit,'total'=>$total,'list'=>$list];
+        return ['code'  => 1, 'msg' => '数据列表', 'page' => $page, 'pagecount' => ceil($total / $limit),
+                'limit' => $limit, 'total' => $total, 'list' => $list
+        ];
     }
 
     public function saveData($data)
     {
         $user = model('Admin')->checkLogin();
         $data['user_id'] = $user['info']['admin_id'];
-        if($data['id']){
+        if ($data['id']) {
             $data['update_time'] = time();
-            return $this->save($data,["id"=>["eq",$data['id']]]);
-        }else{
+            return $this->save($data, ["id" => ["eq", $data['id']]]);
+        } else {
             $data['create_time'] = time();
             $data['update_time'] = time();
             return $this->insert($data);
@@ -87,12 +90,13 @@ class App extends Base {
      * 测试过程中没有安装表结构的话,自动创建表结构
      * @return bool
      */
-    public function createTableIfNotExists() {
+    public function createTableIfNotExists()
+    {
         if ($this->lockTableUpdate(1) === true) {
             return true;
         }
-        if (!Db::execute("SHOW TABLES LIKE '". config('database.prefix') . $this->name ."'")) {
-            $sql = "CREATE TABLE `". config('database.prefix') . $this->name ."` (
+        if (!Db::execute("SHOW TABLES LIKE '".config('database.prefix').$this->name."'")) {
+            $sql = "CREATE TABLE `".config('database.prefix').$this->name."` (
                 `id` int(13) unsigned NOT NULL AUTO_INCREMENT COMMENT '主键自增',
                 `name` varchar(255) DEFAULT NULL COMMENT 'app名称',
                 `ver_num` varchar(255) DEFAULT NULL COMMENT '版本号',

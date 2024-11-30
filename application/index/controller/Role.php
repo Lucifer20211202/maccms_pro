@@ -1,6 +1,6 @@
 <?php
+
 namespace app\index\controller;
-use think\Controller;
 
 class Role extends Base
 {
@@ -38,7 +38,7 @@ class Role extends Base
     {
         $param = mac_param_url();
         $this->check_ajax();
-        $this->check_search($param,1);
+        $this->check_search($param, 1);
         $this->label_search($param);
         return $this->label_fetch('role/ajax_search');
     }
@@ -46,7 +46,7 @@ class Role extends Base
     public function detail()
     {
         $info = $this->label_role_detail();
-        return $this->label_fetch( mac_tpl_fetch('role',$info['role_tpl'],'detail') );
+        return $this->label_fetch(mac_tpl_fetch('role', $info['role_tpl'], 'detail'));
     }
 
     public function ajax_detail()

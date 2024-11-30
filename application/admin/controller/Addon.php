@@ -49,7 +49,7 @@ class Addon extends Base
             return $this->error(lang('param_err'));
         }
 
-        if (!is_dir(ADDON_PATH . $name)) {
+        if (!is_dir(ADDON_PATH.$name)) {
             return $this->error(lang('get_dir_err'));
         }
 
@@ -66,10 +66,12 @@ class Addon extends Base
             foreach ($config as $k => &$v) {
                 if (isset($params[$v['name']])) {
                     if ($v['type'] == 'array') {
-                        $params[$v['name']] = is_array($params[$v['name']]) ? $params[$v['name']] : (array)json_decode($params[$v['name']], true);
+                        $params[$v['name']] = is_array($params[$v['name']]) ? $params[$v['name']] : (array) json_decode($params[$v['name']],
+                            true);
                         $value = $params[$v['name']];
                     } else {
-                        $value = is_array($params[$v['name']]) ? implode(',', $params[$v['name']]) : $params[$v['name']];
+                        $value = is_array($params[$v['name']]) ? implode(',',
+                            $params[$v['name']]) : $params[$v['name']];
                     }
                     $v['value'] = $value;
                 }
@@ -91,9 +93,9 @@ class Addon extends Base
 
             if ($k == 0) {
                 $v['content'] = [
-                    'fixed' => lang('admin/addon/mode/fixed'),
+                    'fixed'  => lang('admin/addon/mode/fixed'),
                     'random' => lang('admin/addon/mode/every_time_random'),
-                    'daily' => lang('admin/addon/mode/daily_switch'),
+                    'daily'  => lang('admin/addon/mode/daily_switch'),
                 ];
             }
         }
@@ -111,18 +113,18 @@ class Addon extends Base
 
     public function downloaded()
     {
-        $offset = (int)$this->request->get("offset");
-        $limit = (int)$this->request->get("limit");
+        $offset = (int) $this->request->get("offset");
+        $limit = (int) $this->request->get("limit");
         $filter = $this->request->get("filter");
         $search = $this->request->param("wd");
         $search = htmlspecialchars(strip_tags($search));
-        $key = $GLOBALS['config']['app']['cache_flag'] . '_' . 'onlineaddons';
+        $key = $GLOBALS['config']['app']['cache_flag'].'_'.'onlineaddons';
         $onlineaddons = Cache::get($key);
         if (!is_array($onlineaddons)) {
             $onlineaddons = [];
-            $result = mac_curl_get(base64_decode('aHR0cDovL2FwaS5tYWNjbXMucHJv') . '/addon/index');
+            $result = mac_curl_get(base64_decode('aHR0cDovL2FwaS5tYWNjbXMucHJv').'/addon/index');
             if ($result['ret']) {
-                $json = json_decode($result['msg'], TRUE);
+                $json = json_decode($result['msg'], true);
                 $rows = isset($json['rows']) ? $json['rows'] : [];
                 foreach ($rows as $index => $row) {
                     $onlineaddons[$row['name']] = $row;
@@ -130,12 +132,13 @@ class Addon extends Base
             }
             Cache::set($key, $onlineaddons, 600);
         }
-        $filter = (array)json_decode($filter, true);
+        $filter = (array) json_decode($filter, true);
         $addons = get_addon_list();
         $list = [];
         foreach ($addons as $k => $v) {
-            if ($search && stripos($v['name'], $search) === FALSE && stripos($v['intro'], $search) === FALSE)
+            if ($search && stripos($v['name'], $search) === false && stripos($v['intro'], $search) === false) {
                 continue;
+            }
 
             if (isset($onlineaddons[$v['name']])) {
                 $v = array_merge($onlineaddons[$v['name']], $v);
@@ -163,7 +166,7 @@ class Addon extends Base
                 }
             }
             $v['url'] = addon_url($v['name']);
-            $v['createtime'] = filemtime(ADDON_PATH . $v['name']);
+            $v['createtime'] = filemtime(ADDON_PATH.$v['name']);
             $v['install'] = '1';
             if ($filter && isset($filter['category_id']) && is_numeric($filter['category_id']) && $filter['category_id'] != $v['category_id']) {
                 continue;
@@ -181,47 +184,13 @@ class Addon extends Base
     }
 
     /**
-     * 安装
-     */
-    public function install()
-    {
-        $param = input();
-        $name = $param['name'];
-        $force = (int)$param['force'];
-        if (!$name) {
-            return $this->error(lang('param_err'));
-        }
-        try {
-            $uid = $this->request->post("uid");
-            $token = $this->request->post("token");
-            $version = $this->request->post("version");
-            $faversion = $this->request->post("faversion");
-            $extend = [
-                'uid' => $uid,
-                'token' => $token,
-                'version' => $version,
-                'faversion' => $faversion,
-            ];
-            Service::install($name, $force, $extend);
-            $info = get_addon_info($name);
-            $info['config'] = get_addon_config($name) ? 1 : 0;
-            $info['state'] = 1;
-            return $this->success(lang('install_err'));
-        } catch (AddonException $e) {
-            return $this->result($e->getData(), $e->getCode(), $e->getMessage());
-        } catch (Exception $e) {
-            return $this->error($e->getMessage(), $e->getCode());
-        }
-    }
-
-    /**
      * 卸载
      */
     public function uninstall()
     {
         $param = input();
         $name = $param['name'];
-        $force = (int)$param['force'];
+        $force = (int) $param['force'];
         if (!$name) {
             return $this->error(lang('param_err'));
         }
@@ -245,16 +214,16 @@ class Addon extends Base
      * 禁用启用
      * MOFIFY BY WALLE     2021-9-23     在一键安装时调用以便直接启用
      */
-    public function state($dd = NULL)
+    public function state($dd = null)
     {
-        if ($dd == NULL) {
+        if ($dd == null) {
             $param = input();
         } else {
             $param = $dd;
         }
         $name = $param['name'];
         $action = $param['action'];
-        $force = (int)$param['force'];
+        $force = (int) $param['force'];
         if (!$name) {
             return $this->error(lang('param_err'));
         }
@@ -282,19 +251,19 @@ class Addon extends Base
             return $this->error($validate->getError());
         }
         $file = $this->request->file('file');
-        $addonTmpDir = RUNTIME_PATH . 'addons' . DS;
+        $addonTmpDir = RUNTIME_PATH.'addons'.DS;
         if (!is_dir($addonTmpDir)) {
             @mkdir($addonTmpDir, 0755, true);
         }
         $info = $file->rule('uniqid')->validate(['size' => 10240000, 'ext' => 'zip'])->move($addonTmpDir);
         if ($info) {
             $tmpName = substr($info->getFilename(), 0, stripos($info->getFilename(), '.'));
-            $tmpAddonDir = ADDON_PATH . $tmpName . DS;
-            $tmpFile = $addonTmpDir . $info->getSaveName();
+            $tmpAddonDir = ADDON_PATH.$tmpName.DS;
+            $tmpFile = $addonTmpDir.$info->getSaveName();
             try {
                 Service::unzip($tmpName);
                 @unlink($tmpFile);
-                $infoFile = $tmpAddonDir . 'info.ini';
+                $infoFile = $tmpAddonDir.'info.ini';
                 if (!is_file($infoFile)) {
                     throw new Exception(lang('admin/addon/lack_config_err'));
                 }
@@ -305,7 +274,7 @@ class Addon extends Base
                     throw new Exception(lang('admin/addon/name_empty_err'));
                 }
 
-                $newAddonDir = ADDON_PATH . $name . DS;
+                $newAddonDir = ADDON_PATH.$name.DS;
                 if (is_dir($newAddonDir)) {
                     throw new Exception(lang('admin/addon/haved_err'));
                 }
@@ -351,17 +320,14 @@ class Addon extends Base
         }
     }
 
-    public function add()
-    {
-        return $this->fetch('admin@addon/add');
-    }
-
     /**
-     * 更新插件
+     * 安装
      */
-    public function upgrade()
+    public function install()
     {
-        $name = $this->request->post("name");
+        $param = input();
+        $name = $param['name'];
+        $force = (int) $param['force'];
         if (!$name) {
             return $this->error(lang('param_err'));
         }
@@ -371,20 +337,59 @@ class Addon extends Base
             $version = $this->request->post("version");
             $faversion = $this->request->post("faversion");
             $extend = [
-                'uid' => $uid,
-                'token' => $token,
-                'version' => $version,
+                'uid'       => $uid,
+                'token'     => $token,
+                'version'   => $version,
                 'faversion' => $faversion,
             ];
-            //调用更新的方法
-            Service::upgrade($name, $extend);
-            Cache::rm('__menu__');
-            return $this->success(lang('update_ok'));
+            Service::install($name, $force, $extend);
+            $info = get_addon_info($name);
+            $info['config'] = get_addon_config($name) ? 1 : 0;
+            $info['state'] = 1;
+            return $this->success(lang('install_err'));
         } catch (AddonException $e) {
             return $this->result($e->getData(), $e->getCode(), $e->getMessage());
         } catch (Exception $e) {
-            return $this->error($e->getMessage());
+            return $this->error($e->getMessage(), $e->getCode());
         }
+    }
+
+    /**
+     * walle
+     * 删除一个不为空的目录
+     * @param $path
+     * @return bool
+     */
+    static function deldir($path)
+    {
+        //如果是目录则继续
+        if (is_dir($path)) {
+            //扫描一个文件夹内的所有文件夹和文件并返回数组
+            $p = scandir($path);
+            //如果 $p 中有两个以上的元素则说明当前 $path 不为空
+            if (count($p) > 2) {
+                foreach ($p as $val) {
+                    //排除目录中的.和..
+                    if ($val != "." && $val != "..") {
+                        //如果是目录则递归子目录，继续操作
+                        if (is_dir($path.DS.$val)) {
+                            //子目录中操作删除文件夹和文件
+                            self::deldir($path.DS.$val);
+                        } else {
+                            //如果是文件直接删除
+                            unlink($path.DS.$val);
+                        }
+                    }
+                }
+            }
+        }
+        //删除目录
+        return rmdir($path);
+    }
+
+    public function add()
+    {
+        return $this->fetch('admin@addon/add');
     }
 
     /**
@@ -438,19 +443,42 @@ class Addon extends Base
      **/
 
     /**
+     * 更新插件
+     */
+    public function upgrade()
+    {
+        $name = $this->request->post("name");
+        if (!$name) {
+            return $this->error(lang('param_err'));
+        }
+        try {
+            $uid = $this->request->post("uid");
+            $token = $this->request->post("token");
+            $version = $this->request->post("version");
+            $faversion = $this->request->post("faversion");
+            $extend = [
+                'uid'       => $uid,
+                'token'     => $token,
+                'version'   => $version,
+                'faversion' => $faversion,
+            ];
+            //调用更新的方法
+            Service::upgrade($name, $extend);
+            Cache::rm('__menu__');
+            return $this->success(lang('update_ok'));
+        } catch (AddonException $e) {
+            return $this->result($e->getData(), $e->getCode(), $e->getMessage());
+        } catch (Exception $e) {
+            return $this->error($e->getMessage());
+        }
+    }
+
+    /**
      * 应用市场列表     作者:walle
      */
     public function market()
     {
         return $this->market_list_data();
-    }
-
-    /**
-     * 模板市场列表     作者:walle
-     */
-    public function markettheme()
-    {
-        return $this->market_list_data('theme');
     }
 
     public function market_list_data($type = 'plugins')
@@ -477,7 +505,7 @@ class Addon extends Base
         $data["sortBy"] = $param['sortBy'] ? $param['sortBy'] : '';
         $data["type"] = $type;
 
-        $res = self::post($this->data_api_host . $this->data_list_api_url, $data, ["lang:{$this->local}"]);
+        $res = self::post($this->data_api_host.$this->data_list_api_url, $data, ["lang:{$this->local}"]);
 
         if (false === $res) {
             return $this->error("API error");
@@ -508,33 +536,45 @@ class Addon extends Base
         }
     }
 
+    /**
+     * 模板市场列表     作者:walle
+     */
+    public function markettheme()
+    {
+        return $this->market_list_data('theme');
+    }
+
     public function curl_test()
     {
         return [
             "code" => 1,
-            "msg" => "成功",
+            "msg"  => "成功",
             "info" => [
-                "list" => [
+                "list"          => [
                     [
-                        "id" => 11,
-                        "name" => "应用名称",
-                        "pc_preview" => "https://pimg.macvideojs.com/images/8c68ac501a1203d8f356486feba89405.jpg",],
+                        "id"         => 11,
+                        "name"       => "应用名称",
+                        "pc_preview" => "https://pimg.macvideojs.com/images/8c68ac501a1203d8f356486feba89405.jpg",
+                    ],
                     [
-                        "id" => 11,
-                        "name" => "应用名称2",
-                        "pc_preview" => "https://pimg.macvideojs.com/images/8c68ac501a1203d8f356486feba89405.jpg",],
+                        "id"         => 11,
+                        "name"       => "应用名称2",
+                        "pc_preview" => "https://pimg.macvideojs.com/images/8c68ac501a1203d8f356486feba89405.jpg",
+                    ],
                     [
-                        "id" => 11,
-                        "name" => "应用名称3",
-                        "pc_preview" => "https://pimg.macvideojs.com/images/8c68ac501a1203d8f356486feba89405.jpg",],
+                        "id"         => 11,
+                        "name"       => "应用名称3",
+                        "pc_preview" => "https://pimg.macvideojs.com/images/8c68ac501a1203d8f356486feba89405.jpg",
+                    ],
                     [
-                        "id" => 11,
-                        "name" => "应用名称4",
-                        "pc_preview" => "https://pimg.macvideojs.com/images/8c68ac501a1203d8f356486feba89405.jpg",],
+                        "id"         => 11,
+                        "name"       => "应用名称4",
+                        "pc_preview" => "https://pimg.macvideojs.com/images/8c68ac501a1203d8f356486feba89405.jpg",
+                    ],
                 ],
-                "count" => 6,
+                "count"         => 6,
                 "search_number" => 4,
-                "type" => "plugins",
+                "type"          => "plugins",
             ],
         ];
     }
@@ -547,14 +587,6 @@ class Addon extends Base
         return $this->marketinfo_data();
     }
 
-    /**
-     * 模板市场管理详情页
-     */
-    public function marketthemeinfo()
-    {
-        return $this->marketinfo_data('theme');
-    }
-
     public function marketinfo_data($type = 'plugins')
     {
         $param = input();
@@ -562,9 +594,9 @@ class Addon extends Base
             return $this->error(lang('param_err'));
         }
         if ($type == 'plugins') {
-            $re_url = $this->data_api_host . $this->data_info_p_api_url;
+            $re_url = $this->data_api_host.$this->data_info_p_api_url;
         } else {
-            $re_url = $this->data_api_host . $this->data_info_api_url;
+            $re_url = $this->data_api_host.$this->data_info_api_url;
         }
 
         $res = self::post($re_url, $param, ["lang:{$this->local}"]);
@@ -588,6 +620,14 @@ class Addon extends Base
         } else {
             return $this->fetch('admin@addon/marketthemeinfo');
         }
+    }
+
+    /**
+     * 模板市场管理详情页
+     */
+    public function marketthemeinfo()
+    {
+        return $this->marketinfo_data('theme');
     }
 
     /**
@@ -617,10 +657,10 @@ class Addon extends Base
         }
         $param["code"] = $param['license'];
         if ($param['type'] == "theme") {
-            $url = $this->data_api_host . $this->verify_code_api_url;
+            $url = $this->data_api_host.$this->verify_code_api_url;
         }
         if ($param['type'] == "plugins") {
-            $url = $this->data_api_host . $this->verify_code_p_api_url;
+            $url = $this->data_api_host.$this->verify_code_p_api_url;
         }
 
         $res = self::post($url, $param, ["lang:{$this->local}"]);
@@ -629,13 +669,13 @@ class Addon extends Base
             $res = json_decode($res, true);
         }
         if (($res["code"] > 1) || ($res["code"] == 0)) {
-            return ["code" => $res["code"], "message" => "API:" . $res["msg"], "data" => ""];
+            return ["code" => $res["code"], "message" => "API:".$res["msg"], "data" => ""];
         }
         if ($param['type'] == "theme") {
-            $url2 = $this->data_api_host . $this->get_downurl_api_url;
+            $url2 = $this->data_api_host.$this->get_downurl_api_url;
         }
         if ($param['type'] == "plugins") {
-            $url2 = $this->data_api_host . $this->get_downurl_p_api_url;
+            $url2 = $this->data_api_host.$this->get_downurl_p_api_url;
         }
 
         $res = self::post($url2, $param, ["lang:{$this->local}"]);
@@ -644,10 +684,13 @@ class Addon extends Base
             $res = json_decode($res, true);
         }
         if (($res["code"] > 1) || ($res["code"] == 0)) {
-            return $this->error("APP:" . $res["msg"]);
+            return $this->error("APP:".$res["msg"]);
         }
         if ($res["code"] == 1) {
-            return ["code" => 200, "message" => "", "data" => ["down_url" => $res["info"]["source"], "type" => $param["type"], "file_name" => $res["info"]["file_name"]]];
+            return ["code" => 200, "message" => "", "data" => [
+                "down_url" => $res["info"]["source"], "type" => $param["type"], "file_name" => $res["info"]["file_name"]
+            ]
+            ];
         }
         return ["code" => $res["code"], "message" => $res["msg"], "data" => ""];
     }
@@ -662,10 +705,10 @@ class Addon extends Base
             return $this->error(lang('param_err'));
         }
         if ($param['type'] == "theme") {
-            $url2 = $this->data_api_host . $this->get_downurl_api_url;
+            $url2 = $this->data_api_host.$this->get_downurl_api_url;
         }
         if ($param['type'] == "plugins") {
-            $url2 = $this->data_api_host . $this->get_downurl_p_api_url;
+            $url2 = $this->data_api_host.$this->get_downurl_p_api_url;
         }
 
         self::post($url2, $param);    //访问下载接口,使下载量+1
@@ -685,13 +728,13 @@ class Addon extends Base
         $this->assign('id', $param['id']);
         $this->assign('type', $param['type']);
 
-        $res = self::post($this->data_api_host . $this->data_info_api_url, $param, ["lang:{$this->local}"]);
+        $res = self::post($this->data_api_host.$this->data_info_api_url, $param, ["lang:{$this->local}"]);
 
         if (!is_array($res)) {
             $res = json_decode($res, true);
         }
         if (($res["code"] > 1) || ($res["code"] == 0)) {
-            return $this->error("APP:" . $res["msg"]);
+            return $this->error("APP:".$res["msg"]);
         }
 
 
@@ -729,7 +772,7 @@ class Addon extends Base
         $data["images[]"] = new \CURLFile($_FILES["images"]['tmp_name']);
         $data["videos[]"] = new \CURLFile($_FILES["videos"]['tmp_name']);
 
-        $res = self::post($this->data_api_host . $this->api_feedback_url, $data, ["lang:{$this->local}"]);
+        $res = self::post($this->data_api_host.$this->api_feedback_url, $data, ["lang:{$this->local}"]);
 
         $res = json_decode($res, true);
         if ($res['code'] == 1) {
@@ -764,12 +807,12 @@ class Addon extends Base
             $this->error("请先安装zip扩展");
         }
         $dir_name = substr(basename($file_name), 0, strlen(basename($file_name)) - 4);
-        if (is_dir(dirname($file_name) . DS . $dir_name)) {
+        if (is_dir(dirname($file_name).DS.$dir_name)) {
             //删除zip
             unlink($file_name);
             return $this->error('该应用已存在,请勿重复安装');
         }
-        $res = $zip->extractTo(dirname($file_name) . DS . $dir_name);
+        $res = $zip->extractTo(dirname($file_name).DS.$dir_name);
         if (!$res) {
             $this->error("解压失败");
         }
@@ -779,7 +822,7 @@ class Addon extends Base
 
         //$bouniqid_name = substr(basename($param["down_url"]),0,strlen(basename($param["down_url"]))-4);
         //判断插件的规则,,:插件目录里面要有与插件目录名一致的首字母大写的.php文件
-        if (!is_file(ADDON_PATH . $dir_name . DS . ucfirst($dir_name) . '.php')) {
+        if (!is_file(ADDON_PATH.$dir_name.DS.ucfirst($dir_name).'.php')) {
             $this->error("应用目录结构异常,不能正常使用");
             return;
         }
@@ -790,120 +833,15 @@ class Addon extends Base
         //$this->state(["name"=>$dir_name,"action"=>"enable","force"=>0]);
 
         if ($param['type'] == "theme") {
-            $url2 = $this->data_api_host . $this->get_downurl_api_url;
+            $url2 = $this->data_api_host.$this->get_downurl_api_url;
         }
         if ($param['type'] == "plugins") {
-            $url2 = $this->data_api_host . $this->get_downurl_p_api_url;
+            $url2 = $this->data_api_host.$this->get_downurl_p_api_url;
         }
 
         self::post($url2, $param);    //访问下载接口,使下载量+1
 
         $this->success("安装成功");
-    }
-
-    /**
-     * 下载并且一键安装模板
-     */
-    public function downandinstalltheme()
-    {
-        //下载zip文件到Addon目录
-        $param = input();
-        if ('zip' != pathinfo($param["down_url"], PATHINFO_EXTENSION)) {
-            return $this->error(lang('admin/addon/downandinstalltheme/ext_err'));
-        }
-        if (!$param["file_name"]) {
-            return $this->error("file_name" . lang('admin/addon/downandinstalltheme/params_miss'));
-        }
-        $file_name = $this->_getFile($param["down_url"], $param["file_name"], 1, "./template/");
-        if (false === $file_name) {
-            return $this->error(lang('download_err'));
-        }
-
-        //判断是否有重名
-        $dir_name = substr(basename($file_name), 0, strlen(basename($file_name)) - 4);
-        /**      改为下面的直接覆盖
-         * if (is_dir("./template/".$dir_name)){
-         * unlink($file_name);
-         * return $this->error("模板已存在,请在本地模板管理菜单中操作");
-         * }**/
-        //解压zip文件
-        $zip = new \ZipArchive();
-        $zip->open($file_name);
-        if (!$zip) {
-            return $this->error(lang('admin/addon/downandinstalltheme/install_zip_extension'));
-        }
-        $dir_name_tmp = $dir_name . '_tmp';
-        $res = $zip->extractTo(dirname($file_name) . DS . $dir_name_tmp);
-        if (!$res) {
-            //删除zip
-            unlink($file_name);
-            return $this->error(lang('admin/addon/downandinstalltheme/unzip_failed'));
-        }
-        //删除zip
-        unlink($file_name);
-
-        //$dir_name = substr(basename($file_name),0,strlen(basename($file_name))-4);
-
-        if ($param['type'] == "theme") {
-            $url2 = $this->data_api_host . $this->get_downurl_api_url;
-        }
-        if ($param['type'] == "plugins") {
-            $url2 = $this->data_api_host . $this->get_downurl_p_api_url;
-        }
-
-        self::post($url2, $param);    //访问下载接口,使下载量+1
-
-        if (is_dir("./template/" . $dir_name)) {
-            self::deldir("./template/" . $dir_name);
-            rename(dirname($file_name) . DS . $dir_name_tmp, dirname($file_name) . DS . $dir_name);
-            return $this->success(lang('admin/addon/downandinstalltheme/tpl_auto_updated'));
-        } else {
-            rename(dirname($file_name) . DS . $dir_name_tmp, dirname($file_name) . DS . $dir_name);
-            return $this->success(lang('admin/addon/downandinstalltheme/tpl_installed_set_config'));
-        }
-
-
-        //直接设置新的的模板
-        /**$config = config('maccms');
-         * $config["site"]["template_dir"] = $dir_name;
-         * $res = mac_save_config_data(APP_PATH . 'extra/maccms.php', $config);
-         * if ($res === false) {
-         * return $this->error(lang('安装失败'));
-         * }**/     //walle  取消直接应用要用户自己去设置里启用
-        return $this->success(lang('install_ok'));
-    }
-
-    /**
-     * walle
-     * 删除一个不为空的目录
-     * @param $path
-     * @return bool
-     */
-    static function deldir($path)
-    {
-        //如果是目录则继续
-        if (is_dir($path)) {
-            //扫描一个文件夹内的所有文件夹和文件并返回数组
-            $p = scandir($path);
-            //如果 $p 中有两个以上的元素则说明当前 $path 不为空
-            if (count($p) > 2) {
-                foreach ($p as $val) {
-                    //排除目录中的.和..
-                    if ($val != "." && $val != "..") {
-                        //如果是目录则递归子目录，继续操作
-                        if (is_dir($path . DS . $val)) {
-                            //子目录中操作删除文件夹和文件
-                            self::deldir($path . DS . $val);
-                        } else {
-                            //如果是文件直接删除
-                            unlink($path . DS . $val);
-                        }
-                    }
-                }
-            }
-        }
-        //删除目录
-        return rmdir($path);
     }
 
     protected function _getFile($url, $filename, $type = 0, $path = '')
@@ -943,10 +881,82 @@ class Addon extends Base
         if ($path == '') {
             $path = ADDON_PATH;
         }
-        $fp2 = @fopen($path . $filename, 'a');
+        $fp2 = @fopen($path.$filename, 'a');
         fwrite($fp2, $content);
         fclose($fp2);
         unset($content, $url);
-        return $path . $filename;
+        return $path.$filename;
+    }
+
+    /**
+     * 下载并且一键安装模板
+     */
+    public function downandinstalltheme()
+    {
+        //下载zip文件到Addon目录
+        $param = input();
+        if ('zip' != pathinfo($param["down_url"], PATHINFO_EXTENSION)) {
+            return $this->error(lang('admin/addon/downandinstalltheme/ext_err'));
+        }
+        if (!$param["file_name"]) {
+            return $this->error("file_name".lang('admin/addon/downandinstalltheme/params_miss'));
+        }
+        $file_name = $this->_getFile($param["down_url"], $param["file_name"], 1, "./template/");
+        if (false === $file_name) {
+            return $this->error(lang('download_err'));
+        }
+
+        //判断是否有重名
+        $dir_name = substr(basename($file_name), 0, strlen(basename($file_name)) - 4);
+        /**      改为下面的直接覆盖
+         * if (is_dir("./template/".$dir_name)){
+         * unlink($file_name);
+         * return $this->error("模板已存在,请在本地模板管理菜单中操作");
+         * }**/
+        //解压zip文件
+        $zip = new \ZipArchive();
+        $zip->open($file_name);
+        if (!$zip) {
+            return $this->error(lang('admin/addon/downandinstalltheme/install_zip_extension'));
+        }
+        $dir_name_tmp = $dir_name.'_tmp';
+        $res = $zip->extractTo(dirname($file_name).DS.$dir_name_tmp);
+        if (!$res) {
+            //删除zip
+            unlink($file_name);
+            return $this->error(lang('admin/addon/downandinstalltheme/unzip_failed'));
+        }
+        //删除zip
+        unlink($file_name);
+
+        //$dir_name = substr(basename($file_name),0,strlen(basename($file_name))-4);
+
+        if ($param['type'] == "theme") {
+            $url2 = $this->data_api_host.$this->get_downurl_api_url;
+        }
+        if ($param['type'] == "plugins") {
+            $url2 = $this->data_api_host.$this->get_downurl_p_api_url;
+        }
+
+        self::post($url2, $param);    //访问下载接口,使下载量+1
+
+        if (is_dir("./template/".$dir_name)) {
+            self::deldir("./template/".$dir_name);
+            rename(dirname($file_name).DS.$dir_name_tmp, dirname($file_name).DS.$dir_name);
+            return $this->success(lang('admin/addon/downandinstalltheme/tpl_auto_updated'));
+        } else {
+            rename(dirname($file_name).DS.$dir_name_tmp, dirname($file_name).DS.$dir_name);
+            return $this->success(lang('admin/addon/downandinstalltheme/tpl_installed_set_config'));
+        }
+
+
+        //直接设置新的的模板
+        /**$config = config('maccms');
+         * $config["site"]["template_dir"] = $dir_name;
+         * $res = mac_save_config_data(APP_PATH . 'extra/maccms.php', $config);
+         * if ($res === false) {
+         * return $this->error(lang('安装失败'));
+         * }**/     //walle  取消直接应用要用户自己去设置里启用
+        return $this->success(lang('install_ok'));
     }
 }

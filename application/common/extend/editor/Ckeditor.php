@@ -1,7 +1,9 @@
 <?php
+
 namespace app\common\extend\editor;
 
-class Ckeditor {
+class Ckeditor
+{
 
     public $name = 'Ckeditor';
     public $ver = '1.0';
@@ -11,9 +13,9 @@ class Ckeditor {
 
     }
 
-    public function back($info='',$status=0,$data=[])
+    public function back($info = '', $status = 0, $data = [])
     {
-        $arr=[];
+        $arr = [];
         if ($status == 1) {
             $arr['uploaded'] = 1;
             $arr['fileName'] = '';

@@ -1,8 +1,9 @@
 <?php
+
 namespace app\index\controller;
 
-use think\Request;
 use think\Cache;
+use think\Request;
 
 class Vod extends Base
 {
@@ -18,22 +19,22 @@ class Vod extends Base
 
         $encode = md5(json_encode($param));
 
-        $cache_for_id_data = Cache::get('index_vod_type_' . $encode);
+        $cache_for_id_data = Cache::get('index_vod_type_'.$encode);
 
         if (empty($cache_for_id_data)) {
             $vod_class = model('type')->where(['type_id' => isset($param['id']) ? $param['id'] : 1])->column('type_extend');
             $vod_class = explode(',', json_decode($vod_class[0])->class);
             $info = $this->label_type();
             $cache_data = ['info' => $info, 'vod_class' => $vod_class];
-            Cache::set('index_vod_type_' . $encode, $cache_data, 60);
-        }else{
+            Cache::set('index_vod_type_'.$encode, $cache_data, 60);
+        } else {
             $info = $cache_for_id_data['info'];
             $vod_class = $cache_for_id_data['vod_class'];
         }
 
-        return $this->label_fetch( mac_tpl_fetch('vod',$info['type_tpl'],'type') , 1 , 'html', [
+        return $this->label_fetch(mac_tpl_fetch('vod', $info['type_tpl'], 'type'), 1, 'html', [
             'vod_class' => $vod_class,
-            'info' => $info,
+            'info'      => $info,
         ]);
 
     }
@@ -42,7 +43,7 @@ class Vod extends Base
     {
 //        $this->check_show(1);
         $info = $this->label_type();
-        return $this->label_fetch( mac_tpl_fetch('vod',$info['type_tpl_list'],'show') );
+        return $this->label_fetch(mac_tpl_fetch('vod', $info['type_tpl_list'], 'show'));
     }
 
     public function ajax_show()
@@ -72,7 +73,7 @@ class Vod extends Base
     {
         $param = mac_param_url();
         $this->check_ajax();
-        $this->check_search($param,1);
+        $this->check_search($param, 1);
         $this->label_search($param);
         return $this->label_fetch('vod/ajax_search');
     }
@@ -80,16 +81,16 @@ class Vod extends Base
     public function detail()
     {
         $info = $this->label_vod_detail();
-        if($info['vod_copyright']==1 && !empty($info['vod_jumpurl']) && $GLOBALS['config']['app']['copyright_status']==2){
+        if ($info['vod_copyright'] == 1 && !empty($info['vod_jumpurl']) && $GLOBALS['config']['app']['copyright_status'] == 2) {
             return $this->label_fetch('vod/copyright');
         }
-        if(!empty($info['vod_pwd']) && session('1-1-'.$info['vod_id'])!='1'){
+        if (!empty($info['vod_pwd']) && session('1-1-'.$info['vod_id']) != '1') {
             return $this->label_fetch('vod/detail_pwd');
         }
 
         $return = [];
-        $res = model('Point')->where(['type_id' => 1,'detail_id' => $info['vod_id']])->column('score');
-        $count = model('Point')->where(['type_id' => 1,'detail_id' => $info['vod_id']])->count();
+        $res = model('Point')->where(['type_id' => 1, 'detail_id' => $info['vod_id']])->column('score');
+        $count = model('Point')->where(['type_id' => 1, 'detail_id' => $info['vod_id']])->count();
         $return['count'] = $count;
         $total = 0;
 
@@ -99,21 +100,26 @@ class Vod extends Base
 
         $return['vod_score_num'] = $count;
 
-        if($count){
-            $return['vod_score'] = round($total/$count,2);
+        if ($count) {
+            $return['vod_score'] = round($total / $count, 2);
 
-            $_1 = model('Point')->where(['type_id' => 1,'detail_id' => $info['vod_id']])->where('score','between',[0,2])->count();
-            $_2 = model('Point')->where(['type_id' => 1,'detail_id' => $info['vod_id']])->where('score','between',[2,4])->count();
-            $_3 = model('Point')->where(['type_id' => 1,'detail_id' => $info['vod_id']])->where('score','between',[4,6])->count();
-            $_4 = model('Point')->where(['type_id' => 1,'detail_id' => $info['vod_id']])->where('score','between',[6,8])->count();
-            $_5 = model('Point')->where(['type_id' => 1,'detail_id' => $info['vod_id']])->where('score','between',[8,10])->count();
+            $_1 = model('Point')->where(['type_id' => 1, 'detail_id' => $info['vod_id']])->where('score', 'between',
+                [0, 2])->count();
+            $_2 = model('Point')->where(['type_id' => 1, 'detail_id' => $info['vod_id']])->where('score', 'between',
+                [2, 4])->count();
+            $_3 = model('Point')->where(['type_id' => 1, 'detail_id' => $info['vod_id']])->where('score', 'between',
+                [4, 6])->count();
+            $_4 = model('Point')->where(['type_id' => 1, 'detail_id' => $info['vod_id']])->where('score', 'between',
+                [6, 8])->count();
+            $_5 = model('Point')->where(['type_id' => 1, 'detail_id' => $info['vod_id']])->where('score', 'between',
+                [8, 10])->count();
 
-            $return['0-2'] = (round($_1/$count,2)*100).'%';
-            $return['2-4'] = (round($_2/$count,2)*100).'%';
-            $return['4-6'] = (round($_3/$count,2)*100).'%';
-            $return['6-8'] = (round($_4/$count,2)*100).'%';
-            $return['8-10'] = (round($_5/$count,2)*100).'%';
-        }else{
+            $return['0-2'] = (round($_1 / $count, 2) * 100).'%';
+            $return['2-4'] = (round($_2 / $count, 2) * 100).'%';
+            $return['4-6'] = (round($_3 / $count, 2) * 100).'%';
+            $return['6-8'] = (round($_4 / $count, 2) * 100).'%';
+            $return['8-10'] = (round($_5 / $count, 2) * 100).'%';
+        } else {
             $return['vod_score'] = 0;
             $return['0-2'] = 0;
             $return['2-4'] = 0;
@@ -126,13 +132,14 @@ class Vod extends Base
 
         $trysee = $GLOBALS['config']['user']['trysee'];
 
-        if($info['vod_is_trysee'] >0){
+        if ($info['vod_is_trysee'] > 0) {
             $trysee = $info['vod_is_trysee'];
         }
 
-        $popedom = $this->check_user_popedom($info['type_id'], 3,$param,'player',$info,$trysee);
+        $popedom = $this->check_user_popedom($info['type_id'], 3, $param, 'player', $info, $trysee);
 
-        return $this->label_fetch(mac_tpl_fetch('vod',$info['vod_tpl'],'detail') , 1 ,'html', ['res' => $return,'popedom' => $popedom]);
+        return $this->label_fetch(mac_tpl_fetch('vod', $info['vod_tpl'], 'detail'), 1, 'html',
+            ['res' => $return, 'popedom' => $popedom]);
     }
 
     public function ajax_detail()
@@ -179,28 +186,28 @@ class Vod extends Base
                 model('Ulog')->saveData($data);
             }
         }
-        return $this->label_fetch( mac_tpl_fetch('vod',$info['vod_tpl_play'],'play') );
+        return $this->label_fetch(mac_tpl_fetch('vod', $info['vod_tpl_play'], 'play'));
     }
 
     public function player()
     {
-        $info = $this->label_vod_play('play',[],0,1);
+        $info = $this->label_vod_play('play', [], 0, 1);
         // 试看权限补充 START
         $param = mac_param_url();
         $trysee = $GLOBALS['config']['user']['trysee'];
-        if($info['vod_is_trysee'] >0){
+        if ($info['vod_is_trysee'] > 0) {
             $trysee = $info['vod_is_trysee'];
         }
-        $popedom = $this->check_user_popedom($info['type_id'], 3,$param,'player',$info,$trysee);
+        $popedom = $this->check_user_popedom($info['type_id'], 3, $param, 'player', $info, $trysee);
         if ($popedom['code'] != 3002) {
-            echo $this->error($popedom['msg'], mac_url('user/index') );
+            echo $this->error($popedom['msg'], mac_url('user/index'));
             die;
         }
         // 试看权限补充 END
-        if($info['vod_copyright']==1 && $GLOBALS['config']['app']['copyright_status']==4){
+        if ($info['vod_copyright'] == 1 && $GLOBALS['config']['app']['copyright_status'] == 4) {
             return $this->label_fetch('vod/copyright');
         }
-        if(!empty($info['vod_pwd_play']) && session('1-4-'.$info['vod_id'])!='1'){
+        if (!empty($info['vod_pwd_play']) && session('1-4-'.$info['vod_id']) != '1') {
             return $this->label_fetch('vod/player_pwd');
         }
         return $this->label_fetch('vod/player');
@@ -228,13 +235,13 @@ class Vod extends Base
                 model('Ulog')->saveData($data);
             }
         }
-        return $this->label_fetch( mac_tpl_fetch('vod',$info['vod_tpl_down'],'down'));
+        return $this->label_fetch(mac_tpl_fetch('vod', $info['vod_tpl_down'], 'down'));
     }
 
     public function downer()
     {
         $info = $this->label_vod_play('down');
-        if(!empty($info['vod_pwd_down']) && session('1-5-'.$info['vod_id'])!='1'){
+        if (!empty($info['vod_pwd_down']) && session('1-5-'.$info['vod_id']) != '1') {
             return $this->label_fetch('vod/downer_pwd');
         }
         return $this->label_fetch('vod/downer');
@@ -254,7 +261,7 @@ class Vod extends Base
 
     public function last_vod()
     {
-        cookie('is_last_vod',true);
+        cookie('is_last_vod', true);
         $info = $this->label_type();
         return $this->label_fetch('map/index');
     }

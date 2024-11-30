@@ -16,7 +16,7 @@ class Actor extends Base
     /**
      *  获取列表
      *
-     * @param Request $request
+     * @param  Request  $request
      * @return \think\response\Json
      */
     public function get_list(Request $request)
@@ -27,16 +27,16 @@ class Actor extends Base
         if (!$validate->scene($request->action())->check($param)) {
             return json([
                 'code' => 1001,
-                'msg'  => '参数错误: ' . $validate->getError(),
+                'msg'  => '参数错误: '.$validate->getError(),
             ]);
         }
-        $offset = isset($param['offset']) ? (int)$param['offset'] : 0;
-        $limit = isset($param['limit']) ? (int)$param['limit'] : 20;
+        $offset = isset($param['offset']) ? (int) $param['offset'] : 0;
+        $limit = isset($param['limit']) ? (int) $param['limit'] : 20;
         // 查询条件组装
         $where = [];
 
         if (isset($param['type_id'])) {
-            $where['type_id'] = (int)$param['type_id'];
+            $where['type_id'] = (int) $param['type_id'];
         }
 
         if (isset($param['sex'])) {
@@ -44,35 +44,35 @@ class Actor extends Base
         }
 
         if (isset($param['area']) && strlen($param['area']) > 0) {
-            $where['actor_area'] = ['like', '%' . format_sql_string($param['area']) . '%'];
+            $where['actor_area'] = ['like', '%'.format_sql_string($param['area']).'%'];
         }
 
         if (isset($param['letter']) && strlen($param['letter']) > 0) {
-            $where['actor_letter'] = ['like', '%' . format_sql_string($param['letter']) . '%'];
+            $where['actor_letter'] = ['like', '%'.format_sql_string($param['letter']).'%'];
         }
 
         if (isset($param['level']) && strlen($param['level']) > 0) {
-            $where['actor_level'] = ['like', '%' . format_sql_string($param['level']) . '%'];
+            $where['actor_level'] = ['like', '%'.format_sql_string($param['level']).'%'];
         }
 
         if (isset($param['name']) && strlen($param['name']) > 0) {
-            $where['actor_name'] = ['like', '%' . format_sql_string($param['name']) . '%'];
+            $where['actor_name'] = ['like', '%'.format_sql_string($param['name']).'%'];
         }
 
         if (isset($param['blood']) && strlen($param['blood']) > 0) {
-            $where['actor_blood'] = ['like', '%' . format_sql_string($param['blood']) . '%'];
+            $where['actor_blood'] = ['like', '%'.format_sql_string($param['blood']).'%'];
         }
 
         if (isset($param['starsign']) && strlen($param['starsign']) > 0) {
-            $where['actor_starsign'] = ['like', '%' . format_sql_string($param['starsign']) . '%'];
+            $where['actor_starsign'] = ['like', '%'.format_sql_string($param['starsign']).'%'];
         }
 
         if (isset($param['time_end']) && isset($param['time_start'])) {
-            $where['actor_time'] = ['between', [(int)$param['time_start'], (int)$param['time_end']]];
-        }elseif (isset($param['time_end'])) {
-            $where['actor_time'] = ['<', (int)$param['time_end']];
-        }elseif (isset($param['time_start'])) {
-            $where['actor_time'] = ['>', (int)$param['time_start']];
+            $where['actor_time'] = ['between', [(int) $param['time_start'], (int) $param['time_end']]];
+        } elseif (isset($param['time_end'])) {
+            $where['actor_time'] = ['<', (int) $param['time_end']];
+        } elseif (isset($param['time_start'])) {
+            $where['actor_time'] = ['>', (int) $param['time_start']];
         }
 
         // 数据获取
@@ -82,7 +82,7 @@ class Actor extends Base
             // 排序
             $order = "actor_time DESC";
             if (strlen($param['orderby']) > 0) {
-                $order = 'actor_' . $param['orderby'] . " DESC";
+                $order = 'actor_'.$param['orderby']." DESC";
             }
             $field = 'actor_id,actor_name,actor_en,actor_alias,actor_sex,actor_hits_month,actor_hits_week,actor_hits_day,actor_time';
             $list = model('Actor')->getListByCond($offset, $limit, $where, $order, $field, []);
@@ -103,7 +103,7 @@ class Actor extends Base
     /**
      * 视频演员详情
      *
-     * @param Request $request
+     * @param  Request  $request
      * @return \think\response\Json
      * @throws \think\db\exception\DataNotFoundException
      * @throws \think\db\exception\ModelNotFoundException
@@ -116,7 +116,7 @@ class Actor extends Base
         if (!$validate->scene($request->action())->check($param)) {
             return json([
                 'code' => 1001,
-                'msg'  => '参数错误: ' . $validate->getError(),
+                'msg'  => '参数错误: '.$validate->getError(),
             ]);
         }
 

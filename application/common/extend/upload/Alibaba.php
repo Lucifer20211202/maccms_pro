@@ -1,4 +1,5 @@
 <?php
+
 namespace app\common\extend\upload;
 
 class Alibaba
@@ -8,7 +9,7 @@ class Alibaba
 
     public function submit($file_path)
     {
-        $filePath = ROOT_PATH . $file_path;
+        $filePath = ROOT_PATH.$file_path;
 
         $url = 'https://kfupload.alibaba.com/mupload';
         $data = [];
@@ -30,9 +31,9 @@ class Alibaba
         $httpheader[] = "Accept-Encoding:gzip,deflate,sdch";
         $httpheader[] = "Accept-Language:zh-CN,zh;q=0.8";
         $httpheader[] = "Connection:close";
-        $ip = mt_rand(48, 140) . "." . mt_rand(10, 240) . "." . mt_rand(10, 240) . "." . mt_rand(10, 240); //随机 ip
-        $httpheader[] = 'CLIENT-IP:' . $ip;
-        $httpheader[] = 'X-FORWARDED-FOR:' . $ip;
+        $ip = mt_rand(48, 140).".".mt_rand(10, 240).".".mt_rand(10, 240).".".mt_rand(10, 240); //随机 ip
+        $httpheader[] = 'CLIENT-IP:'.$ip;
+        $httpheader[] = 'X-FORWARDED-FOR:'.$ip;
         curl_setopt($ch, CURLOPT_HTTPHEADER, $httpheader);
         curl_setopt($ch, CURLOPT_POST, 1);
         curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
@@ -41,9 +42,9 @@ class Alibaba
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
         $html = @curl_exec($ch);
         curl_close($ch);
-        $json = @json_decode($html,true);
+        $json = @json_decode($html, true);
 
-        if($json['code']=='0'){
+        if ($json['code'] == '0') {
             $file_path = $json['url'];
             @unlink($filePath);
         }

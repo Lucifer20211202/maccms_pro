@@ -16,7 +16,7 @@ class Type extends Base
     /**
      *  获取分类树
      *
-     * @param Request $request
+     * @param  Request  $request
      * @return \think\response\Json
      */
     public function get_list(Request $request)
@@ -27,7 +27,7 @@ class Type extends Base
         if (!$validate->scene($request->action())->check($param)) {
             return json([
                 'code' => 1001,
-                'msg'  => '参数错误: ' . $validate->getError(),
+                'msg'  => '参数错误: '.$validate->getError(),
             ]);
         }
         // 查询条件组装
@@ -36,7 +36,7 @@ class Type extends Base
         $where['type_pid'] = 0;
 
         if (isset($param['type_id'])) {
-            $where['type_id'] = (int)$param['type_id'];
+            $where['type_id'] = (int) $param['type_id'];
         }
 
         // 数据获取
@@ -60,8 +60,8 @@ class Type extends Base
             'code' => 1,
             'msg'  => '获取成功',
             'info' => [
-                'total'  => $total,
-                'rows'   => $list,
+                'total' => $total,
+                'rows'  => $list,
             ],
         ]);
     }
@@ -73,14 +73,14 @@ class Type extends Base
      */
     public function get_all_list()
     {
-        $list = Db::table('mac_type')->where(['type_pid'=> 0])->column('type_id,type_name,type_en');
+        $list = Db::table('mac_type')->where(['type_pid' => 0])->column('type_id,type_name,type_en');
         // 返回
         return json([
             'code' => 1,
             'msg'  => '获取成功',
             'info' => [
-                'total'  => count($list),
-                'rows'   => $list,
+                'total' => count($list),
+                'rows'  => $list,
             ],
         ]);
     }

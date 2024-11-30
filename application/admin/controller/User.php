@@ -1,5 +1,7 @@
 <?php
+
 namespace app\admin\controller;
+
 use think\Db;
 
 class User extends Base
@@ -8,83 +10,80 @@ class User extends Base
     public function data()
     {
         $param = input();
-        $param['page'] = intval($param['page']) <1 ? 1 : $param['page'];
-        $param['limit'] = intval($param['limit']) <1 ? $this->_pagesize : $param['limit'];
+        $param['page'] = intval($param['page']) < 1 ? 1 : $param['page'];
+        $param['limit'] = intval($param['limit']) < 1 ? $this->_pagesize : $param['limit'];
 
-        if($param['page'] ==1){
+        if ($param['page'] == 1) {
             model('User')->expire();
         }
 
-        $where=[];
-        if(in_array($param['status'],['0','1'],true)){
+        $where = [];
+        if (in_array($param['status'], ['0', '1'], true)) {
             $where['user_status'] = $param['status'];
         }
-        if(!empty($param['group'])){
+        if (!empty($param['group'])) {
             $where['group_id'] = $param['group'];
         }
-        if(!empty($param['wd'])){
+        if (!empty($param['wd'])) {
             $param['wd'] = htmlspecialchars(urldecode($param['wd']));
-            $where['user_name'] = ['like','%'.$param['wd'].'%'];
+            $where['user_name'] = ['like', '%'.$param['wd'].'%'];
         }
 
-        $order='user_id desc';
-        $res = model('User')->listData($where,$order,$param['page'],$param['limit']);
+        $order = 'user_id desc';
+        $res = model('User')->listData($where, $order, $param['page'], $param['limit']);
 
         $group_list = model('Group')->getCache('group_list');
-        foreach($res['list'] as $k=>$v){
+        foreach ($res['list'] as $k => $v) {
             $res['list'][$k]['group_name'] = $group_list[$v['group_id']]['group_name'];
         }
 
-        $this->assign('list',$res['list']);
-        $this->assign('total',$res['total']);
-        $this->assign('page',$res['page']);
-        $this->assign('limit',$res['limit']);
+        $this->assign('list', $res['list']);
+        $this->assign('total', $res['total']);
+        $this->assign('page', $res['page']);
+        $this->assign('limit', $res['limit']);
 
         $param['page'] = '{page}';
         $param['limit'] = '{limit}';
-        $this->assign('param',$param);
+        $this->assign('param', $param);
 
-        $this->assign('group_list',$group_list);
+        $this->assign('group_list', $group_list);
 
-        $this->assign('title',lang('admin/user/title'));
+        $this->assign('title', lang('admin/user/title'));
         return $this->fetch('admin@user/index');
     }
 
     public function reward()
     {
         $param = input();
-        $param['page'] = intval($param['page']) <1 ? 1 : $param['page'];
-        $param['limit'] = intval($param['limit']) <1 ? $this->_pagesize : $param['limit'];
+        $param['page'] = intval($param['page']) < 1 ? 1 : $param['page'];
+        $param['limit'] = intval($param['limit']) < 1 ? $this->_pagesize : $param['limit'];
         $param['uid'] = intval($param['uid']);
-        $where=[];
-        if(!empty($param['level'])){
-            if($param['level']=='1'){
+        $where = [];
+        if (!empty($param['level'])) {
+            if ($param['level'] == '1') {
                 $where['user_pid'] = ['eq', $param['uid']];
-            }
-            elseif($param['level']=='2'){
+            } elseif ($param['level'] == '2') {
                 $where['user_pid_2'] = ['eq', $param['uid']];
-            }
-            elseif($param['level']=='3'){
+            } elseif ($param['level'] == '3') {
                 $where['user_pid_3'] = ['eq', $param['uid']];
             }
-        }
-        else{
-            $where['user_pid|user_pid_2|user_pid_3'] = ['eq', intval($param['uid']) ];
+        } else {
+            $where['user_pid|user_pid_2|user_pid_3'] = ['eq', intval($param['uid'])];
         }
 
-        if(!empty($param['wd'])){
+        if (!empty($param['wd'])) {
             $param['wd'] = htmlspecialchars(urldecode($param['wd']));
-            $where['user_name'] = ['like','%'.$param['wd'].'%'];
+            $where['user_name'] = ['like', '%'.$param['wd'].'%'];
         }
 
-        $order='user_id desc';
-        $res = model('User')->listData($where,$order,$param['page'],$param['limit']);
+        $order = 'user_id desc';
+        $res = model('User')->listData($where, $order, $param['page'], $param['limit']);
         $group_list = model('Group')->getCache('group_list');
-        foreach($res['list'] as $k=>$v){
+        foreach ($res['list'] as $k => $v) {
             $res['list'][$k]['group_name'] = $group_list[$v['group_id']]['group_name'];
         }
 
-        $where2=[];
+        $where2 = [];
         $where2['user_pid'] = ['eq', $param['uid']];
         $level_cc_1 = Db::name('User')->where($where2)->count();
         $where3 = [];
@@ -92,7 +91,7 @@ class User extends Base
         $where3['plog_type'] = 4;
         $points_cc_1 = Db::name('Plog')->where($where3)->sum('plog_points');
 
-        $where2=[];
+        $where2 = [];
         $where2['user_pid_2'] = ['eq', $param['uid']];
         $level_cc_2 = Db::name('User')->where($where2)->count();
         $where3 = [];
@@ -100,7 +99,7 @@ class User extends Base
         $where3['plog_type'] = 5;
         $points_cc_2 = Db::name('Plog')->where($where3)->sum('plog_points');
 
-        $where2=[];
+        $where2 = [];
         $where2['user_pid_3'] = ['eq', $param['uid']];
         $level_cc_3 = Db::name('User')->where($where2)->count();
         $where3 = [];
@@ -108,7 +107,7 @@ class User extends Base
         $where3['plog_type'] = 6;
         $points_cc_3 = Db::name('Plog')->where($where3)->sum('plog_points');
 
-        $data=[];
+        $data = [];
         $data['level_cc_1'] = intval($level_cc_1);
         $data['level_cc_2'] = intval($level_cc_2);
         $data['level_cc_3'] = intval($level_cc_3);
@@ -116,17 +115,17 @@ class User extends Base
         $data['points_cc_2'] = intval($points_cc_2);
         $data['points_cc_3'] = intval($points_cc_3);
 
-        $this->assign('data',$data);
-        $this->assign('list',$res['list']);
-        $this->assign('total',$res['total']);
-        $this->assign('page',$res['page']);
-        $this->assign('limit',$res['limit']);
+        $this->assign('data', $data);
+        $this->assign('list', $res['list']);
+        $this->assign('total', $res['total']);
+        $this->assign('page', $res['page']);
+        $this->assign('limit', $res['limit']);
 
         $param['page'] = '{page}';
         $param['limit'] = '{limit}';
-        $this->assign('param',$param);
+        $this->assign('param', $param);
 
-        $this->assign('title',lang('admin/user/title'));
+        $this->assign('title', lang('admin/user/title'));
         return $this->fetch('admin@user/reward');
     }
 
@@ -136,25 +135,25 @@ class User extends Base
         if (Request()->isPost()) {
             $param = input('post.');
             $res = model('User')->saveData($param);
-            if($res['code']>1){
+            if ($res['code'] > 1) {
                 return $this->error($res['msg']);
             }
             return $this->success($res['msg']);
         }
 
         $id = input('id');
-        $where=[];
-        $where['user_id'] = ['eq',$id];
+        $where = [];
+        $where['user_id'] = ['eq', $id];
         $res = model('User')->infoData($where);
 
-        $this->assign('info',$res['info']);
+        $this->assign('info', $res['info']);
 
-        $order='group_id asc';
-        $where=[];
-        $res = model('Group')->listData($where,$order);
-        $this->assign('group_list',$res['list']);
+        $order = 'group_id asc';
+        $where = [];
+        $res = model('Group')->listData($where, $order);
+        $this->assign('group_list', $res['list']);
 
-        $this->assign('title',lang('admin/user/title'));
+        $this->assign('title', lang('admin/user/title'));
         return $this->fetch('admin@user/info');
     }
 
@@ -163,11 +162,11 @@ class User extends Base
         $param = input();
         $ids = $param['ids'];
 
-        if(!empty($ids)){
-            $where=[];
-            $where['user_id'] = ['in',$ids];
+        if (!empty($ids)) {
+            $where = [];
+            $where['user_id'] = ['in', $ids];
             $res = model('User')->delData($where);
-            if($res['code']>1){
+            if ($res['code'] > 1) {
                 return $this->error($res['msg']);
             }
             return $this->success($res['msg']);
@@ -182,20 +181,18 @@ class User extends Base
         $col = $param['col'];
         $val = $param['val'];
 
-        if(!empty($ids) && in_array($col,['user_status']) && in_array($val,['0','1'])){
-            $where=[];
-            $where['user_id'] = ['in',$ids];
+        if (!empty($ids) && in_array($col, ['user_status']) && in_array($val, ['0', '1'])) {
+            $where = [];
+            $where['user_id'] = ['in', $ids];
 
-            $res = model('User')->fieldData($where,$col,$val);
-            if($res['code']>1){
+            $res = model('User')->fieldData($where, $col, $val);
+            if ($res['code'] > 1) {
                 return $this->error($res['msg']);
             }
             return $this->success($res['msg']);
         }
         return $this->error(lang('param_err'));
     }
-
-
 
 
 }

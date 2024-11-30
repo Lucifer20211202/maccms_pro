@@ -2,11 +2,8 @@
 
 namespace app\api\controller;
 
-use think\Controller;
-use think\Cache;
 use think\Db;
 use think\Request;
-use think\Validate;
 
 class Vod extends Base
 {
@@ -19,7 +16,7 @@ class Vod extends Base
     /**
      *  获取视频列表
      *
-     * @param Request $request
+     * @param  Request  $request
      * @return \think\response\Json
      */
     public function get_list(Request $request)
@@ -30,18 +27,18 @@ class Vod extends Base
         if (!$validate->scene($request->action())->check($param)) {
             return json([
                 'code' => 1001,
-                'msg'  => '参数错误: ' . $validate->getError(),
+                'msg'  => '参数错误: '.$validate->getError(),
             ]);
         }
-        $offset = isset($param['offset']) ? (int)$param['offset'] : 0;
-        $limit = isset($param['limit']) ? (int)$param['limit'] : 20;
+        $offset = isset($param['offset']) ? (int) $param['offset'] : 0;
+        $limit = isset($param['limit']) ? (int) $param['limit'] : 20;
         // 查询条件组装
         $where = [];
         if (isset($param['type_id'])) {
-            $where['type_id'] = (int)$param['type_id'];
+            $where['type_id'] = (int) $param['type_id'];
         }
         if (isset($param['id'])) {
-            $where['vod_id'] = (int)$param['id'];
+            $where['vod_id'] = (int) $param['id'];
         }
 //        if (isset($param['type_id_1'])) {
 //            $where['type_id_1'] = (int)$param['type_id_1'];
@@ -50,16 +47,16 @@ class Vod extends Base
             $where['vod_letter'] = $param['vod_letter'];
         }
         if (isset($param['vod_tag']) && strlen($param['vod_tag']) > 0) {
-            $where['vod_tag'] = ['like', '%' . format_sql_string($param['vod_tag']) . '%'];
+            $where['vod_tag'] = ['like', '%'.format_sql_string($param['vod_tag']).'%'];
         }
         if (isset($param['vod_name']) && strlen($param['vod_name']) > 0) {
-            $where['vod_name'] = ['like', '%' . format_sql_string($param['vod_name']) . '%'];
+            $where['vod_name'] = ['like', '%'.format_sql_string($param['vod_name']).'%'];
         }
         if (isset($param['vod_blurb']) && strlen($param['vod_blurb']) > 0) {
-            $where['vod_blurb'] = ['like', '%' . format_sql_string($param['vod_blurb']) . '%'];
+            $where['vod_blurb'] = ['like', '%'.format_sql_string($param['vod_blurb']).'%'];
         }
         if (isset($param['vod_class']) && strlen($param['vod_class']) > 0) {
-            $where['vod_class'] = ['like', '%' . format_sql_string($param['vod_class']) . '%'];
+            $where['vod_class'] = ['like', '%'.format_sql_string($param['vod_class']).'%'];
         }
         if (isset($param['vod_area']) && strlen($param['vod_area']) > 0) {
             $where['vod_area'] = format_sql_string($param['vod_area']);
@@ -74,7 +71,7 @@ class Vod extends Base
             // 排序
             $order = "vod_time DESC";
             if (strlen($param['orderby']) > 0) {
-                $order = 'vod_' . $param['orderby'] . " DESC";
+                $order = 'vod_'.$param['orderby']." DESC";
             }
             $field = 'vod_id,vod_name,vod_actor,vod_hits,vod_hits_day,vod_hits_week,vod_hits_month,vod_time,vod_remarks,vod_score,vod_area,vod_year';
 //            $list = model('Vod')->getListByCond($offset, $limit, $where, $order, $field, []);
@@ -96,7 +93,7 @@ class Vod extends Base
     /**
      * 视频详细信息
      *
-     * @param Request $request
+     * @param  Request  $request
      * @return \think\response\Json
      * @throws \think\db\exception\DataNotFoundException
      * @throws \think\db\exception\ModelNotFoundException
@@ -109,7 +106,7 @@ class Vod extends Base
         if (!$validate->scene($request->action())->check($param)) {
             return json([
                 'code' => 1001,
-                'msg'  => '参数错误: ' . $validate->getError(),
+                'msg'  => '参数错误: '.$validate->getError(),
             ]);
         }
 
@@ -138,15 +135,15 @@ class Vod extends Base
         if (!$validate->scene($request->action())->check($param)) {
             return json([
                 'code' => 1001,
-                'msg'  => '参数错误: ' . $validate->getError(),
+                'msg'  => '参数错误: '.$validate->getError(),
             ]);
         }
 
         $result = Db::table('mac_vod')->distinct(true)->field('vod_year')->where(['type_id_1' => $param['type_id_1']])->select();
         $return = [];
         foreach ($result as $index => $item) {
-            if (!empty($item['vod_year'])){
-                array_push($return,$item['vod_year']);
+            if (!empty($item['vod_year'])) {
+                array_push($return, $item['vod_year']);
             }
         }
         // 返回
@@ -154,8 +151,8 @@ class Vod extends Base
             'code' => 1,
             'msg'  => '获取成功',
             'info' => [
-                'total'  => count($return),
-                'rows'   => $return,
+                'total' => count($return),
+                'rows'  => $return,
             ],
         ]);
     }
@@ -175,15 +172,15 @@ class Vod extends Base
         if (!$validate->scene($request->action())->check($param)) {
             return json([
                 'code' => 1001,
-                'msg'  => '参数错误: ' . $validate->getError(),
+                'msg'  => '参数错误: '.$validate->getError(),
             ]);
         }
 
         $result = Db::table('mac_vod')->distinct(true)->field('vod_class')->where(['type_id_1' => $param['type_id_1']])->select();
         $return = [];
         foreach ($result as $index => $item) {
-            if (!empty($item['vod_class'])){
-                array_push($return,$item['vod_class']);
+            if (!empty($item['vod_class'])) {
+                array_push($return, $item['vod_class']);
             }
         }
         // 返回
@@ -191,8 +188,8 @@ class Vod extends Base
             'code' => 1,
             'msg'  => '获取成功',
             'info' => [
-                'total'  => count($return),
-                'rows'   => $return,
+                'total' => count($return),
+                'rows'  => $return,
             ],
         ]);
     }
@@ -212,15 +209,15 @@ class Vod extends Base
         if (!$validate->scene($request->action())->check($param)) {
             return json([
                 'code' => 1001,
-                'msg'  => '参数错误: ' . $validate->getError(),
+                'msg'  => '参数错误: '.$validate->getError(),
             ]);
         }
 
         $result = Db::table('mac_vod')->distinct(true)->field('vod_area')->where(['type_id_1' => $param['type_id_1']])->select();
         $return = [];
         foreach ($result as $index => $item) {
-            if (!empty($item['vod_area'])){
-                array_push($return,$item['vod_area']);
+            if (!empty($item['vod_area'])) {
+                array_push($return, $item['vod_area']);
             }
         }
         // 返回
@@ -228,8 +225,8 @@ class Vod extends Base
             'code' => 1,
             'msg'  => '获取成功',
             'info' => [
-                'total'  => count($return),
-                'rows'   => $return,
+                'total' => count($return),
+                'rows'  => $return,
             ],
         ]);
     }

@@ -1,7 +1,6 @@
 <?php
+
 namespace app\admin\controller;
-use think\Db;
-use app\common\util\Pinyin;
 
 class Role extends Base
 {
@@ -22,25 +21,23 @@ class Role extends Base
         if (!empty($param['rid'])) {
             $where['role_rid'] = ['eq', $param['rid']];
         }
-        if(!empty($param['pic'])){
-            if($param['pic'] == '1'){
-                $where['role_pic'] = ['eq',''];
-            }
-            elseif($param['pic'] == '2'){
-                $where['role_pic'] = ['like','http%'];
-            }
-            elseif($param['pic'] == '3'){
-                $where['role_pic'] = ['like','%#err%'];
+        if (!empty($param['pic'])) {
+            if ($param['pic'] == '1') {
+                $where['role_pic'] = ['eq', ''];
+            } elseif ($param['pic'] == '2') {
+                $where['role_pic'] = ['like', 'http%'];
+            } elseif ($param['pic'] == '3') {
+                $where['role_pic'] = ['like', '%#err%'];
             }
         }
-        if(!empty($param['wd'])){
+        if (!empty($param['wd'])) {
             $param['wd'] = htmlspecialchars(urldecode($param['wd']));
-            $where['role_name'] = ['like','%'.$param['wd'].'%'];
+            $where['role_name'] = ['like', '%'.$param['wd'].'%'];
         }
 
 
-        $order='role_time desc';
-        $res = model('Role')->listData($where,$order,$param['page'],$param['limit']);
+        $order = 'role_time desc';
+        $res = model('Role')->listData($where, $order, $param['page'], $param['limit']);
 
         $this->assign('list', $res['list']);
         $this->assign('total', $res['total']);
@@ -51,7 +48,7 @@ class Role extends Base
         $param['limit'] = '{limit}';
         $this->assign('param', $param);
 
-        $this->assign('title',lang('admin/role/title'));
+        $this->assign('title', lang('admin/role/title'));
         return $this->fetch('admin@role/index');
     }
 
@@ -60,7 +57,7 @@ class Role extends Base
         if (Request()->isPost()) {
             $param = input('post.');
             $res = model('Role')->saveData($param);
-            if($res['code']>1){
+            if ($res['code'] > 1) {
                 return $this->error($res['msg']);
             }
             return $this->success($res['msg']);
@@ -70,22 +67,22 @@ class Role extends Base
         $tab = input('tab');
         $rid = input('rid');
 
-        $where=[];
-        $where['role_id'] = ['eq',$id];
+        $where = [];
+        $where['role_id'] = ['eq', $id];
         $res = model('Role')->infoData($where);
         $info = $res['info'];
-        if(empty($info)){
-            $info['role_rid'] =  $rid;
+        if (empty($info)) {
+            $info['role_rid'] = $rid;
         }
-        $this->assign('info',$info);
+        $this->assign('info', $info);
 
-        $where=[];
-        $where['vod_id'] = ['eq', $info['role_rid'] ];
+        $where = [];
+        $where['vod_id'] = ['eq', $info['role_rid']];
         $res = model('Vod')->infoData($where);
         $data = $res['info'];
-        $this->assign('data',$data);
+        $this->assign('data', $data);
 
-        $this->assign('title',lang('admin/role/title'));
+        $this->assign('title', lang('admin/role/title'));
         return $this->fetch('admin@role/info');
     }
 
@@ -94,11 +91,11 @@ class Role extends Base
         $param = input();
         $ids = $param['ids'];
 
-        if(!empty($ids)){
-            $where=[];
-            $where['role_id'] = ['in',$ids];
+        if (!empty($ids)) {
+            $where = [];
+            $where['role_id'] = ['in', $ids];
             $res = model('Role')->delData($where);
-            if($res['code']>1){
+            if ($res['code'] > 1) {
                 return $this->error($res['msg']);
             }
             return $this->success($res['msg']);
@@ -116,22 +113,23 @@ class Role extends Base
         $end = $param['end'];
 
 
-        if(!empty($ids) && in_array($col,['role_status','role_lock','role_level','role_hits'])){
-            $where=[];
-            $where['role_id'] = ['in',$ids];
-            if(empty($start)) {
+        if (!empty($ids) && in_array($col, ['role_status', 'role_lock', 'role_level', 'role_hits'])) {
+            $where = [];
+            $where['role_id'] = ['in', $ids];
+            if (empty($start)) {
                 $res = model('Role')->fieldData($where, $col, $val);
-            }
-            else{
-                if(empty($end)){$end = 9999;}
-                $ids = explode(',',$ids);
-                foreach($ids as $k=>$v){
-                    $val = rand($start,$end);
-                    $where['role_id'] = ['eq',$v];
+            } else {
+                if (empty($end)) {
+                    $end = 9999;
+                }
+                $ids = explode(',', $ids);
+                foreach ($ids as $k => $v) {
+                    $val = rand($start, $end);
+                    $where['role_id'] = ['eq', $v];
                     $res = model('Role')->fieldData($where, $col, $val);
                 }
             }
-            if($res['code']>1){
+            if ($res['code'] > 1) {
                 return $this->error($res['msg']);
             }
             return $this->success($res['msg']);

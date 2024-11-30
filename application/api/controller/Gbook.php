@@ -15,7 +15,7 @@ class Gbook extends Base
     /**
      *  获取列表
      *
-     * @param Request $request
+     * @param  Request  $request
      * @return \think\response\Json
      */
     public function get_list(Request $request)
@@ -26,45 +26,45 @@ class Gbook extends Base
         if (!$validate->scene($request->action())->check($param)) {
             return json([
                 'code' => 1001,
-                'msg'  => '参数错误: ' . $validate->getError(),
+                'msg'  => '参数错误: '.$validate->getError(),
             ]);
         }
         // 查询条件组装
         $where = [];
 
-        $offset = isset($param['offset']) ? (int)$param['offset'] : 0;
-        $limit = isset($param['limit']) ? (int)$param['limit'] : 20;
+        $offset = isset($param['offset']) ? (int) $param['offset'] : 0;
+        $limit = isset($param['limit']) ? (int) $param['limit'] : 20;
 
         if (isset($param['id'])) {
-            $where['gbook_id'] = (int)$param['id'];
+            $where['gbook_id'] = (int) $param['id'];
         }
 
         if (isset($param['rid'])) {
-            $where['gbook_rid'] = (int)$param['rid'];
+            $where['gbook_rid'] = (int) $param['rid'];
         }
 
         if (isset($param['user_id'])) {
-            $where['user_id'] = (int)$param['user_id'];
+            $where['user_id'] = (int) $param['user_id'];
         }
 
         if (isset($param['status'])) {
-            $where['gbook_status'] = (int)$param['status'];
+            $where['gbook_status'] = (int) $param['status'];
         }
 
         if (isset($param['name']) && strlen($param['name']) > 0) {
-            $where['gbook_name'] = ['like', '%' . format_sql_string($param['name']) . '%'];
+            $where['gbook_name'] = ['like', '%'.format_sql_string($param['name']).'%'];
         }
 
         if (isset($param['content']) && strlen($param['content']) > 0) {
-            $where['gbook_content'] = ['like', '%' . format_sql_string($param['content']) . '%'];
+            $where['gbook_content'] = ['like', '%'.format_sql_string($param['content']).'%'];
         }
 
         if (isset($param['time_end']) && isset($param['time_start'])) {
-            $where['gbook_time'] = ['between', [(int)$param['time_start'], (int)$param['time_end']]];
-        }elseif (isset($param['time_end'])) {
-            $where['gbook_time'] = ['<', (int)$param['time_end']];
-        }elseif (isset($param['time_start'])) {
-            $where['gbook_time'] = ['>', (int)$param['time_start']];
+            $where['gbook_time'] = ['between', [(int) $param['time_start'], (int) $param['time_end']]];
+        } elseif (isset($param['time_end'])) {
+            $where['gbook_time'] = ['<', (int) $param['time_end']];
+        } elseif (isset($param['time_start'])) {
+            $where['gbook_time'] = ['>', (int) $param['time_start']];
         }
 
         // 数据获取
@@ -75,7 +75,7 @@ class Gbook extends Base
             $order = "gbook_time DESC";
             $field = '*';
             if (strlen($param['orderby']) > 0) {
-                $order = 'gbook_' . $param['orderby'] . " DESC";
+                $order = 'gbook_'.$param['orderby']." DESC";
             }
             $list = model('Gbook')->getListByCond($offset, $limit, $where, $order, $field, []);
         }

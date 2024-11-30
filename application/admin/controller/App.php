@@ -1,4 +1,5 @@
 <?php
+
 namespace app\admin\controller;
 
 class App extends Base
@@ -10,8 +11,8 @@ class App extends Base
         $param['page'] = intval($param['page']) < 1 ? 1 : $param['page'];
         $param['limit'] = intval($param['limit']) < 1 ? $this->_pagesize : $param['limit'];
 
-        $order='id desc';
-        $res = model('App')->listData([],$order,$param['page'],$param['limit']);
+        $order = 'id desc';
+        $res = model('App')->listData([], $order, $param['page'], $param['limit']);
 
 
         $this->assign('list', $res['list']);
@@ -30,47 +31,52 @@ class App extends Base
     /**
      * 添加视图
      */
-    public function add(){
+    public function add()
+    {
         return $this->fetch('admin@app/add');
     }
 
-    public function doadd(){
+    public function doadd()
+    {
         $param = input('post.');
         $res = model('App')->saveData($param);
-        if($res['code']>1){
+        if ($res['code'] > 1) {
             return $this->error($res['msg']);
         }
         return $this->success(lang('save_ok'));
     }
 
-    public function edit(){
+    public function edit()
+    {
         $param = input();
-        if(empty($param["id"])){
+        if (empty($param["id"])) {
             return $this->error(lang('param_err'));
         }
 
-        $info = model("App")->where(["id"=>["eq",$param["id"]]])->find();
+        $info = model("App")->where(["id" => ["eq", $param["id"]]])->find();
         $this->assign('info', $info);
 
         return $this->fetch('admin@app/edit');
     }
 
-    public function doedit(){
+    public function doedit()
+    {
         $param = input('post.');
         $res = model('App')->saveData($param);
-        if($res['code']>1){
+        if ($res['code'] > 1) {
             return $this->error($res['msg']);
         }
         return $this->success(lang('save_ok'));
     }
 
-    public function del(){
+    public function del()
+    {
         $param = input();
-        if(empty($param["id"])){
+        if (empty($param["id"])) {
             return $this->error(lang('param_err'));
         }
 
-        $res = model("App")->where(["id"=>["eq",$param["id"]]])->delete();
+        $res = model("App")->where(["id" => ["eq", $param["id"]]])->delete();
         return $this->success("删除成功");
     }
 }

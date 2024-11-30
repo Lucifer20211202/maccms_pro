@@ -16,7 +16,7 @@ class Art extends Base
     /**
      *  获取列表
      *
-     * @param Request $request
+     * @param  Request  $request
      * @return \think\response\Json
      */
     public function get_list(Request $request)
@@ -27,21 +27,21 @@ class Art extends Base
         if (!$validate->scene($request->action())->check($param)) {
             return json([
                 'code' => 1001,
-                'msg'  => '参数错误: ' . $validate->getError(),
+                'msg'  => '参数错误: '.$validate->getError(),
             ]);
         }
         // 查询条件组装
         $where = [];
 
-        $offset = isset($param['offset']) ? (int)$param['offset'] : 0;
-        $limit = isset($param['limit']) ? (int)$param['limit'] : 20;
+        $offset = isset($param['offset']) ? (int) $param['offset'] : 0;
+        $limit = isset($param['limit']) ? (int) $param['limit'] : 20;
 
         if (isset($param['time_end']) && isset($param['time_start'])) {
-            $where['art_time'] = ['between', [(int)$param['time_start'], (int)$param['time_end']]];
-        }elseif (isset($param['time_end'])) {
-            $where['art_time'] = ['<=', (int)$param['time_end']];
-        }elseif (isset($param['time_start'])) {
-            $where['art_time'] = ['>=', (int)$param['time_start']];
+            $where['art_time'] = ['between', [(int) $param['time_start'], (int) $param['time_end']]];
+        } elseif (isset($param['time_end'])) {
+            $where['art_time'] = ['<=', (int) $param['time_end']];
+        } elseif (isset($param['time_start'])) {
+            $where['art_time'] = ['>=', (int) $param['time_start']];
         }
 
         if (isset($param['letter'])) {
@@ -49,27 +49,27 @@ class Art extends Base
         }
 
         if (isset($param['status'])) {
-            $where['art_status'] = (int)$param['status'];
+            $where['art_status'] = (int) $param['status'];
         }
 
         if (isset($param['name']) && strlen($param['name']) > 0) {
-            $where['art_name'] = ['like', '%' . format_sql_string($param['name']) . '%'];
+            $where['art_name'] = ['like', '%'.format_sql_string($param['name']).'%'];
         }
 
         if (isset($param['sub']) && strlen($param['sub']) > 0) {
-            $where['art_sub'] = ['like', '%' . format_sql_string($param['sub']) . '%'];
+            $where['art_sub'] = ['like', '%'.format_sql_string($param['sub']).'%'];
         }
 
         if (isset($param['blurb']) && strlen($param['blurb']) > 0) {
-            $where['art_blurb'] = ['like', '%' . format_sql_string($param['blurb']) . '%'];
+            $where['art_blurb'] = ['like', '%'.format_sql_string($param['blurb']).'%'];
         }
 
         if (isset($param['title']) && strlen($param['title']) > 0) {
-            $where['art_title'] = ['like', '%' . format_sql_string($param['title']) . '%'];
+            $where['art_title'] = ['like', '%'.format_sql_string($param['title']).'%'];
         }
 
         if (isset($param['content']) && strlen($param['content']) > 0) {
-            $where['art_content'] = ['like', '%' . format_sql_string($param['content']) . '%'];
+            $where['art_content'] = ['like', '%'.format_sql_string($param['content']).'%'];
         }
 
         // 数据获取
@@ -80,7 +80,7 @@ class Art extends Base
             $order = "art_time DESC";
             $field = 'art_id,art_name,art_sub,art_en,art_blurb,art_time,art_time_add';
             if (strlen($param['orderby']) > 0) {
-                $order = 'art_' . $param['orderby'] . " DESC";
+                $order = 'art_'.$param['orderby']." DESC";
             }
             $list = model('Art')->getListByCond($offset, $limit, $where, $order, $field, []);
         }
@@ -100,7 +100,7 @@ class Art extends Base
     /**
      * 视频文章详情
      *
-     * @param Request $request
+     * @param  Request  $request
      * @return \think\response\Json
      * @throws \think\db\exception\DataNotFoundException
      * @throws \think\db\exception\ModelNotFoundException
@@ -113,7 +113,7 @@ class Art extends Base
         if (!$validate->scene($request->action())->check($param)) {
             return json([
                 'code' => 1001,
-                'msg'  => '参数错误: ' . $validate->getError(),
+                'msg'  => '参数错误: '.$validate->getError(),
             ]);
         }
 

@@ -7,20 +7,20 @@ use think\Validate;
 class Vod extends Validate
 {
     protected $rule = [
-        'vod_id'     => 'require|number|between:0,' . PHP_INT_MAX,
-        'id'     => 'number|between:0,' . PHP_INT_MAX,
-        'offset'     => 'number|between:0,' . PHP_INT_MAX,
+        'vod_id'     => 'require|number|between:0,'.PHP_INT_MAX,
+        'id'         => 'number|between:0,'.PHP_INT_MAX,
+        'offset'     => 'number|between:0,'.PHP_INT_MAX,
         'limit'      => 'number|between:1,500',
         'orderby'    => 'in:hits,up,pubdate,hits_week,hits_month,hits_day,score',
-        'type_id'    => 'number|between:0,' . PHP_INT_MAX,
+        'type_id'    => 'number|between:0,'.PHP_INT_MAX,
         'vod_letter' => 'max:1',
         'vod_name'   => 'max:50',
         'vod_tag'    => 'max:20',
         'vod_blurb'  => 'max:20',
         'vod_class'  => 'max:10',
         // year,area,class
-        'type_id_1'    => 'require|number|between:0,' . PHP_INT_MAX,
-        'vod_id'    => 'require|number|between:0,' . PHP_INT_MAX,
+        'type_id_1'  => 'require|number|between:0,'.PHP_INT_MAX,
+        'vod_id'     => 'require|number|between:0,'.PHP_INT_MAX,
     ];
 
 //    protected $message  =   [
@@ -32,7 +32,7 @@ class Vod extends Validate
 //    ];
 
     protected $scene = [
-        'get_list' => [
+        'get_list'   => [
             'id',
             'offset',
             'limit',
@@ -48,13 +48,13 @@ class Vod extends Validate
         'get_detail' => [
             'vod_id',
         ],
-        'get_year' => [
+        'get_year'   => [
             'type_id_1',
         ],
-        'get_class' => [
+        'get_class'  => [
             'type_id_1',
         ],
-        'get_area' => [
+        'get_area'   => [
             'type_id_1',
         ],
     ];

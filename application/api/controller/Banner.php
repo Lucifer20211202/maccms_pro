@@ -16,7 +16,7 @@ class Banner extends Base
     /**
      *  获取列表
      *
-     * @param Request $request
+     * @param  Request  $request
      * @return \think\response\Json
      */
     public function get_list(Request $request)
@@ -27,56 +27,60 @@ class Banner extends Base
         if (!$validate->scene($request->action())->check($param)) {
             return json([
                 'code' => 1001,
-                'msg'  => '参数错误: ' . $validate->getError(),
+                'msg'  => '参数错误: '.$validate->getError(),
             ]);
         }
-        $offset = isset($param['offset']) ? (int)$param['offset'] : 0;
-        $limit = isset($param['limit']) ? (int)$param['limit'] : 20;
+        $offset = isset($param['offset']) ? (int) $param['offset'] : 0;
+        $limit = isset($param['limit']) ? (int) $param['limit'] : 20;
         // 查询条件组装
         $where = [];
 
         if (isset($param['id'])) {
-            $where['banner_id'] = (int)$param['id'];
+            $where['banner_id'] = (int) $param['id'];
         }
 
         if (isset($param['pic'])) {
-            $where['banner_pic'] = (int)$param['pic'];
+            $where['banner_pic'] = (int) $param['pic'];
         }
 
         if (isset($param['type'])) {
-            $where['banner_type'] = (int)$param['type'];
+            $where['banner_type'] = (int) $param['type'];
         }
 
         if (isset($param['status'])) {
-            $where['banner_status'] = (int)$param['status'];
+            $where['banner_status'] = (int) $param['status'];
         }
 
         if (isset($param['title']) && strlen($param['title']) > 0) {
-            $where['banner_title'] = ['like', '%' . format_sql_string($param['title']) . '%'];
+            $where['banner_title'] = ['like', '%'.format_sql_string($param['title']).'%'];
         }
 
         if (isset($param['link']) && strlen($param['link']) > 0) {
-            $where['banner_link'] = ['like', '%' . format_sql_string($param['link']) . '%'];
+            $where['banner_link'] = ['like', '%'.format_sql_string($param['link']).'%'];
         }
 
         if (isset($param['cat']) && strlen($param['cat']) > 0) {
-            $where['banner_cat'] = ['like', '%' . format_sql_string($param['cat']) . '%'];
+            $where['banner_cat'] = ['like', '%'.format_sql_string($param['cat']).'%'];
         }
 
         if (isset($param['banner_stime_end']) && isset($param['banner_stime_start'])) {
-            $where['banner_stime'] = ['between', [(int)$param['banner_stime_start'], (int)$param['banner_stime_end']]];
-        }elseif (isset($param['banner_stime_end'])) {
-            $where['banner_stime'] = ['<', (int)$param['banner_stime_end']];
-        }elseif (isset($param['banner_stime_start'])) {
-            $where['banner_stime'] = ['>', (int)$param['banner_stime_start']];
+            $where['banner_stime'] = [
+                'between', [(int) $param['banner_stime_start'], (int) $param['banner_stime_end']]
+            ];
+        } elseif (isset($param['banner_stime_end'])) {
+            $where['banner_stime'] = ['<', (int) $param['banner_stime_end']];
+        } elseif (isset($param['banner_stime_start'])) {
+            $where['banner_stime'] = ['>', (int) $param['banner_stime_start']];
         }
 
         if (isset($param['banner_etime_end']) && isset($param['banner_etime_start'])) {
-            $where['banner_etime'] = ['between', [(int)$param['banner_etime_start'], (int)$param['banner_etime_end']]];
-        }elseif (isset($param['banner_etime_end'])) {
-            $where['banner_etime'] = ['<', (int)$param['banner_etime_end']];
-        }elseif (isset($param['banner_etime_start'])) {
-            $where['banner_etime'] = ['>', (int)$param['banner_etime_start']];
+            $where['banner_etime'] = [
+                'between', [(int) $param['banner_etime_start'], (int) $param['banner_etime_end']]
+            ];
+        } elseif (isset($param['banner_etime_end'])) {
+            $where['banner_etime'] = ['<', (int) $param['banner_etime_end']];
+        } elseif (isset($param['banner_etime_start'])) {
+            $where['banner_etime'] = ['>', (int) $param['banner_etime_start']];
         }
 
         // 数据获取
@@ -86,7 +90,7 @@ class Banner extends Base
             // 排序
             $order = "banner_id DESC";
             if (strlen($param['orderby']) > 0) {
-                $order = 'banner_' . $param['orderby'] . " DESC";
+                $order = 'banner_'.$param['orderby']." DESC";
             }
             $field = '*';
             $list = model('Banner')->getListByCond($offset, $limit, $where, $order, $field, []);
@@ -116,7 +120,7 @@ class Banner extends Base
         if (!$validate->scene($request->action())->check($param)) {
             return json([
                 'code' => 1001,
-                'msg'  => '参数错误: ' . $validate->getError(),
+                'msg'  => '参数错误: '.$validate->getError(),
             ]);
         }
 

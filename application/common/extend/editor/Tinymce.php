@@ -1,7 +1,9 @@
 <?php
+
 namespace app\common\extend\editor;
 
-class Tinymce {
+class Tinymce
+{
 
     public $name = 'Tinymce';
     public $ver = '1.0';
@@ -11,9 +13,9 @@ class Tinymce {
 
     }
 
-    public function back($info='',$status=0,$data=[])
+    public function back($info = '', $status = 0, $data = [])
     {
-        $arr=[];
+        $arr = [];
         $arr['location'] = $data['file'];
         echo json_encode($arr, 1);
         exit;

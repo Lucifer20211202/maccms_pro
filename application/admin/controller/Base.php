@@ -1,9 +1,10 @@
 <?php
+
 namespace app\admin\controller;
-use think\Controller;
+
 use app\common\controller\All;
-use think\Cache;
 use app\common\util\Dir;
+use think\Cache;
 
 class Base extends All
 {
@@ -16,9 +17,9 @@ class Base extends All
         parent::__construct();
 
         //判断用户登录状态
-        if(in_array($this->_cl, ['Index']) && in_array($this->_ac, ['login', 'logout'])) {
+        if (in_array($this->_cl, ['Index']) && in_array($this->_ac, ['login', 'logout'])) {
 
-        } elseif(ENTRANCE == 'api' && in_array($this->_cl, ['Timming']) && in_array($this->_ac, ['index'])) {
+        } elseif (ENTRANCE == 'api' && in_array($this->_cl, ['Timming']) && in_array($this->_ac, ['index'])) {
 
         } else {
             $res = model('Admin')->checkLogin();
@@ -29,37 +30,35 @@ class Base extends All
             $this->_pagesize = $GLOBALS['config']['app']['pagesize'];
             $this->_makesize = $GLOBALS['config']['app']['makesize'];
 
-            if($this->_cl!='Update' && !$this->check_auth($this->_cl,$this->_ac)){
+            if ($this->_cl != 'Update' && !$this->check_auth($this->_cl, $this->_ac)) {
                 return $this->error(lang('permission_denied'));
             }
         }
-        $this->assign('cl',$this->_cl);
-        $this->assign('MAC_VERSION',config('version')['code']);
-        $this->assign('MAC_LANG',config('maccms')['app']['lang']);
+        $this->assign('cl', $this->_cl);
+        $this->assign('MAC_VERSION', config('version')['code']);
+        $this->assign('MAC_LANG', config('maccms')['app']['lang']);
     }
 
-    public function check_auth($c,$a)
+    public function check_auth($c, $a)
     {
         $c = strtolower($c);
         $a = strtolower($a);
 
-        $auths = $this->_admin['admin_auth'] . ',index/index,index/welcome,index/lang,';
+        $auths = $this->_admin['admin_auth'].',index/index,index/welcome,index/lang,';
         $cur = ','.$c.'/'.$a.',';
         //id为1或admin或proadmin为超级管理员,不进行权限验证
-        if(($this->_admin['admin_id'] =='1') || ($this->_admin['admin_name'] =='admin') || ($this->_admin['admin_name'] =='proadmin')){
+        if (($this->_admin['admin_id'] == '1') || ($this->_admin['admin_name'] == 'admin') || ($this->_admin['admin_name'] == 'proadmin')) {
             return true;
-        }
-        elseif(strpos($auths,$cur)===false){
+        } elseif (strpos($auths, $cur) === false) {
             return false;
-        }
-        else{
+        } else {
             return true;
         }
     }
 
     public function _cache_clear()
     {
-        if(ENTRANCE=='admin') {
+        if (ENTRANCE == 'admin') {
             //播放器配置缓存
             $vodplayer = config('vodplayer');
             $voddowner = config('voddowner');
@@ -67,38 +66,38 @@ class Base extends All
             $player = [];
             foreach ($vodplayer as $k => $v) {
                 $player[$k] = [
-                    'show' => (string)$v['show'],
-                    'des' => (string)$v['des'],
-                    'ps' => (string)$v['ps'],
-                    'parse' => (string)$v['parse'],
+                    'show'  => (string) $v['show'],
+                    'des'   => (string) $v['des'],
+                    'ps'    => (string) $v['ps'],
+                    'parse' => (string) $v['parse'],
                 ];
             }
             $downer = [];
             foreach ($voddowner as $k => $v) {
                 $downer[$k] = [
-                    'show' => (string)$v['show'],
-                    'des' => (string)$v['des'],
-                    'ps' => (string)$v['ps'],
-                    'parse' => (string)$v['parse'],
+                    'show'  => (string) $v['show'],
+                    'des'   => (string) $v['des'],
+                    'ps'    => (string) $v['ps'],
+                    'parse' => (string) $v['parse'],
                 ];
             }
 
             $server = [];
             foreach ($vodserver as $k => $v) {
                 $server[$k] = [
-                    'show' => (string)$v['show'],
-                    'des' => (string)$v['des']
+                    'show' => (string) $v['show'],
+                    'des'  => (string) $v['des']
                 ];
             }
-            $content = 'MacPlayerConfig.player_list=' . json_encode($player) . ',MacPlayerConfig.downer_list=' . json_encode($downer) . ',MacPlayerConfig.server_list=' . json_encode($server) . ';';
+            $content = 'MacPlayerConfig.player_list='.json_encode($player).',MacPlayerConfig.downer_list='.json_encode($downer).',MacPlayerConfig.server_list='.json_encode($server).';';
             $path = './static/js/playerconfig.js';
             if (!file_exists($path)) {
                 $path .= '.bak';
             }
             $fc = @file_get_contents($path);
-            if(!empty($fc)){
+            if (!empty($fc)) {
                 $jsb = mac_get_body($fc, '//缓存开始', '//缓存结束');
-                $fc = str_replace($jsb, "\r\n" . $content . "\r\n", $fc);
+                $fc = str_replace($jsb, "\r\n".$content."\r\n", $fc);
                 @fwrite(fopen('./static/js/playerconfig.js', 'wb'), $fc);
             }
         }

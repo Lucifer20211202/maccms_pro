@@ -1,4 +1,5 @@
 <?php
+
 namespace app\common\behavior;
 
 class Begin
@@ -12,18 +13,18 @@ class Begin
             $module = $dispatch['module'][0];
         }
 
-        if( $module =='install'){
+        if ($module == 'install') {
             return;
         }
 
-        if(defined('ENTRANCE') && ENTRANCE == 'admin') {
+        if (defined('ENTRANCE') && ENTRANCE == 'admin') {
 
             if ($module == '') {
                 header('Location: '.url('admin/index/index'));
                 exit;
             }
 
-            if ($module != 'admin' ) {
+            if ($module != 'admin') {
                 header('Location: '.url('admin/index/index'));
                 exit;
             }

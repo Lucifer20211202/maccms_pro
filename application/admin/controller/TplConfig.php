@@ -15,7 +15,7 @@ class TplConfig extends Base
             $tplconfig_new['theme'] = $tplconfig['theme'];
             $tplconfig_old = config('mctheme');
             $tplconfig_new = array_merge($tplconfig_old, $tplconfig_new);
-            $res = mac_save_config_data(APP_PATH . 'extra/mctheme.php', $tplconfig_new);
+            $res = mac_save_config_data(APP_PATH.'extra/mctheme.php', $tplconfig_new);
             if ($res === false) {
                 return $this->error(lang('save_err'));
             }

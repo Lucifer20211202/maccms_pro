@@ -1,5 +1,7 @@
 <?php
+
 namespace app\index\event;
+
 use login\ThinkOauth;
 
 class LoginEvent
@@ -15,9 +17,9 @@ class LoginEvent
             $userInfo['nick'] = $data['nickname'];
             $userInfo['head'] = $data['figureurl_2'];
             $userInfo['openid'] = $qq->openid();
-            return ['code'=>1,'msg'=>'ok','info'=>$userInfo];
+            return ['code' => 1, 'msg' => 'ok', 'info' => $userInfo];
         } else {
-            return ['code'=>0,'msg'=>"获取腾讯QQ用户信息失败：{$data['msg']}"];
+            return ['code' => 0, 'msg' => "获取腾讯QQ用户信息失败：{$data['msg']}"];
         }
     }
 
@@ -32,9 +34,9 @@ class LoginEvent
             $userInfo['nick'] = $data['nickname'];
             $userInfo['head'] = $data['headimgurl'];
             $userInfo['openid'] = $weixin->openid();
-            return ['code'=>1,'msg'=>'ok','info'=>$userInfo];
+            return ['code' => 1, 'msg' => 'ok', 'info' => $userInfo];
         } else {
-            return ['code'=>0,'msg'=>"获取微信用户信息失败：{$data['errmsg']}"];
+            return ['code' => 0, 'msg' => "获取微信用户信息失败：{$data['errmsg']}"];
         }
     }
 

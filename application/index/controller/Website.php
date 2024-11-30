@@ -1,6 +1,7 @@
 <?php
+
 namespace app\index\controller;
-use think\Controller;
+
 use think\Db;
 
 class Website extends Base
@@ -14,7 +15,7 @@ class Website extends Base
     public function type()
     {
         $info = $this->label_type();
-        return $this->label_fetch( mac_tpl_fetch('website',$info['type_tpl'],'type') );
+        return $this->label_fetch(mac_tpl_fetch('website', $info['type_tpl'], 'type'));
     }
 
     public function show()
@@ -43,7 +44,7 @@ class Website extends Base
     {
         $param = mac_param_url();
         $this->check_ajax();
-        $this->check_search($param,1);
+        $this->check_search($param, 1);
         $this->label_search($param);
         return $this->label_fetch('website/ajax_search');
     }
@@ -53,8 +54,8 @@ class Website extends Base
         $info = $this->label_website_detail();
         $return = [];
 
-        $res = model('Point')->where(['type_id' => 11,'detail_id' => $info['website_id']])->column('score');
-        $count = model('Point')->where(['type_id' => 11,'detail_id' => $info['website_id']])->count();
+        $res = model('Point')->where(['type_id' => 11, 'detail_id' => $info['website_id']])->column('score');
+        $count = model('Point')->where(['type_id' => 11, 'detail_id' => $info['website_id']])->count();
         $return['count'] = $count;
         $total = 0;
 
@@ -64,21 +65,26 @@ class Website extends Base
 
         $return['vod_score_num'] = $count;
 
-        if($count){
-            $return['vod_score'] = round($total/$count,2);
+        if ($count) {
+            $return['vod_score'] = round($total / $count, 2);
 
-            $_1 = Db::table('mac_point')->where(['type_id' => 11,'detail_id' => $info['website_id']])->where('score','between',[0,2])->count();
-            $_2 = Db::table('mac_point')->where(['type_id' => 11,'detail_id' => $info['website_id']])->where('score','between',[2,4])->count();
-            $_3 = Db::table('mac_point')->where(['type_id' => 11,'detail_id' => $info['website_id']])->where('score','between',[4,6])->count();
-            $_4 = Db::table('mac_point')->where(['type_id' => 11,'detail_id' => $info['website_id']])->where('score','between',[6,8])->count();
-            $_5 = Db::table('mac_point')->where(['type_id' => 11,'detail_id' => $info['website_id']])->where('score','between',[8,10])->count();
+            $_1 = Db::table('mac_point')->where(['type_id' => 11, 'detail_id' => $info['website_id']])->where('score',
+                'between', [0, 2])->count();
+            $_2 = Db::table('mac_point')->where(['type_id' => 11, 'detail_id' => $info['website_id']])->where('score',
+                'between', [2, 4])->count();
+            $_3 = Db::table('mac_point')->where(['type_id' => 11, 'detail_id' => $info['website_id']])->where('score',
+                'between', [4, 6])->count();
+            $_4 = Db::table('mac_point')->where(['type_id' => 11, 'detail_id' => $info['website_id']])->where('score',
+                'between', [6, 8])->count();
+            $_5 = Db::table('mac_point')->where(['type_id' => 11, 'detail_id' => $info['website_id']])->where('score',
+                'between', [8, 10])->count();
 
-            $return['0-2'] = (round($_1/$count,2)*100).'%';
-            $return['2-4'] = (round($_2/$count,2)*100).'%';
-            $return['4-6'] = (round($_3/$count,2)*100).'%';
-            $return['6-8'] = (round($_4/$count,2)*100).'%';
-            $return['8-10'] = (round($_5/$count,2)*100).'%';
-        }else{
+            $return['0-2'] = (round($_1 / $count, 2) * 100).'%';
+            $return['2-4'] = (round($_2 / $count, 2) * 100).'%';
+            $return['4-6'] = (round($_3 / $count, 2) * 100).'%';
+            $return['6-8'] = (round($_4 / $count, 2) * 100).'%';
+            $return['8-10'] = (round($_5 / $count, 2) * 100).'%';
+        } else {
             $return['website_score'] = 0;
             $return['0-2'] = 0;
             $return['2-4'] = 0;
@@ -87,7 +93,8 @@ class Website extends Base
             $return['8-10'] = 0;
         }
 
-        return $this->label_fetch( mac_tpl_fetch('website',$info['website_tpl'],'detail') ,1 ,'html',['res' => $return]);
+        return $this->label_fetch(mac_tpl_fetch('website', $info['website_tpl'], 'detail'), 1, 'html',
+            ['res' => $return]);
     }
 
     public function ajax_detail()

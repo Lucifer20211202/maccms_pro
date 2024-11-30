@@ -1,16 +1,18 @@
 <?php
+
 namespace app\common\extend\email;
 
-class Phpmailer {
+class Phpmailer
+{
 
     public $name = 'PhpMailer';
     public $ver = '1.0';
 
-    public function submit($to, $title, $body,$config=[])
+    public function submit($to, $title, $body, $config = [])
     {
-        if(empty($config)) {
+        if (empty($config)) {
             $config = $GLOBALS['config']['email']['phpmailer'];
-            $config['nick'] =  $GLOBALS['config']['email']['nick'];
+            $config['nick'] = $GLOBALS['config']['email']['nick'];
         }
         $mail = new \phpmailer\src\PHPMailer();
         //$mail->SMTPDebug = 2;
@@ -22,19 +24,18 @@ class Phpmailer {
         $mail->Port = $config['port'];
         $mail->Username = $config['username'];
         $mail->Password = $config['password'];
-        $mail->setFrom($config['username'] , $config['nick']);
+        $mail->setFrom($config['username'], $config['nick']);
         $mail->addAddress($to);
         $mail->isHTML(true);
         $mail->Subject = $title;
-        $mail->Body    = $body;
+        $mail->Body = $body;
         unset($config);
         $res = $mail->send();
 
-        if($res===true){
-            return ['code'=>1,'msg'=>lang_web('send_ok')];
-        }
-        else{
-            return ['code'=>102,'msg'=>lang_web('error_occurred'). $mail->ErrorInfo ];
+        if ($res === true) {
+            return ['code' => 1, 'msg' => lang_web('send_ok')];
+        } else {
+            return ['code' => 102, 'msg' => lang_web('error_occurred').$mail->ErrorInfo];
         }
     }
 }

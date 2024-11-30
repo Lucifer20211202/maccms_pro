@@ -1,6 +1,6 @@
 <?php
+
 namespace app\index\controller;
-use think\Controller;
 
 class Plot extends Base
 {
@@ -21,9 +21,9 @@ class Plot extends Base
     {
         $param = mac_param_url();
         $this->check_ajax();
-        $this->check_search($param,1);
+        $this->check_search($param, 1);
         $this->label_search($param);
-        $this->assign('param',$param);
+        $this->assign('param', $param);
         return $this->label_fetch('plot/ajax_search');
     }
 

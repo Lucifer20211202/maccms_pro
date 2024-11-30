@@ -1,6 +1,7 @@
 <?php
+
 namespace app\api\controller;
-use think\Controller;
+
 use app\common\controller\All;
 
 class Base extends All
@@ -12,7 +13,7 @@ class Base extends All
         $this->assign($config);
 
         //站点关闭中
-        if($config['site_status'] == 0){
+        if ($config['site_status'] == 0) {
 
         }
     }

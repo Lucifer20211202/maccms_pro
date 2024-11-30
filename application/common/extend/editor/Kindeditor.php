@@ -1,7 +1,9 @@
 <?php
+
 namespace app\common\extend\editor;
 
-class Kindeditor {
+class Kindeditor
+{
 
     public $name = 'Kindeditor';
     public $ver = '1.0';
@@ -11,9 +13,9 @@ class Kindeditor {
 
     }
 
-    public function back($info='',$status=0,$data=[])
+    public function back($info = '', $status = 0, $data = [])
     {
-        $arr=[];
+        $arr = [];
         if ($status == 0) {
             $arr['error'] = 1;
             $arr['message'] = $info;

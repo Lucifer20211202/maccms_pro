@@ -1,6 +1,6 @@
 <?php
+
 namespace app\index\controller;
-use think\Controller;
 
 class Actor extends Base
 {
@@ -9,16 +9,18 @@ class Actor extends Base
     {
         $info = $this->label_actor();
         // 获取分类
-        $types = model('type')->where(['type_mid' => 8,'type_pid' => 0,'type_status' => 1])->order('type_sort desc')->select();
-        return $this->label_fetch('actor/index',1,'html',['types' => $types]);
+        $types = model('type')->where(['type_mid'    => 8, 'type_pid' => 0, 'type_status' => 1
+        ])->order('type_sort desc')->select();
+        return $this->label_fetch('actor/index', 1, 'html', ['types' => $types]);
     }
 
     public function type()
     {
         $info = $this->label_type();
         // 获取分类
-        $types = model('type')->where(['type_mid' => 8,'type_pid' => 0,'type_status' => 1])->order('type_sort desc')->select();
-        return $this->label_fetch( mac_tpl_fetch('actor',$info['type_tpl'],'type') ,1,'html',['types' => $types]);
+        $types = model('type')->where(['type_mid'    => 8, 'type_pid' => 0, 'type_status' => 1
+        ])->order('type_sort desc')->select();
+        return $this->label_fetch(mac_tpl_fetch('actor', $info['type_tpl'], 'type'), 1, 'html', ['types' => $types]);
     }
 
     public function show()
@@ -31,7 +33,7 @@ class Actor extends Base
             $type_id_specified = isset($default_actor_type->type_id) ? $default_actor_type->type_id : 0;
         }
         $info = $this->label_type(0, $type_id_specified);
-        return $this->label_fetch( mac_tpl_fetch('actor',$info['type_tpl_list'],'show') );
+        return $this->label_fetch(mac_tpl_fetch('actor', $info['type_tpl_list'], 'show'));
     }
 
     public function show_all()
@@ -60,16 +62,16 @@ class Actor extends Base
     {
         $param = mac_param_url();
         $this->check_ajax();
-        $this->check_search($param,1);
+        $this->check_search($param, 1);
         $this->label_search($param);
-        $this->assign('param',$param);
+        $this->assign('param', $param);
         return $this->label_fetch('actor/ajax_search');
     }
 
     public function detail()
     {
         $info = $this->label_actor_detail();
-        return $this->label_fetch( mac_tpl_fetch('actor',$info['actor_tpl'],'detail') );
+        return $this->label_fetch(mac_tpl_fetch('actor', $info['actor_tpl'], 'detail'));
     }
 
     public function ajax_detail()

@@ -1,411 +1,411 @@
 <?php
-return array (
-  '__pattern__' => 
-  array (
-    'id' => '[\\s\\S]*?',
-    'ids' => '[\\s\\S]*?',
-    'wd' => '[\\s\\S]*',
-    'en' => '[\\s\\S]*?',
-    'state' => '[\\s\\S]*?',
-    'area' => '[\\s\\S]*',
-    'year' => '[\\s\\S]*?',
-    'lang' => '[\\s\\S]*?',
-    'letter' => '[\\s\\S]*?',
-    'actor' => '[\\s\\S]*?',
-    'director' => '[\\s\\S]*?',
-    'tag' => '[\\s\\S]*?',
-    'class' => '[\\s\\S]*?',
-    'order' => '[\\s\\S]*?',
-    'by' => '[\\s\\S]*?',
-    'file' => '[\\s\\S]*?',
-    'name' => '[\\s\\S]*?',
-    'url' => '[\\s\\S]*?',
-    'type' => '[\\s\\S]*?',
-    'sex' => '[\\s\\S]*?',
-    'version' => '[\\s\\S]*?',
-    'blood' => '[\\s\\S]*?',
-    'starsign' => '[\\s\\S]*?',
-    'page' => '\\d+',
-    'ajax' => '\\d+',
-    'tid' => '\\d+',
-    'mid' => '\\d+',
-    'rid' => '\\d+',
-    'pid' => '\\d+',
-    'sid' => '\\d+',
-    'nid' => '\\d+',
-    'uid' => '\\d+',
-    'level' => '\\d+',
-    'score' => '\\d+',
-    'limit' => '\\d+',
-  ),
-  'map' => 
-  array (
-    0 => 'map/index',
-    1 => 
-    array (
-    ),
-    2 => 
-    array (
-    ),
-  ),
-  'rss' => 
-  array (
-    0 => 'rss/index',
-    1 => 
-    array (
-    ),
-    2 => 
-    array (
-    ),
-  ),
-  'index-<page?>' => 
-  array (
-    0 => 'index/index',
-    1 => 
-    array (
-    ),
-    2 => 
-    array (
-    ),
-  ),
-  'gbook-<page?>' => 
-  array (
-    0 => 'gbook/index',
-    1 => 
-    array (
-    ),
-    2 => 
-    array (
-    ),
-  ),
-  'gbook$' => 
-  array (
-    0 => 'gbook/index',
-    1 => 
-    array (
-    ),
-    2 => 
-    array (
-    ),
-  ),
-  'topic-<page?>' => 
-  array (
-    0 => 'topic/index',
-    1 => 
-    array (
-    ),
-    2 => 
-    array (
-    ),
-  ),
-  'topic$' => 
-  array (
-    0 => 'topic/index',
-    1 => 
-    array (
-    ),
-    2 => 
-    array (
-    ),
-  ),
-  'topicdetail-<id>' => 
-  array (
-    0 => 'topic/detail',
-    1 => 
-    array (
-    ),
-    2 => 
-    array (
-    ),
-  ),
-  'actor-<page?>' => 
-  array (
-    0 => 'actor/index',
-    1 => 
-    array (
-    ),
-    2 => 
-    array (
-    ),
-  ),
-  'actor$' => 
-  array (
-    0 => 'actor/index',
-    1 => 
-    array (
-    ),
-    2 => 
-    array (
-    ),
-  ),
-  'actordetail-<id>' => 
-  array (
-    0 => 'actor/detail',
-    1 => 
-    array (
-    ),
-    2 => 
-    array (
-    ),
-  ),
-  'actorshow/<area?>-<blood?>-<by?>-<letter?>-<level?>-<order?>-<page?>-<sex?>-<starsign?>' => 
-  array (
-    0 => 'actor/show',
-    1 => 
-    array (
-    ),
-    2 => 
-    array (
-    ),
-  ),
-  'role-<page?>' => 
-  array (
-    0 => 'role/index',
-    1 => 
-    array (
-    ),
-    2 => 
-    array (
-    ),
-  ),
-  'role$' => 
-  array (
-    0 => 'role/index',
-    1 => 
-    array (
-    ),
-    2 => 
-    array (
-    ),
-  ),
-  'roledetail-<id>' => 
-  array (
-    0 => 'role/detail',
-    1 => 
-    array (
-    ),
-    2 => 
-    array (
-    ),
-  ),
-  'roleshow/<by?>-<letter?>-<level?>-<order?>-<page?>-<rid?>' => 
-  array (
-    0 => 'role/show',
-    1 => 
-    array (
-    ),
-    2 => 
-    array (
-    ),
-  ),
-  'vodtype/<id>-<page?>' => 
-  array (
-    0 => 'vod/type',
-    1 => 
-    array (
-    ),
-    2 => 
-    array (
-    ),
-  ),
-  'vodtype/<id>' => 
-  array (
-    0 => 'vod/type',
-    1 => 
-    array (
-    ),
-    2 => 
-    array (
-    ),
-  ),
-  'voddetail/<id>' => 
-  array (
-    0 => 'vod/detail',
-    1 => 
-    array (
-    ),
-    2 => 
-    array (
-    ),
-  ),
-  'vodrss-<id>' => 
-  array (
-    0 => 'vod/rss',
-    1 => 
-    array (
-    ),
-    2 => 
-    array (
-    ),
-  ),
-  'vodplay/<id>-<sid>-<nid>' => 
-  array (
-    0 => 'vod/play',
-    1 => 
-    array (
-    ),
-    2 => 
-    array (
-    ),
-  ),
-  'voddown/<id>-<sid>-<nid>' => 
-  array (
-    0 => 'vod/down',
-    1 => 
-    array (
-    ),
-    2 => 
-    array (
-    ),
-  ),
-  'vodshow/<id>-<area?>-<by?>-<class?>-<lang?>-<letter?>-<level?>-<order?>-<page?>-<state?>-<tag?>-<year?>' => 
-  array (
-    0 => 'vod/show',
-    1 => 
-    array (
-    ),
-    2 => 
-    array (
-    ),
-  ),
-  'vodsearch/<wd?>-<actor?>-<area?>-<by?>-<class?>-<director?>-<lang?>-<letter?>-<level?>-<order?>-<page?>-<state?>-<tag?>-<year?>' => 
-  array (
-    0 => 'vod/search',
-    1 => 
-    array (
-    ),
-    2 => 
-    array (
-    ),
-  ),
-  'vodplot/<id>-<page?>' => 
-  array (
-    0 => 'vod/plot',
-    1 => 
-    array (
-    ),
-    2 => 
-    array (
-    ),
-  ),
-  'vodplot/<id>' => 
-  array (
-    0 => 'vod/plot',
-    1 => 
-    array (
-    ),
-    2 => 
-    array (
-    ),
-  ),
-  'arttype/<id>-<page?>' => 
-  array (
-    0 => 'art/type',
-    1 => 
-    array (
-    ),
-    2 => 
-    array (
-    ),
-  ),
-  'arttype/<id>' => 
-  array (
-    0 => 'art/type',
-    1 => 
-    array (
-    ),
-    2 => 
-    array (
-    ),
-  ),
-  'artshow-<id>' => 
-  array (
-    0 => 'art/show',
-    1 => 
-    array (
-    ),
-    2 => 
-    array (
-    ),
-  ),
-  'artdetail-<id>-<page?>' => 
-  array (
-    0 => 'art/detail',
-    1 => 
-    array (
-    ),
-    2 => 
-    array (
-    ),
-  ),
-  'artdetail-<id>' => 
-  array (
-    0 => 'art/detail',
-    1 => 
-    array (
-    ),
-    2 => 
-    array (
-    ),
-  ),
-  'artrss-<id>-<page>' => 
-  array (
-    0 => 'art/rss',
-    1 => 
-    array (
-    ),
-    2 => 
-    array (
-    ),
-  ),
-  'artshow/<id>-<by?>-<class?>-<level?>-<letter?>-<order?>-<page?>-<tag?>' => 
-  array (
-    0 => 'art/show',
-    1 => 
-    array (
-    ),
-    2 => 
-    array (
-    ),
-  ),
-  'artsearch/<wd?>-<by?>-<class?>-<level?>-<letter?>-<order?>-<page?>-<tag?>' => 
-  array (
-    0 => 'art/search',
-    1 => 
-    array (
-    ),
-    2 => 
-    array (
-    ),
-  ),
-  'label-<file>' => 
-  array (
-    0 => 'label/index',
-    1 => 
-    array (
-    ),
-    2 => 
-    array (
-    ),
-  ),
-  'plotdetail/<id>-<page?>' => 
-  array (
-    0 => 'plot/plot',
-    1 => 
-    array (
-    ),
-    2 => 
-    array (
-    ),
-  ),
-  'plotdetail/<id>' => 
-  array (
-    0 => 'plot/detail',
-    1 => 
-    array (
-    ),
-    2 => 
-    array (
-    ),
-  ),
-);
+return [
+    '__pattern__'                                                                                                                     =>
+        [
+            'id'       => '[\\s\\S]*?',
+            'ids'      => '[\\s\\S]*?',
+            'wd'       => '[\\s\\S]*',
+            'en'       => '[\\s\\S]*?',
+            'state'    => '[\\s\\S]*?',
+            'area'     => '[\\s\\S]*',
+            'year'     => '[\\s\\S]*?',
+            'lang'     => '[\\s\\S]*?',
+            'letter'   => '[\\s\\S]*?',
+            'actor'    => '[\\s\\S]*?',
+            'director' => '[\\s\\S]*?',
+            'tag'      => '[\\s\\S]*?',
+            'class'    => '[\\s\\S]*?',
+            'order'    => '[\\s\\S]*?',
+            'by'       => '[\\s\\S]*?',
+            'file'     => '[\\s\\S]*?',
+            'name'     => '[\\s\\S]*?',
+            'url'      => '[\\s\\S]*?',
+            'type'     => '[\\s\\S]*?',
+            'sex'      => '[\\s\\S]*?',
+            'version'  => '[\\s\\S]*?',
+            'blood'    => '[\\s\\S]*?',
+            'starsign' => '[\\s\\S]*?',
+            'page'     => '\\d+',
+            'ajax'     => '\\d+',
+            'tid'      => '\\d+',
+            'mid'      => '\\d+',
+            'rid'      => '\\d+',
+            'pid'      => '\\d+',
+            'sid'      => '\\d+',
+            'nid'      => '\\d+',
+            'uid'      => '\\d+',
+            'level'    => '\\d+',
+            'score'    => '\\d+',
+            'limit'    => '\\d+',
+        ],
+    'map'                                                                                                                             =>
+        [
+            0 => 'map/index',
+            1 =>
+                [
+                ],
+            2 =>
+                [
+                ],
+        ],
+    'rss'                                                                                                                             =>
+        [
+            0 => 'rss/index',
+            1 =>
+                [
+                ],
+            2 =>
+                [
+                ],
+        ],
+    'index-<page?>'                                                                                                                   =>
+        [
+            0 => 'index/index',
+            1 =>
+                [
+                ],
+            2 =>
+                [
+                ],
+        ],
+    'gbook-<page?>'                                                                                                                   =>
+        [
+            0 => 'gbook/index',
+            1 =>
+                [
+                ],
+            2 =>
+                [
+                ],
+        ],
+    'gbook$'                                                                                                                          =>
+        [
+            0 => 'gbook/index',
+            1 =>
+                [
+                ],
+            2 =>
+                [
+                ],
+        ],
+    'topic-<page?>'                                                                                                                   =>
+        [
+            0 => 'topic/index',
+            1 =>
+                [
+                ],
+            2 =>
+                [
+                ],
+        ],
+    'topic$'                                                                                                                          =>
+        [
+            0 => 'topic/index',
+            1 =>
+                [
+                ],
+            2 =>
+                [
+                ],
+        ],
+    'topicdetail-<id>'                                                                                                                =>
+        [
+            0 => 'topic/detail',
+            1 =>
+                [
+                ],
+            2 =>
+                [
+                ],
+        ],
+    'actor-<page?>'                                                                                                                   =>
+        [
+            0 => 'actor/index',
+            1 =>
+                [
+                ],
+            2 =>
+                [
+                ],
+        ],
+    'actor$'                                                                                                                          =>
+        [
+            0 => 'actor/index',
+            1 =>
+                [
+                ],
+            2 =>
+                [
+                ],
+        ],
+    'actordetail-<id>'                                                                                                                =>
+        [
+            0 => 'actor/detail',
+            1 =>
+                [
+                ],
+            2 =>
+                [
+                ],
+        ],
+    'actorshow/<area?>-<blood?>-<by?>-<letter?>-<level?>-<order?>-<page?>-<sex?>-<starsign?>'                                         =>
+        [
+            0 => 'actor/show',
+            1 =>
+                [
+                ],
+            2 =>
+                [
+                ],
+        ],
+    'role-<page?>'                                                                                                                    =>
+        [
+            0 => 'role/index',
+            1 =>
+                [
+                ],
+            2 =>
+                [
+                ],
+        ],
+    'role$'                                                                                                                           =>
+        [
+            0 => 'role/index',
+            1 =>
+                [
+                ],
+            2 =>
+                [
+                ],
+        ],
+    'roledetail-<id>'                                                                                                                 =>
+        [
+            0 => 'role/detail',
+            1 =>
+                [
+                ],
+            2 =>
+                [
+                ],
+        ],
+    'roleshow/<by?>-<letter?>-<level?>-<order?>-<page?>-<rid?>'                                                                       =>
+        [
+            0 => 'role/show',
+            1 =>
+                [
+                ],
+            2 =>
+                [
+                ],
+        ],
+    'vodtype/<id>-<page?>'                                                                                                            =>
+        [
+            0 => 'vod/type',
+            1 =>
+                [
+                ],
+            2 =>
+                [
+                ],
+        ],
+    'vodtype/<id>'                                                                                                                    =>
+        [
+            0 => 'vod/type',
+            1 =>
+                [
+                ],
+            2 =>
+                [
+                ],
+        ],
+    'voddetail/<id>'                                                                                                                  =>
+        [
+            0 => 'vod/detail',
+            1 =>
+                [
+                ],
+            2 =>
+                [
+                ],
+        ],
+    'vodrss-<id>'                                                                                                                     =>
+        [
+            0 => 'vod/rss',
+            1 =>
+                [
+                ],
+            2 =>
+                [
+                ],
+        ],
+    'vodplay/<id>-<sid>-<nid>'                                                                                                        =>
+        [
+            0 => 'vod/play',
+            1 =>
+                [
+                ],
+            2 =>
+                [
+                ],
+        ],
+    'voddown/<id>-<sid>-<nid>'                                                                                                        =>
+        [
+            0 => 'vod/down',
+            1 =>
+                [
+                ],
+            2 =>
+                [
+                ],
+        ],
+    'vodshow/<id>-<area?>-<by?>-<class?>-<lang?>-<letter?>-<level?>-<order?>-<page?>-<state?>-<tag?>-<year?>'                         =>
+        [
+            0 => 'vod/show',
+            1 =>
+                [
+                ],
+            2 =>
+                [
+                ],
+        ],
+    'vodsearch/<wd?>-<actor?>-<area?>-<by?>-<class?>-<director?>-<lang?>-<letter?>-<level?>-<order?>-<page?>-<state?>-<tag?>-<year?>' =>
+        [
+            0 => 'vod/search',
+            1 =>
+                [
+                ],
+            2 =>
+                [
+                ],
+        ],
+    'vodplot/<id>-<page?>'                                                                                                            =>
+        [
+            0 => 'vod/plot',
+            1 =>
+                [
+                ],
+            2 =>
+                [
+                ],
+        ],
+    'vodplot/<id>'                                                                                                                    =>
+        [
+            0 => 'vod/plot',
+            1 =>
+                [
+                ],
+            2 =>
+                [
+                ],
+        ],
+    'arttype/<id>-<page?>'                                                                                                            =>
+        [
+            0 => 'art/type',
+            1 =>
+                [
+                ],
+            2 =>
+                [
+                ],
+        ],
+    'arttype/<id>'                                                                                                                    =>
+        [
+            0 => 'art/type',
+            1 =>
+                [
+                ],
+            2 =>
+                [
+                ],
+        ],
+    'artshow-<id>'                                                                                                                    =>
+        [
+            0 => 'art/show',
+            1 =>
+                [
+                ],
+            2 =>
+                [
+                ],
+        ],
+    'artdetail-<id>-<page?>'                                                                                                          =>
+        [
+            0 => 'art/detail',
+            1 =>
+                [
+                ],
+            2 =>
+                [
+                ],
+        ],
+    'artdetail-<id>'                                                                                                                  =>
+        [
+            0 => 'art/detail',
+            1 =>
+                [
+                ],
+            2 =>
+                [
+                ],
+        ],
+    'artrss-<id>-<page>'                                                                                                              =>
+        [
+            0 => 'art/rss',
+            1 =>
+                [
+                ],
+            2 =>
+                [
+                ],
+        ],
+    'artshow/<id>-<by?>-<class?>-<level?>-<letter?>-<order?>-<page?>-<tag?>'                                                          =>
+        [
+            0 => 'art/show',
+            1 =>
+                [
+                ],
+            2 =>
+                [
+                ],
+        ],
+    'artsearch/<wd?>-<by?>-<class?>-<level?>-<letter?>-<order?>-<page?>-<tag?>'                                                       =>
+        [
+            0 => 'art/search',
+            1 =>
+                [
+                ],
+            2 =>
+                [
+                ],
+        ],
+    'label-<file>'                                                                                                                    =>
+        [
+            0 => 'label/index',
+            1 =>
+                [
+                ],
+            2 =>
+                [
+                ],
+        ],
+    'plotdetail/<id>-<page?>'                                                                                                         =>
+        [
+            0 => 'plot/plot',
+            1 =>
+                [
+                ],
+            2 =>
+                [
+                ],
+        ],
+    'plotdetail/<id>'                                                                                                                 =>
+        [
+            0 => 'plot/detail',
+            1 =>
+                [
+                ],
+            2 =>
+                [
+                ],
+        ],
+];

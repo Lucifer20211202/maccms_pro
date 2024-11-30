@@ -31,7 +31,7 @@ class Banner extends Base
         if (!is_array($where)) {
             $where = json_decode($where, true);
         }
-        $limit_str = ($limit * ($page - 1) + $start) . "," . $limit;
+        $limit_str = ($limit * ($page - 1) + $start).",".$limit;
         if ($totalshow == 1) {
             $total = $this->where($where)->count();
         }
@@ -42,7 +42,9 @@ class Banner extends Base
             $list[$v['banner_id']] = $v;
         }
 
-        return ['code' => 1, 'msg' => '数据列表', 'page' => $page, 'pagecount' => ceil($total / $limit), 'limit' => $limit, 'total' => $total, 'list' => $list];
+        return ['code'  => 1, 'msg' => '数据列表', 'page' => $page, 'pagecount' => ceil($total / $limit),
+                'limit' => $limit, 'total' => $total, 'list' => $list
+        ];
     }
 
     public function listData2($where, $order, $type)
@@ -55,7 +57,7 @@ class Banner extends Base
         if ($type == 'all') {
             $tmp = Db::name('Banner')->where($where)->order($order)->select();
         } else {
-            $catid = Db::name('BannerCat')->where('cat_code="' . $type . '"')->find();
+            $catid = Db::name('BannerCat')->where('cat_code="'.$type.'"')->find();
             //if(!empty($catid))
             $where['banner_cat'] = ['eq', $catid['cat_id']];
 
@@ -67,7 +69,9 @@ class Banner extends Base
             $list[$v['banner_id']] = $v;
         }
 
-        return ['code' => 1, 'msg' => '数据列表', 'page' => $page, 'pagecount' => ceil($total / $limit), 'limit' => $limit, 'total' => $total, 'list' => $list];
+        return ['code'  => 1, 'msg' => '数据列表', 'page' => $page, 'pagecount' => ceil($total / $limit),
+                'limit' => $limit, 'total' => $total, 'list' => $list
+        ];
     }
 
     public function infoData($where, $field = '*', $cache = 0)
@@ -75,7 +79,7 @@ class Banner extends Base
         if (empty($where) || !is_array($where)) {
             return ['code' => 1001, 'msg' => '参数错误'];
         }
-        $key = 'banner_detail_' . $where['banner_id'][1] . '_' . $where['banner_en'][1];
+        $key = 'banner_detail_'.$where['banner_id'][1].'_'.$where['banner_en'][1];
         $info = Cache::get($key);
 
         if ($GLOBALS['config']['app']['cache_core'] == 0 || $cache == 0 || empty($info['banner_id'])) {
@@ -96,9 +100,9 @@ class Banner extends Base
     {
         $validate = \think\Loader::validate('Banner');
         if (!$validate->check($data)) {
-            return ['code' => 1001, 'msg' => lang('param_err') . '：' . $validate->getError()];
+            return ['code' => 1001, 'msg' => lang('param_err').'：'.$validate->getError()];
         }
-        $key = 'banner_detail_' . $data['banner_id'];
+        $key = 'banner_detail_'.$data['banner_id'];
         Cache::rm($key);
 
         if (!empty($data['banner_stime'])) {
@@ -110,9 +114,9 @@ class Banner extends Base
         if (!empty($data['banner_etime'])) {
             $data['banner_etime'] = strtotime($data['banner_etime']);
         } else {
-            $data['banner_etime'] = strtotime(date('Y-m-d') . ' 23:59:59');
+            $data['banner_etime'] = strtotime(date('Y-m-d').' 23:59:59');
         }
-        $data['banner_order'] = (int)$data['banner_order'];
+        $data['banner_order'] = (int) $data['banner_order'];
 
         if (!empty($data['banner_id'])) {
             $where = [];
@@ -122,7 +126,7 @@ class Banner extends Base
             $res = $this->allowField(true)->insert($data);
         }
         if (false === $res) {
-            return ['code' => 1002, 'msg' => lang('save_err') . '：' . $this->getError()];
+            return ['code' => 1002, 'msg' => lang('save_err').'：'.$this->getError()];
         }
 
         return ['code' => 1, 'msg' => lang('save_ok')];
@@ -156,14 +160,15 @@ class Banner extends Base
         if (!in_array($by, ['id', 'order'])) {
             $by = 'id';
         }
-        $by = 'banner_' . $by;
-        $order = $by . ' ' . $order;
+        $by = 'banner_'.$by;
+        $order = $by.' '.$order;
         $where['banner_status'] = 1;
         $times = time();
         $where['banner_stime'] = ['ELT', $times];
         $where['banner_etime'] = ['EGT', $times];
 
-        $cach_name = $GLOBALS['config']['app']['cache_flag'] . '_' . md5('banner_listcache_' . join('&', $where) . '_' . $order . '_' . $page . '_' . $num . '_' . $start);
+        $cach_name = $GLOBALS['config']['app']['cache_flag'].'_'.md5('banner_listcache_'.join('&',
+                    $where).'_'.$order.'_'.$page.'_'.$num.'_'.$start);
         $res = Cache::get($cach_name);
         if ($GLOBALS['config']['app']['cache_core'] == 0 || empty($res)) {
             $res = $this->listData2($where, $order, $type);
@@ -183,8 +188,8 @@ class Banner extends Base
         if ($this->lockTableUpdate(1) === true) {
             return true;
         }
-        if (!Db::execute("SHOW TABLES LIKE '" . config('database.prefix') . $this->name . "'")) {
-            $sql = "CREATE TABLE `" . config('database.prefix') . $this->name . "` (
+        if (!Db::execute("SHOW TABLES LIKE '".config('database.prefix').$this->name."'")) {
+            $sql = "CREATE TABLE `".config('database.prefix').$this->name."` (
                 `banner_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
                 `banner_title` varchar(100) DEFAULT NULL,
                 `banner_link` varchar(200) DEFAULT NULL,

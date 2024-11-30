@@ -1,6 +1,6 @@
 <?php
+
 namespace app\index\controller;
-use think\Controller;
 
 class Art extends Base
 {
@@ -9,37 +9,38 @@ class Art extends Base
     {
         $type_model = model('type')->where(['type_pid' => 0])->column('type_id,type_name');
         $info['type_mid'] = 2;
-        return $this->label_fetch('art/index',1,'html',[
+        return $this->label_fetch('art/index', 1, 'html', [
             'type_model' => $type_model,
-            'info' => $info,
+            'info'       => $info,
         ]);
     }
 
     public function type()
     {
-        $type_model = model('type')->where(['type_mid' => 2,'type_status' => 1])->order('type_sort desc')->column('type_id,type_name');
+        $type_model = model('type')->where(['type_mid'    => 2, 'type_status' => 1
+        ])->order('type_sort desc')->column('type_id,type_name');
         $info = $this->label_type();
         $info['type_mid'] = 2;
-        return $this->label_fetch( mac_tpl_fetch('art',$info['type_tpl'],'type'),'1','html',[
+        return $this->label_fetch(mac_tpl_fetch('art', $info['type_tpl'], 'type'), '1', 'html', [
             'type_model' => $type_model,
-            'info' => $info,
+            'info'       => $info,
         ]);
     }
 
     public function detail()
     {
         $info = $this->label_art_detail();
-        if(!empty($info['art_pwd']) && session('2-1-'.$info['art_id'])!='1'){
+        if (!empty($info['art_pwd']) && session('2-1-'.$info['art_id']) != '1') {
             return $this->label_fetch('art/detail_pwd');
         }
-        return $this->label_fetch( mac_tpl_fetch('art',$info['art_tpl'],'detail') );
+        return $this->label_fetch(mac_tpl_fetch('art', $info['art_tpl'], 'detail'));
     }
 
     public function show()
     {
         $this->check_show();
         $info = $this->label_type();
-        return $this->label_fetch( mac_tpl_fetch('art',$info['type_tpl_list'],'show') );
+        return $this->label_fetch(mac_tpl_fetch('art', $info['type_tpl_list'], 'show'));
     }
 
     public function ajax_show()
@@ -62,7 +63,7 @@ class Art extends Base
     {
         $param = mac_param_url();
         $this->check_ajax();
-        $this->check_search($param,1);
+        $this->check_search($param, 1);
         $this->label_search($param);
         return $this->label_fetch('art/ajax_search');
     }

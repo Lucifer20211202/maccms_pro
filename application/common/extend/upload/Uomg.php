@@ -1,4 +1,5 @@
 <?php
+
 namespace app\common\extend\upload;
 
 class Uomg
@@ -11,10 +12,10 @@ class Uomg
         $type = $GLOBALS['config']['upload']['api']['uomg']['type'];
         $openid = $GLOBALS['config']['upload']['api']['uomg']['openid'];
         $key = $GLOBALS['config']['upload']['api']['uomg']['key'];
-        if(empty($type)){
+        if (empty($type)) {
             $type = 'ali';
         }
-        $filePath = ROOT_PATH . $file_path;
+        $filePath = ROOT_PATH.$file_path;
 
         $url = 'https://api.uomg.com/api/image.'.$type;
         $data = [];
@@ -27,9 +28,9 @@ class Uomg
             $data['Filedata'] = '@'.realpath($file_path);
         }
 
-        $html = mac_curl_post($url,$data);
-        $json = @json_decode($html,true);
-        if($json['code']=='1'){
+        $html = mac_curl_post($url, $data);
+        $json = @json_decode($html, true);
+        if ($json['code'] == '1') {
             $file_path = $json['imgurl'];
             @unlink($filePath);
         }

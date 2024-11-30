@@ -1,10 +1,13 @@
 <?php
+
 namespace app\common\model;
+
 use app\common\util\Pinyin;
 use think\Cache;
 use think\Db;
 
-class Type extends Base {
+class Type extends Base
+{
     // 设置数据表（不含前缀）
     protected $name = 'type';
 
@@ -13,9 +16,9 @@ class Type extends Base {
     protected $updateTime = '';
 
     // 自动完成
-    protected $auto       = [];
-    protected $insert     = [];
-    protected $update     = [];
+    protected $auto = [];
+    protected $insert = [];
+    protected $update = [];
 
 
     //自定义初始化
@@ -32,59 +35,56 @@ class Type extends Base {
         return $total;
     }
 
-    public function listData($where,$order,$format='def',$mid=0,$limit=999,$start=0,$totalshow=1)
+    public function listData($where, $order, $format = 'def', $mid = 0, $limit = 999, $start = 0, $totalshow = 1)
     {
-        if(!is_array($where)){
-            $where = json_decode($where,true);
+        if (!is_array($where)) {
+            $where = json_decode($where, true);
         }
-        $limit_str = ($limit * (1-1) + $start) .",".$limit;
-        if($totalshow==1) {
+        $limit_str = ($limit * (1 - 1) + $start).",".$limit;
+        if ($totalshow == 1) {
             $total = $this->where($where)->count();
-        }
-        else{
+        } else {
 
         }
         $tmp = Db::name('Type')->where($where)->order($order)->limit($limit_str)->select();
 
         $list = [];
-        $childs=[];
-        foreach($tmp as $k=>$v){
-            $v['type_extend'] = json_decode($v['type_extend'],true);
+        $childs = [];
+        foreach ($tmp as $k => $v) {
+            $v['type_extend'] = json_decode($v['type_extend'], true);
             $list[$v['type_id']] = $v;
             $childs[$v['type_pid']][] = $v['type_id'];
         }
 
-        $rc=false;
-        foreach($list as $k=>$v){
-            if($v['type_pid']==0){
-                if(!empty($where)){
-                    if(!$rc){
+        $rc = false;
+        foreach ($list as $k => $v) {
+            if ($v['type_pid'] == 0) {
+                if (!empty($where)) {
+                    if (!$rc) {
                         $type_list = model('Type')->getCache('type_list');
-                        $rc=true;
+                        $rc = true;
                     }
                     $list[$k]['childids'] = $type_list[$v['type_id']]['childids'];
+                } else {
+                    $list[$k]['childids'] = join(',', (array) $childs[$v['type_id']]);
                 }
-                else {
-                    $list[$k]['childids'] = join(',', (array)$childs[$v['type_id']]);
-                }
-            }
-            else {
+            } else {
                 $list[$k]['type_1'] = $list[$v['type_pid']];
             }
         }
-        if($mid>0){
-            foreach($list as $k=>$v){
-                if($v['type_mid'] !=$mid) {
+        if ($mid > 0) {
+            foreach ($list as $k => $v) {
+                if ($v['type_mid'] != $mid) {
                     unset($list[$k]);
                 }
             }
         }
 
-        if($format=='tree'){
-            $list = mac_list_to_tree($list,'type_id','type_pid');
+        if ($format == 'tree') {
+            $list = mac_list_to_tree($list, 'type_id', 'type_pid');
         }
 
-        return ['code'=>1,'msg'=>lang('data_list'),'total'=>$total,'list'=>$list];
+        return ['code' => 1, 'msg' => lang('data_list'), 'total' => $total, 'list' => $list];
     }
 
     public function listCacheData($lp)
@@ -104,14 +104,14 @@ class Type extends Base {
         $num = intval(abs($lp['num']));
         $cachetime = $lp['cachetime'];
         $not = $lp['not'];
-        $page=1;
+        $page = 1;
         $where = [];
 
 
-        if(empty($num)){
+        if (empty($num)) {
             $num = 20;
         }
-        if($start>1){
+        if ($start > 1) {
             $start--;
         }
         if (!in_array($order, ['asc', 'desc'])) {
@@ -123,83 +123,78 @@ class Type extends Base {
         if (!in_array($format, ['def', 'tree'])) {
             $format = 'def';
         }
-        if (in_array($mid, ['1', '2','8','11'])) {
-            $where['type_mid'] = ['eq',$mid];
+        if (in_array($mid, ['1', '2', '8', '11'])) {
+            $where['type_mid'] = ['eq', $mid];
         }
-        if(!empty($flag)){
-            if($flag=='vod'){
-                $where['type_mid'] = ['eq',1];
-            }
-            elseif($flag=='art'){
-                $where['type_mid'] = ['eq',2];
+        if (!empty($flag)) {
+            if ($flag == 'vod') {
+                $where['type_mid'] = ['eq', 1];
+            } elseif ($flag == 'art') {
+                $where['type_mid'] = ['eq', 2];
             }
         }
 
         $param = mac_param_url();
 
         if (!empty($ids)) {
-            if($ids=='parent'){
-                $where['type_pid'] = ['eq',0];
-            }
-            elseif($ids=='child'){
-                $where['type_pid'] = ['gt',0];
-            }
-            elseif($ids=='current'){
+            if ($ids == 'parent') {
+                $where['type_pid'] = ['eq', 0];
+            } elseif ($ids == 'child') {
+                $where['type_pid'] = ['gt', 0];
+            } elseif ($ids == 'current') {
                 $type_info = $this->getCacheInfo($param['id']);
                 $doid = $param['id'];
                 $childs = $type_info['childids'];
-                if($type_info['type_pid']>0){//二级分类->一级
+                if ($type_info['type_pid'] > 0) {//二级分类->一级
                     $doid = $type_info['type_pid'];
                     $type_info1 = $this->getCacheInfo($doid);
                     $childs = $type_info1['childids'];
                 }
 
-                $where['type_id'] = ['in',$childs];
-            }
-            else{
-                $where['type_id'] = ['in',$ids];
+                $where['type_id'] = ['in', $childs];
+            } else {
+                $where['type_id'] = ['in', $ids];
             }
         }
-        if(!empty($parent)){
-            if($parent=='current'){
+        if (!empty($parent)) {
+            if ($parent == 'current') {
                 $type_info = $this->getCacheInfo($param['id']);
                 $parent = intval($type_info['type_id']);
-                if($type_info['type_pid'] !=0){
+                if ($type_info['type_pid'] != 0) {
                     //$parent = $type_info['type_pid'];
                 }
             }
-            $where['type_pid'] = ['in',$parent];
+            $where['type_pid'] = ['in', $parent];
         }
-        if(!empty($not)){
-            $where['type_id'] = ['not in',$not];
+        if (!empty($not)) {
+            $where['type_id'] = ['not in', $not];
         }
 
-        if(defined('ENTRANCE') && ENTRANCE == 'index' && $GLOBALS['config']['app']['popedom_filter'] ==1){
+        if (defined('ENTRANCE') && ENTRANCE == 'index' && $GLOBALS['config']['app']['popedom_filter'] == 1) {
             $type_ids = mac_get_popedom_filter($GLOBALS['user']['group']['group_type']);
-            if(!empty($type_ids)){
-                if(!empty($where['type_id'])){
-                    $where['type_id'] = [ $where['type_id'],['not in', explode(',',$type_ids)] ];
-                }
-                else{
-                    $where['type_id'] = ['not in', explode(',',$type_ids)];
+            if (!empty($type_ids)) {
+                if (!empty($where['type_id'])) {
+                    $where['type_id'] = [$where['type_id'], ['not in', explode(',', $type_ids)]];
+                } else {
+                    $where['type_id'] = ['not in', explode(',', $type_ids)];
                 }
             }
         }
 
-        $where['type_status'] = ['eq',1];
+        $where['type_status'] = ['eq', 1];
 
         $by = 'type_'.$by;
-        $order = 'type_pid asc,'. $by . ' ' . $order;
+        $order = 'type_pid asc,'.$by.' '.$order;
 
-        $cach_name = $GLOBALS['config']['app']['cache_flag']. '_' .md5('type_listcache_'.http_build_query($where).'_'.$order.'_'.$num.'_'.$start);
+        $cach_name = $GLOBALS['config']['app']['cache_flag'].'_'.md5('type_listcache_'.http_build_query($where).'_'.$order.'_'.$num.'_'.$start);
         $res = Cache::get($cach_name);
-        if(empty($cachetime)){
+        if (empty($cachetime)) {
             $cachetime = $GLOBALS['config']['app']['cache_time'];
         }
-        if($GLOBALS['config']['app']['cache_core']==0 || empty($res)) {
-            $res = $this->listData($where,$order,$format,$mid,$num,$start,0);
+        if ($GLOBALS['config']['app']['cache_core'] == 0 || empty($res)) {
+            $res = $this->listData($where, $order, $format, $mid, $num, $start, 0);
             $res['list'] = array_values($res['list']);
-            if($GLOBALS['config']['app']['cache_core']==1) {
+            if ($GLOBALS['config']['app']['cache_core'] == 1) {
                 Cache::set($cach_name, $res, $cachetime);
             }
         }
@@ -207,40 +202,40 @@ class Type extends Base {
         return $res;
     }
 
-    public function infoData($where,$field='*')
+    public function infoData($where, $field = '*')
     {
-        if(empty($where) || !is_array($where)){
-            return ['code'=>1001,'msg'=>lang('param_err')];
+        if (empty($where) || !is_array($where)) {
+            return ['code' => 1001, 'msg' => lang('param_err')];
         }
         $info = $this->field($field)->where($where)->find();
 
-        if(empty($info)){
-            return ['code'=>1002,'msg'=>lang('obtain_err')];
+        if (empty($info)) {
+            return ['code' => 1002, 'msg' => lang('obtain_err')];
         }
         $info = $info->toArray();
 
-        if(!empty($info['type_extend'])){
-            $info['type_extend'] = json_decode($info['type_extend'],true);
-        }
-        else{
-            $info['type_extend'] = json_decode('{"type":"","area":"","lang":"","year":"","star":"","director":"","state":"","version":""}',true);
+        if (!empty($info['type_extend'])) {
+            $info['type_extend'] = json_decode($info['type_extend'], true);
+        } else {
+            $info['type_extend'] = json_decode('{"type":"","area":"","lang":"","year":"","star":"","director":"","state":"","version":""}',
+                true);
         }
 
 
-        return ['code'=>1,'msg'=>lang('obtain_ok'),'info'=>$info];
+        return ['code' => 1, 'msg' => lang('obtain_ok'), 'info' => $info];
     }
 
     public function saveData($data)
     {
         $validate = \think\Loader::validate('Type');
-        if(!$validate->check($data)){
-            return ['code'=>1001,'msg'=>lang('param_err').'：'.$validate->getError() ];
+        if (!$validate->check($data)) {
+            return ['code' => 1001, 'msg' => lang('param_err').'：'.$validate->getError()];
         }
 
-        if(!empty($data['type_extend'])){
+        if (!empty($data['type_extend'])) {
             $data['type_extend'] = json_encode($data['type_extend']);
         }
-        if(empty($data['type_en'])){
+        if (empty($data['type_en'])) {
             $data['type_en'] = Pinyin::get($data['type_name']);
         }
 
@@ -268,48 +263,49 @@ class Type extends Base {
             $data[$filter_field] = mac_filter_xss($data[$filter_field]);
         }
 
-        if(!empty($data['type_id'])){
-            $where=[];
-            $where['type_id'] = ['eq',$data['type_id']];
+        if (!empty($data['type_id'])) {
+            $where = [];
+            $where['type_id'] = ['eq', $data['type_id']];
             $res = $this->allowField(true)->where($where)->update($data);
-        }
-        else{
+        } else {
             $res = $this->allowField(true)->insert($data);
         }
-        if(false === $res){
-            return ['code'=>1002,'msg'=>lang('save_err').'：'.$this->getError() ];
+        if (false === $res) {
+            return ['code' => 1002, 'msg' => lang('save_err').'：'.$this->getError()];
         }
 
         $this->setCache();
-        return ['code'=>1,'msg'=>lang('save_ok')];
+        return ['code' => 1, 'msg' => lang('save_ok')];
     }
 
     public function delData($where)
     {
         $list = $this->where($where)->select();
-        foreach($list as $k=>$v){
-            $where2=[];
-            $where2['type_id|type_id_1'] = ['eq',$v['type_id']];
+        foreach ($list as $k => $v) {
+            $where2 = [];
+            $where2['type_id|type_id_1'] = ['eq', $v['type_id']];
             $flag = $v['type_mid'] == 1 ? 'Vod' : 'Art';
             $cc = model($flag)->where($where2)->count();
-            if($cc > 0){
-                return ['code'=>1021,'msg'=>lang('del_err').'：'. $v['type_name'].'还有'.$cc.'条数据，请先删除或转移' ];
+            if ($cc > 0) {
+                return [
+                    'code' => 1021, 'msg' => lang('del_err').'：'.$v['type_name'].'还有'.$cc.'条数据，请先删除或转移'
+                ];
             }
         }
 
         $res = $this->where($where)->delete();
-        if($res===false){
-            return ['code'=>1001,'msg'=>lang('del_err').'：'.$this->getError() ];
+        if ($res === false) {
+            return ['code' => 1001, 'msg' => lang('del_err').'：'.$this->getError()];
         }
 
         $this->setCache();
-        return ['code'=>1,'msg'=>lang('del_ok')];
+        return ['code' => 1, 'msg' => lang('del_ok')];
     }
 
-    public function fieldData($where,$col,$val)
+    public function fieldData($where, $col, $val)
     {
-        if(!isset($col) || !isset($val)){
-            return ['code'=>1001,'msg'=>lang('param_err')];
+        if (!isset($col) || !isset($val)) {
+            return ['code' => 1001, 'msg' => lang('param_err')];
         }
 
         $data = [];
@@ -317,26 +313,26 @@ class Type extends Base {
 
         $res = $this->allowField(true)->where($where)->update($data);
 
-        if($res===false){
-            return ['code'=>1002,'msg'=>lang('set_err').'：'.$this->getError() ];
+        if ($res === false) {
+            return ['code' => 1002, 'msg' => lang('set_err').'：'.$this->getError()];
         }
 
         $this->setCache();
-        return ['code'=>1,'msg'=>lang('set_ok')];
+        return ['code' => 1, 'msg' => lang('set_ok')];
     }
 
-    public function moveData($where,$val)
+    public function moveData($where, $val)
     {
         $list = $this->where($where)->select();
         $type_info = $this->getCacheInfo($val);
-        if(empty($type_info)){
-            return ['code'=>1011,'msg'=>lang('model/type/to_info_err')];
+        if (empty($type_info)) {
+            return ['code' => 1011, 'msg' => lang('model/type/to_info_err')];
         }
 
-        foreach($list as $k=>$v){
-            $where2=[];
-            $where2['type_id|type_id_1'] = ['eq',$v['type_id']];
-            $update=[];
+        foreach ($list as $k => $v) {
+            $where2 = [];
+            $where2['type_id|type_id_1'] = ['eq', $v['type_id']];
+            $update = [];
             $update['type_id'] = $val;
             $update['type_id_1'] = $type_info['type_pid'];
             $flag = $v['type_mid'] == 1 ? 'Vod' : 'Art';
@@ -347,26 +343,26 @@ class Type extends Base {
             }
         }
 
-        return ['code'=>1,'msg'=>lang('model/type/move_ok')];
+        return ['code' => 1, 'msg' => lang('model/type/move_ok')];
     }
 
     public function setCache()
     {
-        $res = $this->listData([],'type_id asc');
+        $res = $this->listData([], 'type_id asc');
         $list = $res['list'];
-        $key = $GLOBALS['config']['app']['cache_flag']. '_'.'type_list';
-        Cache::set($key,$list);
+        $key = $GLOBALS['config']['app']['cache_flag'].'_'.'type_list';
+        Cache::set($key, $list);
 
-        $type_tree = mac_list_to_tree($list,'type_id','type_pid');
-        $key = $GLOBALS['config']['app']['cache_flag']. '_'.'type_tree';
-        Cache::set($key,$type_tree);
+        $type_tree = mac_list_to_tree($list, 'type_id', 'type_pid');
+        $key = $GLOBALS['config']['app']['cache_flag'].'_'.'type_tree';
+        Cache::set($key, $type_tree);
     }
 
-    public function getCache($flag='type_list')
+    public function getCache($flag = 'type_list')
     {
-        $key = $GLOBALS['config']['app']['cache_flag']. '_'.$flag;
+        $key = $GLOBALS['config']['app']['cache_flag'].'_'.$flag;
         $cache = Cache::get($key);
-        if(empty($cache)){
+        if (empty($cache)) {
             $this->setCache();
             $cache = Cache::get($key);
         }
@@ -376,19 +372,17 @@ class Type extends Base {
     public function getCacheInfo($id)
     {
         $type_list = $this->getCache('type_list');
-        if(is_numeric($id)) {
+        if (is_numeric($id)) {
             return $type_list[$id];
-        }
-        else{
+        } else {
 
-            foreach($type_list as $k=>$v){
-                if($v['type_en'] == $id){
+            foreach ($type_list as $k => $v) {
+                if ($v['type_en'] == $id) {
                     return $type_list[$k];
                 }
             }
         }
     }
-
 
 
 }

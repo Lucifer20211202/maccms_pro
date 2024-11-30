@@ -8,7 +8,7 @@ class Init
 {
     public function run(&$params)
     {
-        if(!file_exists(__DIR__.'/../../data/install/install.lock')){
+        if (!file_exists(__DIR__.'/../../data/install/install.lock')) {
             return;
         }
         $config = config('maccms');

@@ -1,8 +1,6 @@
 <?php
+
 namespace app\admin\controller;
-use think\Db;
-use think\Config;
-use think\Cache;
 
 class Domain extends Base
 {
@@ -13,26 +11,25 @@ class Domain extends Base
             $config = input();
 
             $tmp = $config['domain'];
-            $domain=[];
+            $domain = [];
 
 
+            foreach ($tmp['site_url'] as $k => $v) {
 
-            foreach ($tmp['site_url'] as $k=>$v){
-
-                $domain[$v] =[
-                   'site_url'=>$v,
-                    'site_name'=>$tmp['site_name'][$k],
-                    'site_keywords'=>$tmp['site_keywords'][$k],
-                    'site_description'=>$tmp['site_description'][$k],
-                    'template_dir'=>$tmp['template_dir'][$k],
-                    'html_dir'=>$tmp['html_dir'][$k],
-                    'ads_dir'=>$tmp['ads_dir'][$k],
+                $domain[$v] = [
+                    'site_url'         => $v,
+                    'site_name'        => $tmp['site_name'][$k],
+                    'site_keywords'    => $tmp['site_keywords'][$k],
+                    'site_description' => $tmp['site_description'][$k],
+                    'template_dir'     => $tmp['template_dir'][$k],
+                    'html_dir'         => $tmp['html_dir'][$k],
+                    'ads_dir'          => $tmp['ads_dir'][$k],
                 ];
 
             }
 
 
-            $res = mac_save_config_data(APP_PATH . 'extra/domain.php', $domain);
+            $res = mac_save_config_data(APP_PATH.'extra/domain.php', $domain);
             if ($res === false) {
                 return $this->error(lang('save_err'));
             }
@@ -40,7 +37,7 @@ class Domain extends Base
         }
 
 
-        $templates = glob('./template' . '/*', GLOB_ONLYDIR);
+        $templates = glob('./template'.'/*', GLOB_ONLYDIR);
         foreach ($templates as $k => &$v) {
             $v = str_replace('./template/', '', $v);
         }
@@ -55,11 +52,11 @@ class Domain extends Base
     public function del()
     {
         $param = input();
-        if(!empty($param['ids'])){
+        if (!empty($param['ids'])) {
             $list = config('domain');
             unset($list[$param['ids']]);
-            $res = mac_save_config_data(APP_PATH . 'extra/domain.php', $list);
-            if($res===false){
+            $res = mac_save_config_data(APP_PATH.'extra/domain.php', $list);
+            if ($res === false) {
                 return $this->error(lang('del_err'));
             }
         }
@@ -70,7 +67,7 @@ class Domain extends Base
     {
         $list = config('domain');
         $html = '';
-        foreach($list as $k=>$v){
+        foreach ($list as $k => $v) {
             $html .= $v['site_url'].'$'.$v['site_name'].'$'.$v['site_keywords'].'$'.$v['site_description'].'$'.$v['template_dir'].'$'.$v['html_dir'].'$'.$v['ads_dir']."\n";
         }
 
@@ -86,34 +83,33 @@ class Domain extends Base
         if ($info) {
             $data = file_get_contents($info->getpathName());
             @unlink($info->getpathName());
-            if($data){
-                $list = explode(chr(10),$data);
+            if ($data) {
+                $list = explode(chr(10), $data);
 
-                $domain =[];
+                $domain = [];
 
-                foreach($list as $k=>$v){
-                    if(!empty($v)) {
+                foreach ($list as $k => $v) {
+                    if (!empty($v)) {
                         $one = explode('$', $v);
                         $domain[$one[0]] = [
-                            'site_url' => $one[0],
-                            'site_name' => $one[1],
-                            'site_keywords' => $one[2],
+                            'site_url'         => $one[0],
+                            'site_name'        => $one[1],
+                            'site_keywords'    => $one[2],
                             'site_description' => $one[3],
-                            'template_dir' => $one[4],
-                            'html_dir' => $one[5],
-                            'ads_dir'=>$one[6],
+                            'template_dir'     => $one[4],
+                            'html_dir'         => $one[5],
+                            'ads_dir'          => $one[6],
                         ];
                     }
                 }
 
-                $res = mac_save_config_data(APP_PATH . 'extra/domain.php', $domain);
-                if($res===false){
+                $res = mac_save_config_data(APP_PATH.'extra/domain.php', $domain);
+                if ($res === false) {
                     return $this->error(lang('write_err_config'));
                 }
             }
             return $this->success(lang('import_err'));
-        }
-        else{
+        } else {
             return $this->error($file->getError());
         }
     }

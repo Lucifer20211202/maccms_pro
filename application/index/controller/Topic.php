@@ -1,6 +1,6 @@
 <?php
+
 namespace app\index\controller;
-use think\Controller;
 
 class Topic extends Base
 {
@@ -23,7 +23,7 @@ class Topic extends Base
     {
         $param = mac_param_url();
         $this->check_ajax();
-        $this->check_search($param,1);
+        $this->check_search($param, 1);
         $this->label_search($param);
         return $this->label_fetch('topic/ajax_search');
     }
@@ -31,7 +31,7 @@ class Topic extends Base
     public function detail()
     {
         $info = $this->label_topic_detail();
-        return $this->label_fetch(  mac_tpl_fetch('topic',$info['topic_tpl'],'detail')  );
+        return $this->label_fetch(mac_tpl_fetch('topic', $info['topic_tpl'], 'detail'));
     }
 
     public function ajax_detail()
